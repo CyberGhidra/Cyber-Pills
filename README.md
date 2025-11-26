@@ -13,34 +13,58 @@ Here you will find analysis, exercises, and notes about networking (based on the
 ```
 📂 Repository Structure (Work in Progress)
 ├── 📁 tcm-security/
+│   │ 
 │   ├── 📁 blue-team/
-│   │   ├── lab-setup/
-│   │   ├── security-operations-fundamentals/
-│   │   ├── phishing-analysis/
-│   │   ├── network-security/
-│   │   ├── endpoint-security/
-│   │   ├── siem/
-│   │   ├── threat-intelligence/
-│   │   ├── digital-forensics/
-│   │   └── incident-response/
+│   │   └── 📁 SOC101/
+│   │       ├── 01-lab-setup/
+│   │       ├── 02-security-operations-fundamentals/
+│   │       ├── 03-phishing-analysis/
+│   │       ├── 04-network-security/
+│   │       ├── 05-endpoint-security/
+│   │       ├── 06-siem/
+│   │       ├── 07-threat-intelligence/
+│   │       ├── 08-digital-forensics/
+│   │       └── 09-incident-response/
 │   │
 │   ├── 📁 red-team/
-│   │   ├── privilege-escalation/
-│   │   ├── enumeration/
-│   │   └── attack-techniques/
+│   │   └── 📁 practical-ethical-hacking/
+│   │       ├── 01-notekeeping/
+│   │       ├── 02-networking-refresher/
+│   │       ├── 03-lab-setup/
+│   │       ├── 04-linux-fundamentals/
+│   │       ├── 05-python-fundamentals/
+│   │       ├── 06-ethical-hacker-methodology/
+│   │       ├── 07-information-gathering/
+│   │       ├── 08-scanning-enumeration/
+│   │       ├── 09-vulnerability-scanning-nessus/
+│   │       ├── 10-exploitation-basics/
+│   │       ├── 11-new-capstone/
+│   │       ├── 12-active-directory-overview/
+│   │       ├── 13-active-directory-lab-build/
+│   │       ├── 14-ad-initial-attack-vectors/
+│   │       ├── 15-ad-post-compromise-enumeration/
+│   │       ├── 16-ad-post-compromise-attacks/
+│   │       ├── 17-ad-compromised-domain-next-steps/
+│   │       ├── 18-additional-ad-attacks/
+│   │       ├── 19-active-directory-case-studies/
+│   │       ├── 20-post-exploitation/
+│   │       ├── 21-webapp-enumeration-revisited/
+│   │       ├── 22-web-vulnerabilities/
+│   │       ├── 23-wireless-pentesting/
+│   │       ├── 24-legal-documents-report-writing/
+│   │       └── 25-career-advice/
 │   │
 │   └── 📁 notes/
 │
 ├── 📁 security-plus/
-│   ├── study-notes/
-│   ├── key-concepts/
-│   └── practice-tests/
+│   ├── 01-study-notes/
+│   ├── 02-key-concepts/
+│   └── 03-practice-tests/
 │
 └── 📁 ccna/
-    ├── networking-fundamentals/
-    ├── theory/
-    └── labs/
-
+    ├── 01-networking-fundamentals/
+    ├── 02-theory/
+    └── 03-labs/
 ```
 
 
