@@ -14,8 +14,14 @@ Here you will find analysis, exercises, and notes about networking (based on the
 📂 Repository Structure (Work in Progress)
 ├── 📁 tcm-security/
 │   ├── 📁 blue-team/
-│   │   ├── defensive-scripts/
-│   │   ├── log-analysis/
+│   │   ├── lab-setup/
+│   │   ├── security-operations-fundamentals/
+│   │   ├── phishing-analysis/
+│   │   ├── network-security/
+│   │   ├── endpoint-security/
+│   │   ├── siem/
+│   │   ├── threat-intelligence/
+│   │   ├── digital-forensics/
 │   │   └── incident-response/
 │   │
 │   ├── 📁 red-team/
@@ -34,6 +40,7 @@ Here you will find analysis, exercises, and notes about networking (based on the
     ├── networking-fundamentals/
     ├── theory/
     └── labs/
+
 ```
 
 
