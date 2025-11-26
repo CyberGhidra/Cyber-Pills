@@ -1,41 +1,39 @@
-📘 Cyber Pills
+ITALIAN VERSION : 
+Ciao a tutti,
+questa è la mia repository dove caricherò il mio piano di studio e i test pratici che svolgerò nell’ambito Blue Team e Red Team.
+Qui troverete analisi, esercizi e appunti riguardanti networking di base (teoria e pratica CCNA), concetti di sicurezza tratti dal libro CompTIA Security+ e dai corsi di TCM Security.
 
-A collection of concise and practical explanations of cybersecurity concepts, blue-team exercises, notes, and hands-on labs.
+ENGLISH VERSION : 
+Hey everyone,
+this is my repository where I will document my study plan and the practical tests I create while learning Blue Team and Red Team topics.
+Here you will find analysis, exercises, and notes about networking (based on the CCNA book and labs), cybersecurity concepts from the CompTIA Security+ book, and material inspired by TCM Security courses.
 
-🔍 What you’ll find here
 
-Cybersecurity “pills” explained in simple and technical terms
+📂 Repository Structure (Work in Progress)
+├── 📁 tcm-security/
+│   ├── 📁 blue-team/
+│   │   ├── defensive-scripts/
+│   │   ├── log-analysis/
+│   │   └── incident-response/
+│   │
+│   ├── 📁 red-team/
+│   │   ├── privilege-escalation/
+│   │   ├── enumeration/
+│   │   └── attack-techniques/
+│   │
+│   └── 📁 notes/
+│
+├── 📁 security-plus/
+│   ├── study-notes/
+│   ├── key-concepts/
+│   └── practice-tests/
+│
+└── 📁 ccna/
+    ├── networking-fundamentals/
+    ├── theory/
+    └── labs/
 
-Notes from Security+, CCNA, and other courses
 
-Phishing analysis examples
 
-Windows & Linux security basics
 
-Blue team practices and incident response exercises
 
-Small labs and technical experiments
-
-🗂 Repository Structure (Work in progress)
-
-/phishing/ – header analysis, payload inspection
-
-/security+/ – study notes and key concepts
-
-/ccna/ – networking fundamentals
-
-/blue-team/ – defensive scripts, logs, analysis
-
-/labs/ – VM exercises and test environments
-
-🧭 Roadmap
-
- Add phishing analysis examples
-
- Add Windows hardening notes
-
- Add Linux hardening notes
-
- Add SIEM queries examples
-
- Add incident response mini-guides
