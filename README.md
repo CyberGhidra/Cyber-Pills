@@ -10,6 +10,8 @@ Here you will find analysis, exercises, and notes about networking (based on the
 
 
 📂 Repository Structure (Work in Progress)
+```
+📂 Repository Structure (Work in Progress)
 ├── 📁 tcm-security/
 │   ├── 📁 blue-team/
 │   │   ├── defensive-scripts/
@@ -32,7 +34,7 @@ Here you will find analysis, exercises, and notes about networking (based on the
     ├── networking-fundamentals/
     ├── theory/
     └── labs/
-
+```
 
 
 
