@@ -11,7 +11,7 @@ Here you will find analysis, exercises, and notes about networking (based on the
 
 📂 Repository Structure (Work in Progress)
 ```
-📂 Repository Structure (Work in Progress)
+📂 Cyber Pills (Work in Progress)
 ├── 📁 tcm-security/
 │   │ 
 │   ├── 📁 blue-team/
