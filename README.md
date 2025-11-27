@@ -61,23 +61,23 @@ Here you will find analysis, exercises, and notes about networking (based on the
 │
 ├── 📁 comptia/
 │    └── 📂 security-plus/
-│         ├── 01-il-professionista-della-sicurezza/
-│         ├── 02-panorama-delle-minacce/
-│         ├── 03-codice-malevolo/
-│         ├── 04-ingegneria-sociale/
-│         ├── 05-valutazione-e-test-di-sicurezza/
-│         ├── 06-sicurezza-delle-applicazioni/
-│         ├── 07-crittografia-e-pki/
-│         ├── 08-gestione-identita-e-accessi/
-│         ├── 09-resilienza-e-risposta-ai-disastri/
-│         ├── 10-cloud-e-virtualizzazione/
-│         ├── 11-sicurezza-degli-endpoint/
-│         ├── 12-sicurezza-delle-reti/
-│         ├── 13-sicurezza-wireless-e-mobile/
-│         ├── 14-monitoraggio-e-incident-response/
-│         ├── 15-analisi-forense-digitale/
-│         ├── 16-governance-e-conformita/
-│         └── 17-gestione-dei-rischi-e-privacy/
+│         ├── 01-security-professional/
+│         ├── 02-threat-landscape/
+│         ├── 03-malicious-code/
+│         ├── 04-social-engineering/
+│         ├── 05-security-assessment-and-testing/
+│         ├── 06-application-security/
+│         ├── 07-cryptography-and-pki/
+│         ├── 08-identity-and-access-management/
+│         ├── 09-resilience-and-disaster-recovery/
+│         ├── 10-cloud-and-virtualization-security/
+│         ├── 11-endpoint-security/
+│         ├── 12-network-security/
+│         ├── 13-wireless-and-mobile-security/
+│         ├── 14-monitoring-and-incident-response/
+│         ├── 15-digital-forensics/
+│         ├── 16-governance-risk-and-compliance/
+│         └── 17-privacy-and-risk-management/
 │
 │
 └── 📁 ccna/
