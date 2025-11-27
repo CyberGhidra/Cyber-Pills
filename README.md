@@ -59,10 +59,25 @@ Here you will find analysis, exercises, and notes about networking (based on the
 │   │
 │   └── 📁 notes/
 │
-├── 📁 security-plus/
-│   ├── 01-study-notes/
-│   ├── 02-key-concepts/
-│   └── 03-practice-tests/
+📂 security-plus/
+│   ├── 01-il-professionista-della-sicurezza/
+│   ├── 02-panorama-delle-minacce/
+│   ├── 03-codice-malevolo/
+│   ├── 04-ingegneria-sociale/
+│   ├── 05-valutazione-e-test-di-sicurezza/
+│   ├── 06-sicurezza-delle-applicazioni/
+│   ├── 07-crittografia-e-pki/
+│   ├── 08-gestione-identita-e-accessi/
+│   ├── 09-resilienza-e-risposta-ai-disastri/
+│   ├── 10-cloud-e-virtualizzazione/
+│   ├── 11-sicurezza-degli-endpoint/
+│   ├── 12-sicurezza-delle-reti/
+│   ├── 13-sicurezza-wireless-e-mobile/
+│   ├── 14-monitoraggio-e-incident-response/
+│   ├── 15-analisi-forense-digitale/
+│   ├── 16-governance-e-conformita/
+│   └── 17-gestione-dei-rischi-e-privacy/
+│
 │
 └── 📁 ccna/
     ├── 01-networking-fundamentals/
