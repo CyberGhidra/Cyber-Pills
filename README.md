@@ -57,7 +57,13 @@ Here you will find analysis, exercises, and notes about networking (based on the
 │   │       ├── 24-legal-documents-report-writing/
 │   │       └── 25-career-advice/
 │   │
-│   └── 📁 notes/
+│   ├── 📁 fondamentals/
+│        └── 📂 linux/
+│        │    ├── .../
+│        │    └── .../
+│        ├── 📂 phyton/
+│             ├── .../
+│             └── .../
 │
 ├── 📁 comptia/
 │    └── 📂 security-plus/
@@ -81,9 +87,14 @@ Here you will find analysis, exercises, and notes about networking (based on the
 │
 │
 └── 📁 ccna/
-    ├── 01-networking-fundamentals/
-    ├── 02-theory/
-    └── 03-labs/
+     └── 📂 ccna-200-301-vl1/
+     │    ├── .../
+     │    └── .../
+     │  
+     ├── 📁 ccna-200-301-vl2/
+          ├── .../
+          └── .../ 
+
 ```
 
 
