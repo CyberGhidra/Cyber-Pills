@@ -57,7 +57,7 @@ Here you will find analysis, exercises, and notes about networking (based on the
 │   │       ├── 24-legal-documents-report-writing/
 │   │       └── 25-career-advice/
 │   │
-│   ├── 📁 fondamentals/
+│   ├── 📁 fundamentals/
 │        └── 📂 linux/
 │        │    ├── .../
 │        │    └── .../
