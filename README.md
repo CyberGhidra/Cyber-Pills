@@ -87,13 +87,66 @@ Here you will find analysis, exercises, and notes about networking (based on the
 │
 │
 └── 📁 ccna/
-     └── 📂 ccna-200-301-vl1/
-     │    ├── .../
-     │    └── .../
+     └── 📁 ccna-200-301-vl1/
+     │    ├── 01-introduction-to-tcpip-networking/
+     │    ├── 02-fundamentals-of-ethernet-lans/
+     │    ├── 03-fundamentals-of-wans-and-ip-routing/
+     │    ├── 04-using-the-command-line-interface/
+     │    ├── 05-analyzing-ethernet-lan-switching/
+     │    ├── 06-configuring-basic-switch-management/
+     │    ├── 07-configuring-and-verifying-switch-interfaces/
+     │    ├── 08-implementing-ethernet-vlans/
+     │    ├── 09-spanning-tree-protocol-concepts/
+     │    ├── 10-rstp-and-etherchannel-configuration/
+     │    ├── 11-perspectives-on-ipv4-subnetting/
+     │    ├── 12-analyzing-classful-ipv4-networks/
+     │    ├── 13-analyzing-subnet-masks/
+     │    ├── 14-analyzing-existing-subnets/
+     │    ├── 15-subnet-design/
+     │    ├── 16-operating-cisco-routers/
+     │    ├── 17-configuring-ipv4-addresses-and-static-routes/
+     │    ├── 18-ip-routing-in-the-lan/
+     │    ├── 19-ip-addressing-on-hosts/
+     │    ├── 20-troubleshooting-ipv4-routing/
+     │    ├── 21-understanding-ospf-concepts/
+     │    ├── 22-implementing-basic-ospf-features/
+     │    ├── 24-ospf-neighbors-and-route-selection/
+     │    ├── 25-fundamentals-of-ip-version-6/
+     │    ├── 26-ipv6-addressing-and-subnetting/
+     │    ├── 27-implementing-ipv6-addressing-on-routers/
+     │    ├── 28-implementing-ipv6-addressing-on-hosts/
+     │    ├── 29-implementing-ipv6-routing/
+     │    └── 30-exam-updates/
+     │ 
      │  
      ├── 📁 ccna-200-301-vl2/
-          ├── .../
-          └── .../ 
+          ├── 01-wireless-lans/
+          ├── 02-operating-cisco-wireless-lans/
+          ├── 03-securing-wireless-networks/
+          ├── 04-building-a-wireless-lan/
+          ├── 05-ip-access-control-lists/
+          ├── 06-basic-ipv4-access-control-lists/
+          ├── 07-named-and-extended-ip-acls/
+          ├── 08-applied-ip-acls/
+          ├── 09-security-architectures/
+          ├── 10-securing-network-devices/
+          ├── 11-implementing-switch-port-security/
+          ├── 12-dhcp-snooping-and-arp-inspection/
+          ├── 13-device-management-protocols/
+          ├── 14-network-address-translation/
+          ├── 15-quality-of-service-qos/
+          ├── 16-first-hop-redundancy-protocols/
+          ├── 17-snmp-tftp-and-ftp/
+          ├── 18-wan-architecture/
+          ├── 19-cloud-architectures/
+          ├── 20-vpn-and-remote-access/
+          ├── 21-introduction-to-controller-based-networking/
+          ├── 22-cisco-software-defined-access/
+          ├── 23-understanding-rest-and-json/
+          ├── 24-understanding-ansible-and-terraform/
+          ├── 25-exam-updates/
+          └── 26-final-review/
+
 
 ```
 
