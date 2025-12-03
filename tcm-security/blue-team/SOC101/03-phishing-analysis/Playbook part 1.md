@@ -2,7 +2,7 @@
 
 This document summarizes the complete workflow for manual and automated phishing email analysis following the methodology from TCM Security SOC101,
 including all Python tools used (emldump, oledump, pdfid, pdf-parser, eioc).
-
+```
 -----------------------------------------------
 1. EMAIL ACQUISITION
 -----------------------------------------------
@@ -35,5 +35,5 @@ CTRL+F inside the .eml or decoded message:
 • Find encoded strings  
 • Identify suspicious redirect patterns 
 
-
+```
 
