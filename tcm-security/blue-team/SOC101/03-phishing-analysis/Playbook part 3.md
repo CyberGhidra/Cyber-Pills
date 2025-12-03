@@ -9,17 +9,25 @@
 -----------------------------------------------
 Python command:
     python3 ../file path/emldump.py <email.eml>
-OUTPUT LIKE
-    1: M multipart/mixed > container 
-    2: M multipart/related > sotto-container 
-    3: 1528 Text/HTML
-    4: 114688 Application/octet-strem (nomefile.iso) example
-Extract number 4 
-    python3 ../file path/emldump.py <email.eml> -s 4 -d > <nome file>
-    --> inside the same folder we can see the sha256, sha1 or md5
-    --> command sha256 <name file>
-    --> OUTPUT like = 75gf85js96sjs78vd...
-    --> take and use virustotal to see if is good 
+
+OUTPUT LIKE:
+    1: M multipart/mixed  
+    2: M multipart/related  
+    3: 1528 text/html  
+    4: 114688 application/octet-stream (filename.iso)
+
+Extract item 4:
+    python3 ../file path/emldump.py <email.eml> -s 4 -d > <filename>
+
+→ This creates the extracted file in the current folder (example: filename.iso)
+
+Calculate hash:
+    sha256sum <filename>     (Linux/macOS)
+or Windows:
+    Get-FileHash .\<filename>
+
+Use VirusTotal / Hybrid Analysis to check reputation.
+
 -----------------------------------------------
 6.2 eioc.py (MalwareCube Email IOC Extractor)
 -----------------------------------------------
@@ -29,16 +37,17 @@ Python command:
 Extracts:
 • URLs  
 • Hashes (MD5, SHA1, SHA256)  
-• Attachments  
+• Detects presence of attachments and extracts their hashes  
+  (does NOT extract/save the actual files)
 • IP indicators
 
 -----------------------------------------------
 6.3 oledump.py – identify macro streams
 -----------------------------------------------
 List all OLE/VBA streams:
-    python3 ../file path/oledump.py <suspicious.doc> just Microsoft files or VBA ecc
+    python3 ../file path/oledump.py <suspicious.doc>
 
-EXTRACT LIKE 
+OUTPUT LIKE:
   1:       114 '\x01CompObj'
   2:      4096 '\x05DocumentSummaryInformation'
   3:      4096 '\x05SummaryInformation'
@@ -51,16 +60,19 @@ EXTRACT LIKE
  10:       563 'Macros/VBA/dir'
  11:      4096 'WordDocument'
 
-1 column = n stream
-3 column = stream Wheigth
-2 columns = M > active macro
-            m = noautoactive macro
+EXPLANATION:
+1st column  = stream number  
+2nd column = indicator:  
+              M = macro stream with code  
+              m = macro present but not auto-open  
+              A = auto-executable macro (AutoOpen / Document_Open)  
+3rd column = stream size
 
-Extract specific stream (example stream 7):
+Extract specific stream (example: stream 7):
     python3 oledump.py <suspicious.doc> -s 7 -S
 
-Decompress corrupted macro stream:
-    python3 oledump.py suspicious.doc -s 7 --vbadecompresscorrupt
+If macro is corrupted/offuscata:
+    python3 oledump.py <suspicious.doc> -s 7 --vbadecompresscorrupt
 
 Used to:
 • Reveal VBA macros  
@@ -68,16 +80,80 @@ Used to:
 • Detect PowerShell commands  
 • Identify downloaders / dropper logic  
 
+-----------------------------------------------
+7. PDF MALWARE ANALYSIS
+-----------------------------------------------
+
+-----------------------------------------------
+7.1 pdfid.py – static indicator scan
+-----------------------------------------------
+    python3 ../file path/pdfid.py suspicious.pdf
+
+Detects:
+• /JS  
+• /JavaScript  
+• /OpenAction  
+• /Launch  
+• /EmbeddedFile  
+
+-----------------------------------------------
+7.2 pdf-parser.py – object-level PDF analysis
+-----------------------------------------------
+List objects:
+    python3 ../file path/pdf-parser.py suspicious.pdf | more
+or search URLs:
+    python3 ../file path/pdf-parser.py suspicious.pdf -s "/URI"
+
+Example:
+obj 1 0
+ Type: /Catalog
+ Referencing: 2 0 R
+ /OpenAction 8 0 R
+
+obj 2 0
+ Type: /Pages
+ Referencing: 3 0 R
+
+obj 3 0
+ Type: /Page
+ Referencing: 4 0 R, 5 0 R
+
+obj 4 0
+ Type: /JS
+ /JavaScript 7 0 R
+
+obj 5 0
+ Type: /EmbeddedFile
+ Contains stream
+ Filter: FlateDecode
+ Stream length: 10240 bytes
+
+obj 6 0
+ Contains stream
+ Filter: FlateDecode
+ Stream length: 290 bytes
+---- Stream ----
+(this.exportDataObject({ cName: "update.doc", nLaunch: 2 }))
+
+Extract embedded file (example: object 5):
+    python3 ../file path/pdf-parser.py suspicious.pdf --object 5 --filter --raw > update.doc
+    python3 ../file path/oledump.py update.doc
+    python3 ../file path/oledump.py update.doc -s <stream number> --vbadecompresscorrupt
+                                                
+-----------------------------------------------
 JUST FOR WINDOWS 
+-----------------------------------------------
+Safest way to extract attachments is using emldump.py.
+Do NOT double-click attachments from Outlook/Thunderbird.
 
-there isn't a safe mode to download a file from EML.
-But we can analys in the same way 
-POWERSHELL > Get-filehash .\<file name>
-or
-> Get-filehash -algorithm md5 .\<file name>
-> Get-filehash -algorithm sha1 .\<file name>
+POWERSHELL:
+    Get-FileHash .\<filename>
+    Get-FileHash -Algorithm MD5 .\<filename>
+    Get-FileHash -Algorithm SHA1 .\<filename>
 
+-----------------------------------------------
 TOOLS for SANDBOX 
+-----------------------------------------------
 - JoeSandbox
 - Any.run https://app.any.run
 - Hybrid Analysis https://hybrid-analysis.com/
