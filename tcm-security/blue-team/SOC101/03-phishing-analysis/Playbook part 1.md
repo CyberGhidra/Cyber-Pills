@@ -15,7 +15,7 @@ including all Python tools used (emldump, oledump, pdfid, pdf-parser, eioc).
 2. HEADER ANALYSIS (MANUAL)
 -----------------------------------------------
 Checks performed:
-• Recived bottom to top
+• Received bottom to top
 • Authentication-Results:
   • SPF result  
   • DKIM signature  
@@ -32,9 +32,11 @@ IF SPF = FAIL > spoofing
 3. CONTENT SEARCH (MANUAL)
 -----------------------------------------------
 CTRL+F inside the .eml or decoded message:
-• Find URLs 
+• Find URLs ---> When no URLs are found: Base64 blocks , Quoted-Printable
 • Find encoded strings  
 • Identify suspicious redirect patterns 
+
+TOOLS = MxToolBox https://mxtoolbox.com/
 
 ```
 
