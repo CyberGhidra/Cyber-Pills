@@ -1,4 +1,4 @@
-# EMAIL PHISHING ANALYSIS PLAYBOOK
+# EMAIL PHISHING ANALYSIS HEADER
 
 This document summarizes the complete workflow for manual and automated phishing email analysis following the methodology from TCM Security SOC101,
 including all Python tools used (emldump, oledump, pdfid, pdf-parser, eioc).
@@ -22,16 +22,17 @@ Checks performed:
   • DMARC alignment  
 • From vs Return-Path mismatch 
 
+IF SPF = FAIL > spoofing 
+   DKIM = FAIL > spoofing or manipolation
+   DKIM = NONE > Suspicious
+   DMARC = FAIL > spoofing 
+   DMARC = NONE > Weak domain 
+   
 -----------------------------------------------
 3. CONTENT SEARCH (MANUAL)
 -----------------------------------------------
 CTRL+F inside the .eml or decoded message:
 • Find URLs 
-  •"http"
-  •"https"
-  •"url="
-  •"redirect"
-  •"href="
 • Find encoded strings  
 • Identify suspicious redirect patterns 
 
