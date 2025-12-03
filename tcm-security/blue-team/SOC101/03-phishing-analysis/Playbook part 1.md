@@ -10,6 +10,7 @@ including all Python tools used (emldump, oledump, pdfid, pdf-parser, eioc).
 • Or extract full headers for manual inspection  
 • Download SublimeText https://www.sublimetext.com/ --> tools > install package controll > Control+shift+P ( search bar ) > install package > email header
 • select ( down - right part ) email header
+• Linux command for SublimeText = subl <nomefile>
 
 -----------------------------------------------
 2. HEADER ANALYSIS (MANUAL)
