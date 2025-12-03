@@ -1,0 +1,39 @@
+# EMAIL PHISHING ANALYSIS PLAYBOOK
+
+This document summarizes the complete workflow for manual and automated phishing email analysis following the methodology from TCM Security SOC101,
+including all Python tools used (emldump, oledump, pdfid, pdf-parser, eioc).
+
+-----------------------------------------------
+1. EMAIL ACQUISITION
+-----------------------------------------------
+• Obtain the email in .eml format  
+• Or extract full headers for manual inspection  
+• Download SublimeText https://www.sublimetext.com/ --> tools > install package controll > Control+shift+P ( search bar ) > install package > email header
+• select ( down - right part ) email header
+
+-----------------------------------------------
+2. HEADER ANALYSIS (MANUAL)
+-----------------------------------------------
+Checks performed:
+• Recived bottom to top
+• Authentication-Results:
+  • SPF result  
+  • DKIM signature  
+  • DMARC alignment  
+• From vs Return-Path mismatch 
+
+-----------------------------------------------
+3. CONTENT SEARCH (MANUAL)
+-----------------------------------------------
+CTRL+F inside the .eml or decoded message:
+• Find URLs 
+  •"http"
+  •"https"
+  •"url="
+  •"redirect"
+  •"href="
+• Find encoded strings  
+• Identify suspicious redirect patterns 
+
+
+
