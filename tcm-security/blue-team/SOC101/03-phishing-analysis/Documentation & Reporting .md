@@ -1,5 +1,5 @@
 # Phishing Analysis Report Template
-
+```
 Headers
 <...>
 Date:
@@ -54,3 +54,4 @@ Verdict
 
 Defense Actions
 <......>
+```
