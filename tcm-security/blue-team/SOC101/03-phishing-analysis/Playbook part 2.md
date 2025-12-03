@@ -43,6 +43,7 @@ LCBs4oCZYWdnaW9ybmFtZW50byB2ZXJyw6Ag ==
 • PishTank https://www.phishtank.com/
 • URL2PNG https://www.url2png.com/
 • VirusTotal https://www.virustotal.com/gui/home/upload
+• Talos Cisco https://talosintelligence.com/
 • Use urlscan.io (https://urlscan.io/) to analyze: 
   - screenshot  
   - network requests  
