@@ -1,5 +1,5 @@
 #   Email Content Analysis
-
+```
 -----------------------------------------------
 4. CONTENT DECODING USING CYBERCHEF
 -----------------------------------------------
@@ -32,7 +32,7 @@ LCBs4oCZYWdnaW9ybmFtZW50byB2ZXJyw6Ag ==
     > Defang URL 
 
 
-
+```
 
 
 
