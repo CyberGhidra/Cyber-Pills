@@ -5,7 +5,20 @@
 -----------------------------------------------
 
 -----------------------------------------------
-6.1 emldump.py (extract attachments from .eml) https://github.com/DidierStevens/DidierStevensSuite/blob/master/emldump.py
+6.1 eioc.py (MalwareCube Email IOC Extractor)
+-----------------------------------------------
+Python command:
+    python3 eioc.py email.eml
+
+Extracts:
+• URLs  
+• Hashes (MD5, SHA1, SHA256)  
+• Detects presence of attachments and extracts their hashes  
+  (does NOT extract/save the actual files)
+• IP indicators
+
+-----------------------------------------------
+6.2 emldump.py (extract attachments from .eml) https://github.com/DidierStevens/DidierStevensSuite/blob/master/emldump.py
 -----------------------------------------------
 Python command:
     python3 ../file path/emldump.py <email.eml>
@@ -27,19 +40,6 @@ or Windows:
     Get-FileHash .\<filename>
 
 Use VirusTotal / Hybrid Analysis to check reputation.
-
------------------------------------------------
-6.2 eioc.py (MalwareCube Email IOC Extractor)
------------------------------------------------
-Python command:
-    python3 eioc.py email.eml
-
-Extracts:
-• URLs  
-• Hashes (MD5, SHA1, SHA256)  
-• Detects presence of attachments and extracts their hashes  
-  (does NOT extract/save the actual files)
-• IP indicators
 
 -----------------------------------------------
 6.3 oledump.py – identify macro streams
@@ -158,6 +158,7 @@ TOOLS for SANDBOX
 - Any.run https://app.any.run
 - Hybrid Analysis https://hybrid-analysis.com/
 
-
+JUST FOR FUN
+https://github.com/rf-peixoto/phishing_pot
 
 ```
