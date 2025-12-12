@@ -27,9 +27,6 @@ TCPDUMP needs to know which NIC (Network Interface Card) to capture traffic from
 - ip link show 
 example :
 1: lo        → loopback (127.0.0.1)
-
-
-''
 2: enp0s3    → ethernet
 3: wlan0 / wlp2s0 → wireless
 
