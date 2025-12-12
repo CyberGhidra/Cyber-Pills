@@ -45,6 +45,17 @@ Shows IP addresses and port numbers instead of hostnames.
 ```
 sudo tcpdump -i enp0s3 -n
 ```
+### `-A`
+Displays payload in ASCII format. Useful for HTTP headers, requests, responses
+```
+sudo tcpdump -i lo -A
+```
+### `-X`
+Displays payload in hexadecimal + ASCII. Useful for binary data or malware analysis
+```
+sudo tcpdump -i lo -X
+```
+
 ### `host`
 Matches traffic where the source OR destination matches the host.
 ```
