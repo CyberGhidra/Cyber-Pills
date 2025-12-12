@@ -1,0 +1,115 @@
+# Understanding TCPdump Basics – TCP 3-Way Handshake
+
+To understand how tcpdump works, it is important to analyze the TCP 3-way handshake
+and how packets are exchanged between a client and a server.
+
+## Steps
+```
+1) Open three terminal windows  
+   (Shortcut: Ctrl + Shift + T)
+
+2) Identify available network interfaces:
+  ```bash
+  tcpdump -D
+
+3) For this example, use the loopback interface:
+   lo → internal interface (127.0.0.1)
+
+4) Start sniffing traffic on the loopback interface:
+   sudo tcpdump -i lo
+   This captures all traffic sent to and from 127.0.0.1.
+
+5) In the second terminal, create a local TCP server using netcat:
+   nc -lvp 1234
+
+   -l → listen mode
+   -v → verbose output
+   -p → specify port
+   The server listens on port 1234.
+
+6) In the third terminal, connect to the local server:
+
+   nc 127.0.0.1 1234
+
+   This creates a TCP connection between the client (terminal 3)
+   and the server (terminal 2), triggering the TCP 3-way handshake
+
+7) Now, in the third terminal, type:
+```text
+HELLO
+
+The message appears in the second terminal (the server).
+This confirms that data is being transmitted between the client and the server.
+```
+
+## To analyze this communication, we observe the first terminal running tcpdump.
+```
+Example tcpdump output:
+
+12:34:56.123456 IP localhost.54321 > localhost.1234: Flags [S], seq 1000, win 65495, length 0
+12:34:56.123789 IP localhost.1234 > localhost.54321: Flags [S.], seq 2000, ack 1001, win 65495, length 0
+12:34:56.124012 IP localhost.54321 > localhost.1234: Flags [.], ack 2001, win 512, length 0
+
+8) Let’s analyze the first packet:
+
+   12:34:56.123456 IP localhost.54321 > localhost.1234: Flags [S], seq 1000, win 65495, length 0
+
+   Field explanation:
+
+   12:34:56.123456
+   → Timestamp (time when the packet was captured)
+
+   IP
+   → Network protocol (IPv4)
+
+   localhost.54321
+   → Source host and source port (client)
+  
+   >
+   → Direction of traffic (source → destination)
+  
+   localhost.1234
+   → Destination host and destination port (server)
+  
+   Flags [S]
+   → TCP flag
+
+  Common flags you may observe in tcpdump:
+
+   - `[S]`   → SYN  
+   Connection request (start of a TCP connection)
+
+   - `[S.]`  → SYN-ACK  
+   Server acknowledges the SYN and accepts the connection
+  
+   - `[.]`   → ACK  
+   Acknowledgement (confirms received data or handshake step)
+  
+   - `[P.]`  → PSH-ACK  
+   Packet contains data that should be immediately passed to the application
+   (example: typing "HELLO")
+  
+   - `[F.]`  → FIN-ACK  
+   Graceful connection termination
+  
+   - `[R]`   → RST  
+   Connection reset (error or refused connection)
+  
+   seq 1000
+   → TCP sequence number
+   Identifies the position of this packet’s data in the TCP stream.
+   Each byte of data is numbered.
+
+   ack 1001
+   → TCP acknowledgement number
+   Means:
+   - I have successfully received all bytes up to number 1000
+   - I expect the next byte to be 1001
+
+   win 65495
+   → TCP window size
+   The window size indicates how much data the receiver
+   can accept **without sending an acknowledgement**.
+  
+   length 0
+   → No payload data in this packet
