@@ -22,3 +22,6 @@ Terminal 3 – Start Wireshark (Loopback interface)
 3 terminal
 sudo wireshark (interface lo = loopback)
 ```
+## SETUP Wireshark
+
+1) open 
