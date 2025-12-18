@@ -4,33 +4,7 @@
 - Used in the **top filter bar** inside Wireshark
 - ❌ NOT tcpdump syntax
 - Used for **analysis**, not capture
-
----
-
-## Packet Time Configuration
-
-The first thing to configure is the packet timestamp format.
-
-```
-View → Time Display Format → Date and Time of Day → UTC
-```
-
-Why this matters:
-- Consistent timestamps across systems
-- Easier correlation with SIEM, firewall and server logs
-
----
-
-## Capture Filters vs Display Filters
-
-| Feature | Capture Filters | Display Filters |
-|------|---------------|----------------|
-| When applied | Before capture | After capture |
-| Purpose | Reduce captured traffic | Analyze traffic |
-| Syntax | BPF (tcpdump) | Wireshark |
-| Can change later | ❌ No | ✅ Yes |
-| Restart capture required | ✅ Yes | ❌ No |
-
+  
 ---
 
 ## IP / Host Filters
@@ -303,9 +277,3 @@ tcp.port == 4444 || tcp.port == 1337
 frame.len > 1000 && tcp
 ```
 
----
-
-## SOC Analyst Mental Model
-
-> Capture filters reduce data  
-> Display filters explain behavior
