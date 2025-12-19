@@ -130,15 +130,3 @@ This allows you to:
 - Quickly review accessed resources without manual filtering
 
 ---
-
-## SOC Analyst Tip
-
-- Start with **Statistics** for the big picture
-- Use **Follow HTTP Stream** for context
-- Use **Export Objects** to extract URLs and files
-- Use **Marked packets** to build timelines
-
----
-
-> First get the big picture.  
-> Then zoom into the packets that matter.
