@@ -161,7 +161,3 @@ Now that the malware behavior is known:
 
 ---
 
-## SOC Analyst Mindset
-
-> Start broad, then go deep.  
-> Let the PCAP tell the story.
