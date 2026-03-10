@@ -8,9 +8,7 @@ First, start the Metasploit Framework using quiet mode:
 msfconsole -q
 ```
 
-The `-q` (quiet mode) option starts Metasploit **without displaying the initial banner and startup messages**.  
-This makes the terminal output cleaner during lab activities.
-
+The -q option starts Metasploit in quiet mode and suppresses the startup banner and most initial messages.
 ---
 
 ## 2. Configuring and Launching the Exploit
@@ -88,7 +86,7 @@ mkdir prova
 Then share it with:
 
 ```cmd
-net share prova=C:\Users\tcm\Downloads
+net share prova=C:\Users\tcm\Downloads\prova
 ```
 
 This command creates a **network share named `prova`** pointing to the Downloads directory.
