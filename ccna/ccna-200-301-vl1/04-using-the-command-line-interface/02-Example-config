@@ -1,0 +1,206 @@
+! ════════════════════════════════════════════
+!  SCENARIO 1: Brand new switch (no password)
+! ════════════════════════════════════════════
+
+Press RETURN to get started.
+
+Switch>           ← no password required!
+Switch> enable
+Switch#           ← no password required!
+
+
+! ════════════════════════════════════════════
+!  FIRST TIME: Set all passwords from scratch
+! ════════════════════════════════════════════
+
+Switch# configure terminal
+Switch(config)#
+
+! ── Set hostname ──
+Switch(config)# hostname SW1
+SW1(config)#
+
+! ── Set enable (admin) password ──
+SW1(config)# enable secret MySecretPass
+
+! ── Set console password ──
+SW1(config)# line console 0
+SW1(config-line)# login
+SW1(config-line)# password ConsolePass
+SW1(config-line)# exit
+
+! ── Set Telnet/SSH password ──
+SW1(config)# line vty 0 15
+SW1(config-line)# login
+SW1(config-line)# password VtyPass
+SW1(config-line)# exit
+
+! ── Save configuration ──
+SW1(config)# end
+SW1# copy running-config startup-config
+[OK]
+
+
+! ════════════════════════════════════════════
+!  FROM NOW ON: passwords are required
+! ════════════════════════════════════════════
+
+Press RETURN to get started.
+
+User Access Verification
+Password: ConsolePass        ← now required!
+
+SW1>
+SW1> enable
+Password: MySecretPass       ← now required!
+SW1#
+
+
+! ════════════════════════════════════════════
+!  METHOD 1: Console access
+!  - Physical cable (rollover or USB)
+!  - Terminal emulator: 9600 baud, 8N1
+! ════════════════════════════════════════════
+
+Press RETURN to get started.
+Password: ConsolePass
+SW1>              ← User Mode (can only look)
+
+
+! ════════════════════════════════════════════
+!  USER MODE vs ENABLE MODE
+! ════════════════════════════════════════════
+
+SW1>              ← User Mode  : prompt ends with >
+SW1#              ← Enable Mode: prompt ends with #
+
+! ── show commands work in both modes ──
+SW1> show mac address-table dynamic
+
+Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+   1    0200.1111.1111    DYNAMIC     Gi0/1
+   1    0200.3333.3333    DYNAMIC     Fa0/3
+
+! ── privileged commands rejected in user mode ──
+SW1> reload
+% Unknown command or computer name    ← REJECTED!
+
+! ── move to enable mode ──
+SW1> enable
+Password: MySecretPass
+SW1#
+
+! ── now reload is accepted ──
+SW1# reload
+Proceed with reload? [confirm] y
+
+
+! ════════════════════════════════════════════
+!  CONFIGURATION MODE and SUBMODES
+! ════════════════════════════════════════════
+
+SW1# configure terminal
+SW1(config)#              ← Global config mode
+
+! ── Global submode: Line (console) ──
+SW1(config)# line console 0
+SW1(config-line)#         ← Line submode
+SW1(config-line)# exit
+SW1(config)#
+
+! ── Global submode: Line (Telnet/SSH) ──
+SW1(config)# line vty 0 15
+SW1(config-line)#         ← Line submode
+SW1(config-line)# exit
+SW1(config)#
+
+! ── Global submode: Interface ──
+SW1(config)# interface FastEthernet 0/1
+SW1(config-if)#           ← Interface submode
+SW1(config-if)# speed 100
+SW1(config-if)# exit
+SW1(config)#
+
+! ── Exit configuration mode ──
+SW1(config)# end          ← (or Ctrl+Z)
+SW1#
+
+
+! ════════════════════════════════════════════
+!  running-config (RAM) vs startup-config (NVRAM)
+! ════════════════════════════════════════════
+
+SW1# show running-config      ← active config in RAM (changes immediately)
+hostname SW1
+enable secret MySecretPass
+line console 0
+ login
+ password ConsolePass
+line vty 0 15
+ login
+ password VtyPass
+interface FastEthernet0/1
+ speed 100
+
+SW1# show startup-config      ← saved config in NVRAM (used at boot)
+hostname SW1                  ← matches running-config only after saving!
+
+! ── Save running-config to startup-config ──
+SW1# copy running-config startup-config
+Destination filename [startup-config]?   ← press Enter
+Building configuration...
+[OK]
+
+
+! ════════════════════════════════════════════
+!  METHOD 2: Telnet (not secure, clear text)
+!  Requires IP address on switch (Chapter 6)
+! ════════════════════════════════════════════
+
+C:\> telnet 192.168.1.1
+Password: VtyPass
+SW1>              ← lands in User Mode
+
+
+! ════════════════════════════════════════════
+!  METHOD 3: SSH (secure, encrypted)
+!  Requires IP address on switch (Chapter 6)
+! ════════════════════════════════════════════
+
+C:\> ssh -l admin 192.168.1.1
+Password: VtyPass             ← same vty password, but encrypted in transit
+SW1>              ← lands in User Mode
+
+
+! ════════════════════════════════════════════
+!  CLI HELP FEATURES
+! ════════════════════════════════════════════
+
+SW1> ?                        ← all commands available in current mode
+SW1> sh?                      ← commands starting with "sh"
+SW1> show ?                   ← all parameters for "show"
+SW1> show mac<Tab>            ← autocompletes to "show mac address-table"
+SW1# show mac address-table dynamic
+
+
+! ════════════════════════════════════════════
+!  SCENARIO 2: Erase everything and start over
+!  (lab use only)
+! ════════════════════════════════════════════
+
+SW1# erase startup-config
+Erasing the nvram filesystem will remove all configuration files!
+[confirm]                     ← press Enter
+[OK]
+
+SW1# reload
+Proceed with reload? [confirm] y
+
+! After reboot → back to factory default, no passwords
+Press RETURN to get started.
+Switch>           ← no password again!
+Switch> enable
+Switch#           ← no password again!
