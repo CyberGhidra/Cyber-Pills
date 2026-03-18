@@ -13,7 +13,7 @@
 
 ---
 
-## Block 2 — Cisco Switch Configuration (Ch. 4–10)
+## Block 2 — Cisco Switch Configuration (Ch. 4–7) and (Ch. 8-10)
 > **Goal:** Learn the CLI, then apply everything on a real/simulated switch.
 
 | Chapter | Topic | Study method |
@@ -22,6 +22,10 @@
 | 05 | Analyzing Ethernet LAN Switching | Lab + verification commands |
 | 06 | Configuring Basic Switch Management | Lab configs |
 | 07 | Configuring and Verifying Switch Interfaces | Lab configs |
+
+2 part advance switching 
+| Chapter | Topic | Study method |
+|---------|-------|--------------|
 | 08 | Implementing Ethernet VLANs | Lab configs |
 | 09 | Spanning Tree Protocol Concepts | Theory + topology diagrams |
 | 10 | RSTP and EtherChannel Configuration | Lab configs |
@@ -82,15 +86,3 @@
 | Flashcard review | Quick pass through all cards before exam day |
 
 ---
-
-1–3 → teoria pura
-
-4–7 → subito lab (Packet Tracer / GNS3)
-
-8–10 → lab obbligatori
-
-11–15 → esercizi subnetting ogni giorno
-
-16–24 → teoria + lab mix
-
-25–29 → più leggero ma da capire
