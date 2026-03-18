@@ -1,26 +1,4 @@
 # Chapter 7 – Configuring and Verifying Switch Interfaces
-> **CCNA 200-301 Official Cert Guide, Volume 1** — Summary pages 161–182
-
----
-
-## 📋 Table of Contents
-1. [IEEE Autonegotiation Concepts](#1-ieee-autonegotiation-concepts)
-2. [Autonegotiation Under Working Conditions](#2-autonegotiation-under-working-conditions)
-3. [Autonegotiation When Only One Side Uses It](#3-autonegotiation-when-only-one-side-uses-it)
-4. [Autonegotiation and LAN Hubs](#4-autonegotiation-and-lan-hubs)
-5. [Configuring Speed and Duplex Manually](#5-configuring-speed-and-duplex-manually)
-6. [Using Auto-MDIX on Cisco Switches](#6-using-auto-mdix-on-cisco-switches)
-7. [Managing Switch Interface Configuration](#7-managing-switch-interface-configuration)
-8. [The description and interface range Commands](#8-the-description-and-interface-range-commands)
-9. [Administratively Controlling Interfaces with shutdown](#9-administratively-controlling-interfaces-with-shutdown)
-10. [Removing Configuration with the no Command](#10-removing-configuration-with-the-no-command)
-11. [Analyzing Switch Interface Status and Statistics](#11-analyzing-switch-interface-status-and-statistics)
-12. [Interface Status Codes](#12-interface-status-codes)
-13. [The Duplex Mismatch Issue](#13-the-duplex-mismatch-issue)
-14. [Common Layer 1 Problems on Working Interfaces](#14-common-layer-1-problems-on-working-interfaces)
-15. [Command References](#15-command-references)
-16. [Key Terms](#16-key-terms)
-17. [Review Key Topics](#17-review-key-topics)
 
 ---
 
@@ -455,31 +433,6 @@ SW1# show interfaces gi1/0/1
 | `show interfaces [type number] status` | Lists one line per interface with description, status, duplex, speed |
 | `show interfaces [type number]` | Lists detailed status and statistical information (counters) |
 | `show interfaces description` | Lists one line per interface with two-part status and description |
-
----
-
-## 16. Key Terms
-
-`10/100` · `10/100/1000` · `auto-MDIX` · `autonegotiation` · `duplex mismatch` · `full duplex` · `half duplex` · `late collisions` · `parallel detection`
-
----
-
-## 17. Review Key Topics — Table 7-4
-
-| Key Topic Element | Description | Page Number |
-|---|---|---|
-| List | IEEE autonegotiation rules when both link partners participate | 162 |
-| List | IEEE autonegotiation rules when only one partner participates (parallel detection) | 163 |
-| Example 7-1 | Confirming all default settings on switch interfaces | 166 |
-| Example 7-3 | Interpreting autonegotiation clues before/after completion | 167 |
-| Example 7-4 | `show interfaces` command autonegotiation clues | 168 |
-| Example 7-5 | Configuring speed and duplex on both ends of a link | 169 |
-| Example 7-6 | `show interfaces status` without using autonegotiation | 170 |
-| Example 7-9 | Configuring and verifying the `description` command | 172 |
-| Example 7-12 | Administratively disabling an interface with `shutdown` | 174 |
-| Example 7-13 | Interface status when configured with the `shutdown` command | 174 |
-| Table 7-2 | Two types of interface state terms and their meanings | 176 |
-| List | Explanations of different error statistics on switch interfaces | 179 |
 
 ---
 
