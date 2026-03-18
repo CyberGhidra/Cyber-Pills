@@ -83,4 +83,14 @@
 
 ---
 
-*Good luck with the CCNA 200-301! 🎯*
+1–3 → teoria pura
+
+4–7 → subito lab (Packet Tracer / GNS3)
+
+8–10 → lab obbligatori
+
+11–15 → esercizi subnetting ogni giorno
+
+16–24 → teoria + lab mix
+
+25–29 → più leggero ma da capire
