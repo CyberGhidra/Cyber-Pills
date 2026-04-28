@@ -78,7 +78,7 @@ explorer.exe  (PID: 1716)
 In this example:
 - `explorer.exe` is the **shell** (the Windows desktop process). It is the natural parent for anything a user launches from the desktop or taskbar.
 - `firefox.exe` is a **child** of `explorer.exe`.
-- `notepad++.exe` is a **grandchild** of `explorer.exe` and a **child** of `firefox.exe`.
+- `notepad++.exe` is a **child** of `explorer.exe`.
 
 > 🔍 **Anomaly detection tip:** If `notepad++.exe` (or any unexpected process) appears as a child of a browser, this can indicate a browser-based exploit that has achieved code execution.
 
@@ -282,7 +282,7 @@ WMIC process where processid=6592 get commandline
 This returns the **full command line** used to launch the process. For a Base64-encoded PowerShell payload, the output might look like:
 
 ```
-powershell.exe -NoP -NonI -W Hidden -Exec Bypass -e <BASE64_STRING>
+powershell.exe -e <BASE64_STRING>
 ```
 
 Copy the long Base64 string (the part after the `-e` flag).
