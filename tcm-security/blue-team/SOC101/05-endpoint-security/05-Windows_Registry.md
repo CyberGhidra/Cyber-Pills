@@ -1,33 +1,5 @@
 # 🗂️ Windows Registry — Complete Guide
 
-> A comprehensive reference for understanding and navigating the Windows Registry.
-
----
-
-## Table of Contents
-
-- [What is the Windows Registry?](#what-is-the-windows-registry)
-- [How to Access the Registry](#how-to-access-the-registry)
-- [Registry Files on Disk](#registry-files-on-disk)
-- [The Five Root Keys (Hives)](#the-five-root-keys-hives)
-  - [HKEY_CLASSES_ROOT](#hkey_classes_root)
-  - [HKEY_CURRENT_USER](#hkey_current_user)
-  - [HKEY_LOCAL_MACHINE](#hkey_local_machine)
-  - [HKEY_USERS](#hkey_users)
-  - [HKEY_CURRENT_CONFIG](#hkey_current_config)
-- [Keys vs Values](#keys-vs-values)
-- [Value Types](#value-types)
-  - [String Value (REG_SZ)](#string-value-reg_sz)
-  - [Expandable String Value (REG_EXPAND_SZ)](#expandable-string-value-reg_expand_sz)
-  - [Multi-String Value (REG_MULTI_SZ)](#multi-string-value-reg_multi_sz)
-  - [DWORD (REG_DWORD)](#dword-reg_dword)
-  - [QWORD (REG_QWORD)](#qword-reg_qword)
-  - [Binary Value (REG_BINARY)](#binary-value-reg_binary)
-  - [None (REG_NONE)](#none-reg_none)
-- [Common Operations](#common-operations)
-- [Registry via Command Line](#registry-via-command-line)
-- [Safety & Best Practices](#safety--best-practices)
-
 ---
 
 ## What is the Windows Registry?
@@ -534,6 +506,4 @@ Changes in `HKEY_CURRENT_USER` are scoped to a single user and are easier to rev
 
 For experimental changes, test on a VM snapshot before applying to a production system.
 
----
 
-*Last updated: 2026 — Applies to Windows 10 and Windows 11.*
