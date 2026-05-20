@@ -70,20 +70,29 @@ Indipendentemente dal modello cloud:
 - Crittografia
 - Accesso e conservazione
 
+si è responsabili dei dati, inclusa la classificazione della riservatezza, la scelta di come proteggerli, prendere decisioni di crittografia e garantire la conformità ai requisiti di governance dei dati. Il provider di servizi cloud protegge l'infrastruttura che archivia i dati, ma si decide quali dati raccogliere, chi può accedervi, per quanto tempo conservarli e come proteggerli.
+
+
 ### 🔐 Identità e accessi
 - Account e permessi
 - MFA
 - Principio del minimo privilegio
+
+la gestione di account utente, metodi di autenticazione e autorizzazioni di accesso è sempre responsabilità dell'utente. Un'identità compromessa può concedere a un utente malintenzionato l'accesso alle risorse cloud anche quando tutto il resto è bloccato. L'implementazione di procedure di identità complesse, ad esempio la richiesta di autenticazione a più fattori (MFA) e l'applicazione dell'accesso con privilegi minimi, è uno degli obblighi di sicurezza più importanti.
 
 ### 💻 Endpoint
 - Sicurezza di PC, smartphone, tablet
 - Patch e aggiornamenti
 - Protezione da malware
 
+I dispositivi che si connettono ai tuoi servizi cloud, ovvero portatili, tablet, telefoni e desktop, sono responsabilità tua da proteggere. Un utente malintenzionato che compromette un endpoint può usarlo per accedere ai servizi cloud come utente legittimo del dispositivo. La protezione degli endpoint tramite la gestione dei dispositivi, gli aggiornamenti della sicurezza e il rilevamento delle minacce fanno parte della responsabilità condivisa.
+
 ### ⚙️ Configurazioni
 - Impostazioni del tenant cloud
 - Policy di sicurezza
 - Controllo accessi alle risorse
+
+le impostazioni e le configurazioni di sicurezza all'interno del tenant cloud, ovvero la configurazione di servizi, autorizzazioni delle risorse e criteri di rete, sono responsabilità dell'utente. Un account di archiviazione configurato in modo errato o un criterio di accesso eccessivamente permissivo può esporre i dati anche quando la piattaforma sottostante è protetta correttamente.
 
 ---
 
@@ -130,6 +139,12 @@ Nei sistemi di intelligenza artificiale il modello si estende su tre livelli:
 - Gestione modelli e piattaforma
 - Controlli di sicurezza integrati
 - Protezione ambiente di esecuzione
+
+A seconda che la funzionalità di intelligenza artificiale venga distribuita come servizio SaaS (ad esempio, Microsoft 365 Copilot) o un servizio PaaS (ad esempio, Azure AI Foundry), il provider gestisce in genere:
+
+- Protezione dell'infrastruttura fisica e dell'ambiente di hosting del modello di intelligenza artificiale
+- Fornire controlli di sicurezza a livello di piattaforma, ad esempio il filtro del contenuto e le misure di sicurezza predefinite, a seconda del livello di servizio
+- Gestione dell'infrastruttura di calcolo sottostante e della sicurezza operativa del servizio di intelligenza artificiale
 
 ---
 
