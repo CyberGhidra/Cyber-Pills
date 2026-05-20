@@ -57,6 +57,7 @@ Con il cloud, parte della sicurezza passa al provider.
   - Utenti e identità
   - Dati
   - Configurazioni del servizio (tenant)
+<img width="754" height="481" alt="image" src="https://github.com/user-attachments/assets/82289b90-56dd-40c3-bf52-5725ab8eb30b" />
 
 ---
 
