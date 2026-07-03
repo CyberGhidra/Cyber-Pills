@@ -1,4 +1,4 @@
-# Threat Landscape — CompTIA Security+
+# Threat Landscape 
 
 ## 1. Classification of Security Threats
 
