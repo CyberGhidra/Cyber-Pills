@@ -1,4 +1,4 @@
-# Malicious Code — CompTIA Security+
+# Malicious Code 
 
 ## 1. What Is Malware?
 
