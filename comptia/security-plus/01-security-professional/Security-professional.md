@@ -1,4 +1,4 @@
-# Security Goals of Cybersecurity — CompTIA Security+
+# Security Goals of Cybersecurity 
 
 ## 1. The Objectives of Information Security
 
