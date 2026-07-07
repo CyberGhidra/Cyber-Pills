@@ -1,7 +1,5 @@
 # LimaCharlie — EDR Platform Overview
 
-> TCM Security course notes — introduction to LimaCharlie as a free EDR platform, exploration of the detection dashboard, and hands-on deployment of an endpoint agent with live telemetry analysis.
-
 **Official links:**
 - [https://limacharlie.io/](https://limacharlie.io/) — product overview and documentation
 - [https://app.limacharlie.io/signup](https://app.limacharlie.io/signup) — create a free account
@@ -304,10 +302,3 @@ PHASE 3 — Agent Deployment & Live Investigation
 **Key takeaway:** LimaCharlie provides a full production-grade EDR capability at zero cost for lab use. The combination of live telemetry (processes, network, files, autoruns), remote console, and an automated D&R rules engine covers the entire detection and investigation workflow — from initial alert to artifact recovery — without requiring any physical access to the endpoint.
 
 ---
-
-## 5. Additional Notes / Things Worth Adding to Your Study
-
-- **LSASS protection:** Windows 10/11 and Server 2022 include **PPL (Protected Process Light)** for LSASS, which blocks tools like Mimikatz from reading its memory unless the attacker has a kernel-level driver. Understanding this defense is the natural next step after this lab.
-- **LimaCharlie D&R rule syntax:** rules are written in YAML-like syntax with `event`, `op`, and `path` fields — worth reading the documentation to understand how to write custom rules beyond the pre-built ones.
-- **Correlation with previous labs:** the full attack chain demonstrated across these labs maps directly to the MITRE ATT&CK framework: Initial Access (payload delivery) → Execution (`notmalware.elf`) → Persistence (cron job) → Credential Access (Mimikatz/LSASS dump) → all detected at the EDR layer by LimaCharlie.
-- **VirusTotal API integration:** LimaCharlie supports direct VirusTotal integration as an add-on, automating the hash lookup step instead of doing it manually every time.
