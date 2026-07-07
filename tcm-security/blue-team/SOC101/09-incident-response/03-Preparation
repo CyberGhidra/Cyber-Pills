@@ -1,1 +1,178 @@
+# Incident Response — Preparation
 
+> TCM Security course notes — the Preparation phase is the foundation of every effective incident response program. Everything you do (or fail to do) before an incident occurs directly determines how well you can respond when one happens.
+
+**Reference documents:**
+- **SANS Security Forms** — [https://www.sans.org/media/security-training/mgt512/secinc_forms.pdf](https://www.sans.org/media/security-training/mgt512/secinc_forms.pdf)
+- **NIST SP 800-84** (Testing IR Plans) — [https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-84.pdf](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-84.pdf)
+- **Backdoors & Breaches** (IR Tabletop Card Game) — [https://play.backdoorsandbreaches.com](https://play.backdoorsandbreaches.com)
+
+---
+
+## Why Preparation Is the Most Important Phase
+
+Of all the IR phases, Preparation is the one that happens *before* anything goes wrong — which is precisely why it's often neglected. Organizations that skip or underfund preparation find themselves improvising during an active incident: scrambling for contact numbers, arguing about who has authority to take a system offline, or realizing they have no forensic tools available.
+
+A well-prepared team doesn't eliminate incidents — they make sure that when one occurs, the response is fast, coordinated, and leaves as little room for error as possible.
+
+> **Key principle:** The decisions made during an active incident should already be made before the incident starts. Preparation converts chaos into procedure.
+
+---
+
+## 1. End User Preparation
+
+The majority of security incidents begin with a human action — a clicked phishing link, a weak password, or a misdirected email. End users are simultaneously the largest attack surface and the first line of defense.
+
+- **Security awareness training** — regular, mandatory training covering phishing recognition, password hygiene, safe browsing, physical security (tailgating, clean desk policy), and what to do when something looks suspicious. Training should be repeated at least annually and updated when new threat trends emerge.
+- **Phishing simulations** — controlled, fake phishing campaigns sent internally to test whether users apply what they learned. Results are used to identify high-risk users who need additional training, not to punish them. Simulations should vary in sophistication over time.
+- **Incident reporting** — users need a simple, clearly communicated way to report suspicious activity (a dedicated email address, a button in the email client, a phone number). If reporting feels complicated, users won't do it — and the IR team loses its most widely distributed set of eyes.
+
+> A user who reports a suspicious email within minutes can mean the difference between a contained phishing attempt and a full breach. Reporting culture is built during preparation, not during an incident.
+
+---
+
+## 2. Stakeholder Involvement
+
+IR is not purely a technical function. An effective incident response program requires buy-in, defined roles, and clear authority across multiple departments before any incident occurs.
+
+| Stakeholder | Role in IR |
+|-------------|-----------|
+| **Information Technology** | System isolation, log collection, rebuilds, patching — the technical execution arm of IR |
+| **Legal Advisors** | Advise on breach notification obligations, evidence handling, contractual implications, and liability — must be looped in early on any significant incident |
+| **Public Relations** | Manage external communications (press, customers, partners) — a poorly worded statement during an incident can cause as much damage as the incident itself |
+| **Data Owners** | Business unit owners who know what data lives where, its classification, and its criticality — essential for impact assessment and recovery prioritization |
+
+All of these stakeholders should be **identified and briefed before an incident**. An active incident is not the time to introduce yourself to the legal team.
+
+---
+
+## 3. Communications Planning
+
+During a serious incident — especially one involving a compromised network — your normal communication channels may not be trustworthy. A well-prepared IR program has communication infrastructure that works independently of the affected systems.
+
+- **Incident response contact list** — a current, printed or offline-accessible roster of every person who may need to be contacted: IR team members, system owners, executives, legal, PR, external forensics firms, law enforcement contacts. Phone numbers, not just email addresses.
+- **On-call information** — who is reachable outside business hours, and how? Incidents don't respect schedules.
+- **Escalation protocols** — clearly defined thresholds: at what point does a security event become a declared incident? When does the IR lead notify the CISO? When does the CISO notify the board? Remove ambiguity before the pressure is on.
+- **Out-of-band communication** — a separate communication channel that does not rely on the potentially compromised corporate network or email system. Examples include a dedicated Signal group, a separate phone conference bridge, or personal mobile numbers. If an attacker is reading your corporate Slack, you do not want to coordinate your response there.
+
+---
+
+## 4. Physical Locations
+
+IR work requires physical space and physical security for sensitive evidence and equipment.
+
+- **War room** — a dedicated (or pre-designated) physical space where the IR team can gather, work, and communicate without interruption. Should have whiteboards, screens, network access, and physical access control. In many organizations this is a pre-designated conference room that gets "activated" during a declared incident.
+- **Evidence storage** — physical storage for seized hardware, printed logs, forensic images, and chain-of-custody documentation. Evidence storage must address all three security principles:
+  - **Confidentiality** — only authorized IR team members and legal can access evidence
+  - **Integrity** — evidence must be stored in a way that proves it has not been tampered with (sealed bags, hash verification, access logs)
+  - **Availability** — evidence must be retrievable when needed for investigation, legal proceedings, or regulatory review
+
+---
+
+## 5. Incident Tracking
+
+Every action taken during an incident must be tracked — what was done, when, by whom, and why. This serves investigation continuity, legal defensibility, and post-incident review.
+
+- **TheHive Project** ([thehive-project.org](https://thehive-project.org)) — a free, open-source Security Incident Response Platform (SIRP) specifically designed for IR case management. Supports task assignment, evidence attachment, timeline building, and team collaboration. Widely used in security teams that cannot afford enterprise SOAR platforms.
+- **Existing ticketing systems** — some organizations use their standard IT ticketing tool (ServiceNow, Jira, Remedy) for IR tracking, adapted with IR-specific templates. The advantage is familiarity; the disadvantage is these tools are often not designed with evidence integrity or confidentiality in mind.
+- **Access control** — the incident ticket/case must be restricted to authorized team members only. Information about an active investigation leaking internally can tip off an insider threat or cause premature actions.
+- **Version control** — all documentation, playbooks, scripts, and configuration files used during IR should be version-controlled (e.g., in a private Git repository), so changes are tracked and rollback is possible.
+
+---
+
+## 6. Hardware and Software Readiness
+
+Having the right tools available before an incident is critical. Scrambling to download, license, or configure forensic tools during an active incident wastes time and risks contaminating evidence.
+
+- **Digital forensics workstation** — a dedicated, hardened machine used exclusively for forensic analysis. Should have a known-clean OS image, forensic software pre-installed, and no connection to the corporate network during analysis to prevent cross-contamination.
+- **Laptops** — portable machines for on-site IR work that can be brought to an affected location without depending on the compromised infrastructure.
+- **Removable media** — USB drives and external hard drives (write-protected where possible) for collecting evidence, transferring forensic images, and delivering tools to isolated systems.
+- **Evidence documentation supplies** — printed chain-of-custody forms, tamper-evident bags, labels, and permanent markers for physical evidence. These may sound old-fashioned but are legally essential.
+- **Jump kit** — a pre-packed bag (physical or virtual) containing everything an IR responder needs to begin work immediately on-site: cables, adapters, bootable forensic media (e.g., a TAILS or forensic Linux USB), network tap, blank drives, documentation forms, and the contact list. The jump kit should be tested and updated regularly — not opened for the first time during an incident.
+
+---
+
+## 7. Asset Management
+
+You cannot protect what you don't know you have. A current, accurate asset inventory is a prerequisite for effective IR — without it, determining the scope of an incident becomes a guessing game.
+
+A complete asset register should include, for each system:
+
+- **Operating system** (version, patch level)
+- **Applications** installed (versions, patch level)
+- **Hostname** and **IP address(es)** (static vs. DHCP)
+- **Protocols and services** running (open ports, exposed services)
+- **Criticality classification** — which systems are business-critical and cannot be taken offline without executive approval?
+- **Network diagrams** — accurate, up-to-date topology maps showing how systems connect to each other, to the internet, and to third parties
+- **Cryptography** — which systems handle encryption, certificate management, or key storage? Compromise of these has cascading effects
+- **Clean OS images** — pre-built, verified baseline images for each standard system configuration, enabling rapid re-imaging during recovery without needing to rebuild from scratch
+
+> **Detection tip:** During an incident, asset management data is what lets you quickly answer: "What else could be affected?" and "What is this machine supposed to be doing?" — questions that are impossible to answer reliably without a maintained inventory.
+
+---
+
+## 8. Simulated Exercises
+
+The best way to find gaps in your preparation is to practice before a real incident forces you to find them the hard way.
+
+- **Tabletop exercises** — structured discussion-based simulations where the IR team (and relevant stakeholders) walk through a hypothetical incident scenario together. No systems are actually touched — the goal is to talk through decisions, identify process gaps, and surface disagreements about roles and authority before they become problems in a real event. Referenced directly in **NIST SP 800-84**.
+- **Prepare staff to handle incidents** — exercises build familiarity with the IR process, reduce panic, and help team members internalize their roles. The first time someone should experience an IR workflow is not during an actual breach.
+- **Identify weaknesses** — exercises frequently surface gaps: missing contact numbers, unclear escalation authority, tools that aren't available or don't work as expected, or playbooks that are out of date.
+- **Identify log sources** — exercises help clarify what logging is actually in place vs. what the team assumes is in place. Common discovery: "we assumed the firewall was logging denied connections — it wasn't."
+
+**Tools:**
+- **NIST SP 800-84** — provides a full methodology for planning and conducting IR tests, including tabletop exercises, functional drills, and full-scale simulations
+- **Backdoors & Breaches** ([play.backdoorsandbreaches.com](https://play.backdoorsandbreaches.com)) — a card-based tabletop game specifically designed for IR scenario practice. Players draw scenario cards (initial compromise, pivots, C2 methods) and work through detection and response decisions. An engaging, low-barrier way to run IR exercises, especially for teams new to tabletop formats.
+
+---
+
+## 9. Incident Response Plan
+
+A documented, approved, and distributed IR plan is the backbone of the entire preparation phase. It must exist *before* an incident, not be written during one.
+
+- **Playbooks** — step-by-step response guides for specific, known incident types. A playbook answers: "What do we do when we detect a ransomware infection?" or "What are the steps for responding to a compromised admin account?" Each playbook should cover detection criteria, immediate actions, escalation path, evidence collection steps, and recovery procedure. Playbooks are technical and prescriptive.
+- **Runbooks** — operational procedures that support playbooks, covering routine tasks (e.g., "how to pull logs from the SIEM", "how to isolate a host in CrowdStrike"). Runbooks are the *how*; playbooks are the *what and when*.
+
+> Both should be stored somewhere accessible offline or out-of-band — a playbook that lives only on the compromised network is useless when you need it most.
+
+---
+
+## 10. Notification Policies
+
+Before an incident, the organization must have clear, pre-approved policies defining who gets notified, when, and how — because during an incident, people will argue about this, and argument wastes time.
+
+- **Law enforcement** — under what conditions do you engage law enforcement (FBI, local police, national CERT)? Who has authority to make that call? Note that involving law enforcement may affect your ability to control the timeline and public narrative.
+- **Legal team** — should be notified early in any incident that may involve data breach, regulatory reporting obligations, or potential litigation. Legal can also assert attorney-client privilege over certain IR communications.
+- **Regulators** — many industries (healthcare/HIPAA, finance/PCI-DSS, EU/GDPR) have mandatory breach notification deadlines (e.g., GDPR requires notification within 72 hours of discovering a personal data breach). Missing these deadlines carries significant fines. Notification timelines must be tracked from the moment the incident is declared.
+- **Cyber insurance** — most cyber insurance policies require notification within a specific window after incident discovery. Failing to notify on time can void coverage entirely. The insurance provider may also have mandatory IR firms or vendors that must be engaged.
+- **Management/executives** — what thresholds trigger executive notification? Who delivers that notification? What format and level of detail is appropriate for a non-technical audience?
+
+---
+
+## 11. Documentation
+
+Documentation is one of the most critical and most underrated elements of incident response. The instinct during a fast-moving incident is to act first and document later — this is the wrong approach.
+
+- **Document everything** — every action taken on a system, every command run, every file accessed, every conversation that influenced a decision. This creates the incident timeline, supports legal proceedings, and enables accurate post-incident review.
+- **Evidence documentation** — all collected evidence must be logged with: what it is, where it came from, who collected it, when it was collected, and its hash value at time of collection. Chain of custody forms exist for exactly this purpose.
+- **Slow down** — this point is emphasized deliberately in the course. In the rush to contain and remediate, responders often skip documentation, overwrite evidence, or take actions they can't later explain or justify. Slowing down to document properly is not inefficiency — it is discipline. A well-documented response is defensible in court, in a regulatory audit, and in a lessons-learned review. An undocumented response is not.
+
+> **Rule of thumb:** If you didn't write it down, it didn't happen — at least not in any way you can prove.
+
+---
+
+## Summary
+
+| Area | Key Preparation Activity |
+|------|-------------------------|
+| End Users | Awareness training, phishing simulations, reporting channels |
+| Stakeholders | Define roles for IT, Legal, PR, Data Owners before an incident |
+| Communications | Contact lists, escalation protocols, out-of-band channels |
+| Physical | War room, secure evidence storage (CIA) |
+| Tracking | TheHive or ticketing system with access/version control |
+| Hardware/Software | Forensic workstation, jump kit, clean removable media |
+| Asset Management | Full inventory: OS, apps, IPs, criticality, network diagrams |
+| Exercises | Tabletops, Backdoors & Breaches, NIST SP 800-84 |
+| IR Plan | Playbooks (what/when) + Runbooks (how) |
+| Notifications | Pre-approved policies for law enforcement, legal, regulators, insurance |
+| Documentation | Document everything, slow down, chain of custody |
