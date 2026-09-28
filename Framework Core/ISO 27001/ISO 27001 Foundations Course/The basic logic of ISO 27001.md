@@ -1,35 +1,61 @@
-# 01 - La Logica di Base della ISO 27001
+# Appunti e Sintesi ISO/IEC 27001
 
-> **Tema centrale:** Come funziona concretamente la sicurezza delle informazioni secondo lo standard.
+Raccolta strutturata dei concetti chiave, requisiti e controlli dello standard ISO/IEC 27001 (aggiornato all'edizione 2022).
 
 ---
 
-## 1. Approccio Prescrittivo vs Approccio Basato sul Rischio
+## Modulo 1: La Logica di Base della ISO 27001
 
-Uno dei principali errori di chi si approccia alla ISO 27001 è pensare che lo standard contenga ricette o requisiti tecnici dettagliati (es. frequenza dei backup, distanza del sito di disaster recovery, configurazioni dei router o brand tecnologici da adottare).
+### 1. Approccio Prescrittivo vs Basato sul Rischio
 
-* **Perché lo standard non è prescrittivo?**  
-  Ogni organizzazione ha esigenze diverse. Un backup ogni 24 ore può risultare eccessivo per chi manipola pochi dati statici, ma completamente inadeguato per chi registra migliaia di transazioni al secondo e necessita di backup orari o in tempo reale.
-* **La vera funzione della ISO 27001:**  
-  Fornire un **framework sistemico** per:
+Il malinteso più comune è credere che la ISO 27001 indichi requisiti tecnici precisi (es. ogni quante ore fare il backup, a quanti km collocare il sito di disaster recovery o quali apparati di rete acquistare).
+
+* **Perché NON è prescrittiva:** Ogni azienda ha un contesto differente. Un backup ogni 24 ore è un costo inutile per chi gestisce dati statici, ma è insufficiente per una banca o un e-commerce ad alto traffico che richiede backup orari o continui.
+* **Cosa fa invece la ISO 27001:** Fornisce un **framework sistemico** per:
   1. Identificare cosa può andare storto (**Risk Assessment** / Valutazione del rischio).
-  2. Stabilire quali contromisure adottare per evitarlo (**Risk Treatment** / Trattamento del rischio).
+  2. Decidere quali contromisure implementare per mitigarlo (**Risk Treatment** / Trattamento del rischio).
 
 ---
 
-## 2. Il Principio di Selezione dei Controlli
+### 2. Criterio di Scelta dei Controlli
 
 La sicurezza deve essere un **abito su misura** (*tailor-made*):
 
-| Cosa FARE | Cosa NON FARE |
+| Regola | Principio guida |
 |---|---|
-| Implementare **tutti** i controlli necessari emersi dalla valutazione del rischio | Implementare controlli solo perché considerati "di tendenza" o moderni |
-| Giustificare ogni salvaguardia in funzione di un rischio reale | Escludere controlli necessari solo perché sgraditi, complessi o scomodi |
+| **Cosa fare** | Implementare tutti i controlli resi necessari dall'analisi del rischio. |
+| **Cosa NON fare** | Implementare controlli solo perché "di moda" o escluderne altri solo perché complessi o sgraditi. |
 
 ---
 
-## 3. La Sicurezza non è solo un Problema IT
+### 3. IT Security vs Information Security
 
-L'IT da solo rappresenta circa il **50%** della sicurezza delle informazioni. La maggior parte degli incidenti non deriva da guasti hardware, ma da errori operativi, usi impropri o comportamenti non corretti da parte del personale di business.
+L'IT copre solo circa il **50%** della sicurezza complessiva:
+* La maggioranza degli incidenti non dipende da guasti tecnici, ma dall'uso errato dei sistemi da parte degli utenti interni.
+* Parte delle informazioni critiche non è in formato digitale (es. archivi cartacei, accordi confidenziali).
+* Per funzionare, le misure tecniche devono essere affiancate da:
+  - Policy e procedure operative chiare.
+  - Corsi di formazione e consapevolezza (*awareness*).
+  - Clausole contrattuali, aspetti legali e misure disciplinari.
 
-Inoltre, molte informazioni critiche risiedono ancora su supporti non digitali (es. documenti cartacei). Per questo, la sicurezza richiede una difesa su più livelli:
+---
+
+### 4. Responsabilità del Top Management
+
+Senza l'impegno concreto dei vertici aziendali, le misure di sicurezza non vengono applicate dal resto dell'organizzazione. La ISO 27001 stabilisce compiti precisi per la Direzione:
+
+* [ ] **Obiettivi:** Fissare le aspettative e gli obiettivi di sicurezza allineati al business.
+* [ ] **Policy:** Emettere e diffondere la politica di sicurezza dell'informazione.
+* [ ] **Ruoli:** Assegnare formalmente le responsabilità del sistema.
+* [ ] **Risorse:** Stanziare budget economico e personale sufficiente.
+* [ ] **Riesame:** Verificare periodicamente se i risultati corrispondono agli obiettivi.
+
+---
+
+### 5. Prevenzione del Degrado e Miglioramento Continuo
+
+Con il tempo, le tecnologie cambiano, l'organigramma muta e i progetti di sicurezza rischiano l'obsolescenza e l'abbandono. Per evitarlo, la ISO 27001 include processi ciclici obbligatori:
+
+1. **Monitoraggio e Misurazione:** Tracciamento periodico dell'efficacia delle misure.
+2. **Audit Interni:** Controlli regolari e imparziali sullo stato di conformità.
+3. **Azioni Correttive:** Risoluzione definitiva delle cause alla radice dei problemi emersi.
