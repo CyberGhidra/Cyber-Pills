@@ -68,3 +68,55 @@ print(name_dictionary)    # {'neut': 4, '247CTF': 6}
 print(name_boolean)       # True
 print(name_range)         # range(0, 6)
 print(name_bytes)         # b'neut2'
+```
+# 2. Numbers (Numeri)
+
+Python supporta diversi tipi di numeri, conversioni di base (esadecimale, ottale, binario) e funzioni matematiche built-in come valore assoluto e arrotondamento.
+
+---
+
+### Codice Sorgente Completo (`numbers-demo.py`)
+
+```python
+# Interi (int) e numeri a virgola mobile (float)
+t1_int = 1
+t1_float = 1.0
+
+print(t1_int)                # 1
+print(t1_float)              # 1.0
+
+print(type(t1_int))          # <class 'int'>
+print(type(t1_float))        # <class 'float'>
+
+# Numeri complessi (complex) - la parte immaginaria usa il suffisso 'j'
+t1_complex = 3.14j
+print(t1_complex)            # 3.14j
+print(type(t1_complex))      # <class 'complex'>
+
+# Numeri esadecimali (prefisso 0x)
+t1_hex = 0xa
+print(t1_hex)                # 10
+print(type(t1_hex))          # <class 'int'>
+
+# Numeri ottali (prefisso 0o)
+t1_octal = 0o10
+print(t1_octal)              # 8
+print(type(t1_octal))        # <class 'int'>
+
+# Operazioni combinate tra basi diverse (decimale, esadecimale, ottale)
+print(1 + 0x1 + 0o1)         # 3
+
+# Valore assoluto con abs()
+print(abs(4))                # 4
+print(abs(-4))               # 4
+
+# Arrotondamento con round()
+print(round(8.4))            # 8
+print(round(8.5))            # 8 (in Python 3 usa il "round half to even")
+print(round(8.6))            # 9
+
+# Conversioni di rappresentazione in binario ed esadecimale
+print(bin(8))                # 0b1000
+print(hex(8))                # 0x8
+
+```
