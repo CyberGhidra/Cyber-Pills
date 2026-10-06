@@ -120,3 +120,104 @@ print(bin(8))                # 0b1000
 print(hex(8))                # 0x8
 
 ```
+# 3. Strings and String Formatting (Stringhe e Formattazione)
+
+In Python le stringhe sono sequenze immutabili di caratteri supportate da numerosi metodi integrati per la manipolazione, la ricerca, l'allineamento e la formattazione avanzata.
+
+---
+
+### Codice Sorgente Completo (`string-demo.py`)
+
+```python
+# 1. Definizione e Delimitatori
+string1 = "I am a string!"
+string2 = 'I am a string too!'
+
+print(string1)
+print(string2)
+
+# Stringhe multi-linea con tripli apici
+string3 = """I am a long
+long
+string!"""
+print(string3)
+
+# Gestione degli apici e caratteri di escape
+string4 = "I'm a string"
+print(string4)
+
+string5 = 'I"m a string'
+print(string5)
+
+string6 = "I\"m a string\nI\"m on a newline!"
+string6 = "\\ \x41\x42\x43"    # Escape del backslash e codici esadecimali ASCII (\x41=A, \x42=B, \x43=C)
+print(string6)                 # Output: \ ABC
+
+# Moltiplicazione e lunghezza
+string7 = "aaaaaaaaaa"
+print(string7)
+string7 = "a" * 10
+print(string7)
+print(len(string7))            # 10
+
+# 2. Metodi di Controllo, Ricerca e Trasformazione
+print("neut" in string4)              # False (verifica presenza sottostringa)
+print(string4.startswith("I"))       # True
+print(string4.startswith("n"))       # False
+print(string4.index("string"))       # 6 (indice di inizio della sottostringa)
+print(string4.upper())               # Converte tutto in maiuscolo
+print(string4.lower())               # Converte tutto in minuscolo
+
+# Pulizia (strip), sostituzione (replace) e suddivisione (split)
+messy_string = "Messy,string!"
+print(messy_string)
+print(messy_string.strip())
+print(messy_string.replace("!", "?").strip())
+print(messy_string.replace("string", "example"))
+
+print(messy_string.split(","))       # ['Messy', 'string!']
+print(messy_string.split())          # Divide per default sullo spazio: ['Messy,string!']
+
+# Encoding in sequenza di byte
+string4 = "I am a string!"
+print(string4)
+print(string4.encode())              # b'I am a string!'
+print(string4.encode("utf-8"))       # b'I am a string!'
+
+# Allineamento e padding (utile negli exploit script per payload/padding)
+print(string4.rjust(25))             # Allinea a destra con spazi fino a lunghezza 25
+print(string4.rjust(25, "X"))        # Riempie a sinistra con 'X'
+print(string4.ljust(25))             # Allinea a sinistra con spazi
+print(string4.ljust(25, "X"))        # Riempie a destra con 'X'
+
+# 3. Concatenazione
+print("I am " + "a string")
+print("String 4 is " + str(len(string4)) + " characters long!")
+
+print(1 + 1)                         # 2 (somma aritmetica)
+print("1" + "1")                     # 11 (concatenazione di stringhe)
+print(type("1" + "1"))               # <class 'str'>
+
+# 4. Formattazione con .format()
+print("string4 is {} characters long!".format(len(string4)))
+print("{} {} {}".format(len(string4), 5.0, 0x12))
+print("{0} {2} {1}".format(len(string4), 5.0, 0x12))               # Con indici posizionali
+print("{length}".format(length=len(string4)))                      # Con argomenti con nome
+
+# 5. Formattazione con f-strings (da Python 3.6+)
+length = len(string4)
+print(f"string4 is {length} characters long")
+print(f"string4 is {length:.2f} characters long")                  # Formattazione decimale (2 decimali)
+print(f"string4 is {length:.3f} characters long")                  # 3 decimali
+print(f"string4 is {length:.4f} characters long")                  # 4 decimali
+
+# Specificatori di base numerica nelle f-strings
+print(f"string4 is {length:x} characters long")                    # Esadecimale ('e' per 14)
+print(f"string4 is {length:b} characters long")                    # Binario ('1110' per 14)
+print(f"string4 is {length:o} characters long")                    # Ottale ('16' per 14)
+
+# 6. Formattazione in stile C (%-formatting)
+print("string4 is %d characters long!" % len(string4))             # %d per intero
+print("string4 is %f characters long!" % len(string4))             # %f per float
+print("string4 is %x characters long!" % len(string4))             # %x per esadecimale
+```
