@@ -221,3 +221,164 @@ print("string4 is %d characters long!" % len(string4))             # %d per inte
 print("string4 is %f characters long!" % len(string4))             # %f per float
 print("string4 is %x characters long!" % len(string4))             # %x per esadecimale
 ```
+# 4. Booleans and Operators (Booleani e Operatori)
+
+In Python i valori booleani sono rappresentati dalle costanti `True` e `False`. Python mette a disposizione operatori di confronto, logici, aritmetici, di assegnazione composta e bitwise (a livello di bit).
+
+---
+
+### Codice Sorgente Completo (`boolean-demo.py`)
+
+```python
+# 1. Definizione e Uguaglianza Booleana
+valid = True
+not_valid = False
+
+print(valid)                         # True
+print(not_valid)                     # False
+
+print(valid == True)                 # True
+print(not_valid == True)             # False
+
+print(valid != True)                 # False
+print(not_valid != True)             # True
+
+# Operatore logico NOT
+print(not valid)                     # False
+print(not not_valid)                 # True
+
+# 2. Operatori di Confronto
+print((10 < 9) == True)              # False
+print((10 == 10) == True)            # True
+print((10 != 10) == True)            # False
+print((10 >= 10) == True)            # True
+print((10 <= 10) == True)            # True
+print((10 > 9) == True)              # True
+
+# Valutazione diretta delle espressioni di confronto
+print((10 < 9))                      # False
+print((10 == 10))                    # True
+print((10 != 10))                    # False
+print((10 >= 10))                    # True
+print((10 <= 10))                    # True
+print((10 > 9))                      # True
+
+print("-----")
+
+# 3. Operatori Logici (AND, OR) e Valutazione Booleana
+print(10 > 5 and 10 < 5)             # False (entrambe devono essere True)
+print(10 > 5 or 10 < 5)              # True (almeno una deve essere True)
+
+# Casting a bool di interi
+print(bool(0))                       # False (lo 0 numerico è falsy)
+print(bool(1))                       # True  (i numeri diversi da 0 sono truthy)
+
+print(bool(0) == False)              # True
+print(bool(1) == True)               # True
+
+# 4. Operatori Aritmetici
+print(10 + 10)                       # 20 (Addizione)
+print(10 - 10)                       # 0 (Sottrazione)
+print(10 / 10)                       # 1.0 (Divisione standard - produce sempre un float)
+print(10 // 10)                      # 1 (Divisione intera - floor division)
+
+print(10 / 3)                        # 3.3333333333333335
+print(10 // 3)                       # 3
+print(10 % 3)                        # 1 (Modulo - resto della divisione)
+
+print(10 * 10)                       # 100 (Moltiplicazione)
+print(10 ** 10)                      # 10000000000 (Esponenziazione / Potenza)
+print(10 % 10)                       # 0
+
+# 5. Operatori di Assegnazione Composta
+x = 10
+print(x)                             # 10
+x = x + 1
+print(x)                             # 11
+x += 1                               # Equivalente a x = x + 1
+print(x)                             # 12
+x -= 1                               # Equivalente a x = x - 1
+print(x)                             # 11
+x *= 5                               # Equivalente a x = x * 5
+print(x)                             # 55
+x /= 5                               # Equivalente a x = x / 5
+print(x)                             # 11.0
+
+# 6. Operazioni Bitwise (Shift a livello di bit)
+x = 13
+print(bin(x))                        # 0b1101
+# Rimuove il prefisso '0b' con slicing [2:] e allinea a 4 bit con '0'
+print(bin(x)[2:].rjust(4, "0"))       # 1101
+
+# Shift a destra di 1 bit (x >> 1): 1101 diventa 0110 (valore decimale: 6)
+print(bin(x >> 1)[2:].rjust(4, "0")) # 0110
+```
+# 5. Tuples (Tuple)
+
+Le tuple sono sequenze ordinate e immutabili racchiuse tra parentesi tonde `()`. Possono contenere elementi duplicati e tipi di dato misti, supportando indicizzazione, slicing, spacchettamento (unpacking) e concatenazione[cite: 15, 16].
+
+---
+
+### Codice Sorgente Completo (`tuple-demo.py`)
+
+```python
+# 1. Creazione e Verifica del Tipo
+tuple_items = ("item1", "item2", "item3")
+print(tuple_items)
+print(type(tuple_items))             # <class 'tuple'>
+
+tuple_numbers = (1, 2, 3)
+print(tuple_numbers)
+print(type(tuple_numbers))           # <class 'tuple'>
+
+# Tupla con singolo elemento (richiede la virgola finale) e moltiplicazione
+tuple_repeat = ('Combine!',) * 4
+print(tuple_repeat)                  # ('Combine!', 'Combine!', 'Combine!', 'Combine!')
+print(type(tuple_repeat))            # <class 'tuple'>
+
+# Tipi eterogenei e annidati (tuple all'interno di tuple)
+mixed_tuple = ("A", 1, ("A", 1))
+print(mixed_tuple)
+print(type(mixed_tuple))             # <class 'tuple'>
+
+# Concatenazione tra tuple con '+'
+tuple_combined = tuple_items + tuple_numbers
+print(tuple_combined)                # ('item1', 'item2', 'item3', 1, 2, 3)
+print(type(tuple_combined))          # <class 'tuple'>
+
+# 2. Unpacking (Spacchettamento)
+item1, item2, item3 = tuple_items
+print(item1)                         # item1
+print(item2)                         # item2
+print(item3)                         # item3
+
+# 3. Controllo Appartenenza e Metodi di Ricerca
+print("item2" in tuple_items)        # True
+print("item3" in tuple_items)        # True
+print("item4" in tuple_items)        # False
+
+# Ricerca dell'indice di un valore
+print(tuple_items.index("item2"))    # 1
+
+# 4. Indicizzazione e Slicing
+tuple_items = ("item1", "item2", "item3")
+print(tuple_items[0])                # item1 (primo elemento)
+print(tuple_items[1])                # item2
+print(tuple_items[2])                # item3
+
+print(len(tuple_items))              # 3 (lunghezza della tupla)
+
+# Indici negativi (partendo dal fondo)
+print(tuple_items[-1])               # item3 (ultimo elemento)
+print(tuple_items[-2])               # item2 (penultimo elemento)
+
+# Slicing [inizio:fine] (esclude l'indice di fine)
+print(tuple_items[0:2])              # ('item1', 'item2')
+print(tuple_items[:2])               # ('item1', 'item2')
+print(tuple_items[-3:-1])            # ('item1', 'item2')
+
+# Slicing applicato alle stringhe (concetto identico alle tuple)
+string1 = "I am a string!"
+print(string1[0:4])                  # I am
+print(string1[-1])                   # !
+```
