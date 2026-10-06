@@ -382,3 +382,118 @@ string1 = "I am a string!"
 print(string1[0:4])                  # I am
 print(string1[-1])                   # !
 ```
+# 6. Lists (Liste)
+
+Le liste in Python sono collezioni ordinate, mutabili e flessibili delimitate da parentesi quadre `[]`. A differenza delle tuple, le liste permettono di modificare, aggiungere, eliminare e ordinare i propri elementi sul posto[cite: 17, 18, 19].
+
+---
+
+### Codice Sorgente Completo (`list-demo.py`)
+
+```python
+# 1. Creazione e Tipi di Dato Misti
+list1 = ["A", "B", "C", "D", "E", "F"]
+print(list1)
+
+# Lista contenente tipi misti: str, int, float, liste annidate, tuple, bool
+list2 = ["A", 1, 2.0, ["A"], [], list(), ("A"), False]
+print(list2)
+print(type(list2))                  # <class 'list'>
+
+# 2. Indicizzazione e Annidamento
+print(list1[0])                     # 'A' (primo elemento)
+print(list1[-1])                    # 'F' (ultimo elemento)
+print(list2[3][0])                  # 'A' (primo elemento della sottolista in indice 3)
+print(list2[3][-1])                 # 'A'
+
+# 3. Modifica, Inserimento e Rimozione
+list1[0] = "X"                      # Sovrascrittura elemento per indice
+print(list1)                        # ['X', 'B', 'C', 'D', 'E', 'F']
+
+del list1[0]                        # Eliminazione per indice con l'istruzione del
+print(list1)                        # ['B', 'C', 'D', 'E', 'F']
+
+list1.insert(0, "A")                # Inserimento di 'A' in posizione 0
+print(list1)                        # ['A', 'B', 'C', 'D', 'E', 'F']
+
+del list1[0]
+print(list1)                        # ['B', 'C', 'D', 'E', 'F']
+
+# Prepend tramite concatenazione
+list1 = ["A"] + list1
+print(list1)                        # ['A', 'B', 'C', 'D', 'E', 'F']
+
+# 4. Aggiunta in Coda ed Estrazione
+list1.append("G")                   # Aggiunge un elemento in coda
+print(list1)
+
+print(max(list1))                   # 'G' (valore massimo lessicografico)
+print(min(list1))                   # 'A' (valore minimo lessicografico)
+
+# Ricerca indice e dereferenziazione
+print(list1.index("C"))             # 2
+print(list1[list1.index("C")])      # 'C'
+
+# Inversione degli elementi
+list1.reverse()                     # Inverte la lista sul posto (in-place)
+print(list1)
+
+list1 = list1[::-1]                 # Inversione tramite slicing con passo negativo
+print(list1)
+
+# Conteggio e rimozione con pop()
+print(list1.count("A"))             # 1 (conta occorrenze)
+list1.append("A")
+print(list1)
+print(list1.count("A"))             # 2
+
+list1.pop()                         # Rimuove e restituisce l'ultimo elemento
+print(list1)
+
+# 5. Estensione e Svuotamento
+list3 = ["H", "I", "J"]
+print(list3)
+
+list1.extend(list3)                 # Estende la lista concatenando list3 in coda
+print(list1)
+
+list1.clear()                       # Rimuove tutti gli elementi
+print(list1)                        # []
+
+# 6. Ordinamento (sort)
+list4 = [8, 12, 5, 6, 17, 2]
+print(list4)
+
+list4.sort()                        # Ordinamento crescente sul posto
+print(list4)                        # [2, 5, 6, 8, 12, 17]
+
+list4.sort(reverse=True)            # Ordinamento decrescente
+print(list4)                        # [17, 12, 8, 6, 5, 2]
+
+# 7. Riferimento vs Copia Superficiale (Shallow Copy)
+# Assegnazione per riferimento (stesso oggetto in memoria)
+list5 = list4
+print(list4)
+print(list5)
+
+list5[2] = "X"                      # Modifica list5...
+print(list5)
+print(list4)                        # ...e modifica anche list4!
+
+# Copia indipendente con .copy()
+list6 = list4.copy()
+print(list4)
+print(list6)
+
+list6[2] = "A"                      # Modifica solo la copia list6
+print(list6)                        # [17, 12, 'A', 6, 5, 2]
+print(list4)                        # list4 rimane inalterata: [17, 12, 'X', 6, 5, 2]
+
+# 8. Mappatura e Trasformazione di Tipo (map)
+list7 = ["1", "2", "3"]
+print(list7)
+
+# Converte ogni stringa della lista in float
+list8 = list(map(float, list7))
+print(list8)                        # [1.0, 2.0, 3.0]
+```
