@@ -257,3 +257,56 @@ for c in "string":
 for key, value in {"a": 1, "b": 2, "c": 3}.items():
     print(key, value)                # Unpacking delle tuple (chiave, valore): a 1, b 2, c 3
 ```
+# 11. Reading and Writing Files (Lettura e Scrittura File)
+
+La gestione dei file in Python avviene tramite la funzione integrata `open()`. Essa consente di specificare la modalità di apertura (`'r'` per lettura, `'w'` per scrittura, `'a'` per append, `'t'` per testo) e la codifica dei caratteri (`encoding`). È buona prassi gestire il puntatore del file tramite `.seek()`, chiudere le risorse con `.close()` o utilizzare il context manager `with open(...)` per la chiusura automatica e sicura dei descrittori di file.
+
+---
+
+### Codice Sorgente Completo (`files-demo.py`)
+
+```python
+# 1. Apertura e Ispezione dell'Oggetto File
+f = open('top-100.txt')
+print(f)                             # <_io.TextIOWrapper name='top-100.txt' mode='r' encoding='UTF-8'>
+
+# Apertura esplicita in modalità lettura testo ('rt')
+f = open('top-100.txt', 'rt')
+print(f)
+
+# 2. Lettura con readlines() e Gestione del Cursore con seek()
+print(f.readlines())                 # Legge l'intero file e restituisce una lista di righe
+print(f.readlines())                 # Restituisce [] perché il cursore si trova alla fine del file (EOF)
+
+f.seek(0)                            # Riposiziona il cursore all'inizio del file (offset 0)
+print(f.readlines())                 # Rilegge nuovamente tutte le righe
+
+# 3. Iterazione Riga per Riga e Pulizia dell'A Capo
+f.seek(0)
+for line in f:
+    print(line.strip())              # line.strip() rimuove gli spazi bianchi e il carattere finale '\n'
+
+f.close()                            # Chiusura manuale del file
+
+# 4. Scrittura in Modalità Append ('a')
+f = open("test.txt", "a")
+f.write("test line two!")            # Accoda la stringa in fondo al file esistente
+f.close()
+
+# 5. Attributi dell'Oggetto File
+print(f.name)                        # 'test.txt' (nome del file)
+print(f.closed)                      # True (verifica se il descrittore è stato chiuso)
+print(f.mode)                        # 'a' (modalità con cui era stato aperto)
+
+# 6. Context Manager 'with open' e Gestione delle Codifiche (Encoding)
+# Caso di errore tipico su file dizionario/wordlist (es. rockyou.txt in UTF-8):
+# with open('rockyou.txt') as f:
+#     for line in f:
+#         print(line.strip())
+# -> Solleva: UnicodeDecodeError: 'utf-8' codec can't decode byte ...
+
+# Risoluzione specificando la corretta codifica (es. 'latin-1'):
+with open('rockyou.txt', encoding='latin-1') as f:
+    for line in f:
+        print(line.strip())          # Lettura sicura senza errori di decodifica
+ ```       
