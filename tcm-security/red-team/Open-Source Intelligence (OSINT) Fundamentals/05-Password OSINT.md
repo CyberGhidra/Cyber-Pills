@@ -50,3 +50,57 @@ Nella terza schermata il flusso operativo passa alla fase di cracking/lookup del
             │
             ▼
 [ Password in Chiaro Identificata ]
+
+```
+# Open-Source Intelligence (OSINT) Fundamentals
+## Hunting Breached Passwords — Part 2: Piattaforme, Motori e API
+
+Nella seconda parte dedicata all'investigazione su credenziali compromesse, l'attenzione si sposta sui database di dump centralizzati, sui motori di aggregazione di violazioni (*breach data engines*) e sull'automazione delle ricerche tramite API e sintassi avanzata (come Lucene).
+
+---
+
+### 1. Panoramica delle Piattaforme Citate
+
+* **[WeLeakInfo](https://weleakinfo.to/v2/)**
+  * Storico aggregatore di leak (la versione originale fu sequestrata dalle forze dell'ordine nel 2020; varie re-indicizzazioni e cloni operano su TLD alternativi).
+  * Consente di cercare correlazioni tra e-mail, username, hash e password in chiaro esposte in vecchi dump.
+
+* **[LeakCheck](https://leakcheck.io/)**
+  * Motore di threat intelligence e monitoraggio breach con database costantemente aggiornato.
+  * Offre sia un'interfaccia web sia API dedicate per analisti di sicurezza per verificare se credenziali aziendali o personali sono finite in raccolte recenti di stealer log o dump pubblici.
+
+* **[SnusBase](https://snusbase.com/)**
+  * Database avanzato indicizzato per indagini OSINT e red teaming.
+  * Permette ricerche incrociate partendo non solo dall'indirizzo e-mail, ma anche da IP, hash di password, username, nomi completi o numeri di telefono.
+
+* **[HaveIBeenPwned](https://haveibeenpwned.com/)**
+  * Il servizio pubblico di riferimento globale gestito da Troy Hunt.
+  * **Caratteristica etica fondamentale:** Conferma *se* un account è stato compromesso e *in quale violazione*, ma **non mostra mai la password in chiaro** né l'hash, limitandosi a indicare la fonte del breach e i tipi di dati esposti (es. "Passwords, IP addresses, Email addresses").
+
+---
+
+### 2. Focus su Scylla.sh: Ricerche Avanzate e API
+
+Dalla schermata si osserva l'interfaccia di **Scylla.sh**, un database pubblico open-source di credenziali esposte:
+
+#### A. Cosa restituisce la piattaforma (Password e Campi)
+Come mostrato nel risultato a video, la ricerca per prefisso restituisce direttamente:
+* **`email`**: L'account associato (es. `shark@tesla.com`, `shark@mail.ru`).
+* **`domain`**: La collezione / dump da cui proviene il dato (es. `Collections`).
+* **`password`**: La password direttamente leggibile / estratta dal leak (nel caso mostrato: `907DaDE814`).
+
+#### B. Sintassi di Ricerca Lucene (`Queries`)
+Scylla utilizza la sintassi di interrogazione Apache Lucene, che supporta wildcard e filtri mirati sui campi:
+* **Ricerca per prefisso / campo specifico:**  
+  * `email:shark*` — cerca tutte le email che iniziano per "shark".
+  * `password:ff*` — cerca qualsiasi record la cui password inizi per "ff".
+* **Wildcard avanzate su più campi:**  
+  * `name:da?e password:*d*` — individua nomi utente come *dave, dale, dane* combinati a password contenenti il carattere "d".
+
+#### C. Interfaccia API per Scripting e Automazione
+Sotto la sezione **API** della schermata, la piattaforma espone la modalità di interrogazione programmatica[cite: 6]:
+* **Chiamata HTTP GET:**  
+  È possibile effettuare richieste GET impostando l'header `Accept: application/json`[cite: 6].
+* **Esempio di endpoint mostrato:**
+  ```text
+  GET [https://scylla.sh/search?q=your_lucene_query&size=100&start=200](https://scylla.sh/search?q=your_lucene_query&size=100&start=200)
