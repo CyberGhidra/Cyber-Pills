@@ -71,7 +71,23 @@ Sempre dentro questa interfaccia possiamo andare a etichettare la nostra lan :
   - Da qui setti il range esempio 192.168.1.1 a 192.168.1.253
   - e imposti il gateway
   - e poi setti lease time ovvero ogni quanto fa scadere ip dato ai client
- 
+
+- un' altra cosa fondamentale da questa schemata si puo settare i protocolli di amministazione 
+  es 
+  https, http
+  ssh
+  ping
+  snmp
+  Ovviamente disattivando https non si potra piu raggiungerlo via 443
+  Altri protocolli come 
+  Security Fabric Connection: Abilita la comunicazione con l'ecosistema Fortinet
+  FMG-Access: Apre la porta di ascolto (protocollo FGFM) necessaria affinché l'apparato possa essere gestito centralmente da una
+  piattaforma FortiManager
+  Trovaimo anche la sessione Supporto LLDP :
+  Receive LLDP e Transmit LLDP
+  LLDP è un protocollo standard di Livello 2 che permette ai dispositivi adiacenti collegati fisicamente di presentarsi e scambiarsi
+  informazioni di base
+  Nel contesto Fortinet, serve in particolare al firewall per rilevare automaticamente la presenza di un altro FortiGate a monte
 
 
 ORa parliamo di static route 
@@ -147,4 +163,3 @@ config sys admin
     next
 end
 ""
-
