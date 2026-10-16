@@ -1,31 +1,5 @@
 # Fortinet FortiOS: Fondamenti di Rete e Sicurezza
 
-## Indice
-1. [Il Contesto Moderno della Sicurezza di Rete](#1-il-contesto-moderno-della-sicurezza-di-rete)
-   - [Evoluzione del Firewall](#11-evoluzione-del-firewall)
-   - [Casi d'Uso e Funzionalità](#12-casi-duse-e-funzionalit%C3%A0)
-   - [Architettura Hardware e Software](#13-architettura-hardware-e-software)
-   - [L'Ecosistema Fortinet Fabric](#14-lecosistema-fortinet-fabric)
-2. [Accesso Iniziale e Modalità Operative (Factory Default)](#2-accesso-iniziale-e-modalit%C3%A0-operative-factory-default)
-   - [Accesso Out-of-the-Box per Categoria Hardware](#21-accesso-out-of-the-box-per-categoria-hardware)
-   - [Modalità Operative: NAT Mode vs. Transparent Mode](#22-modalit%C3%A0-operative-nat-mode-vs-transparent-mode)
-3. [Configurazione delle Interfacce di Rete](#3-configurazione-delle-interfacce-di-rete)
-   - [Modalità di Assegnazione IP](#31-modalit%C3%A0-di-assegnazione-ip)
-   - [Ruoli (Role) e Alias](#32-ruoli-role-e-alias)
-   - [Accesso Amministrativo e Protocolli di Gestione](#33-accesso-amministrativo-e-protocolli-di-gestione)
-4. [Configurazione del Server DHCP](#4-configurazione-del-server-dhcp)
-5. [Routing Statico: Default Route per Accesso a Internet](#5-routing-statico-default-route-per-accesso-a-internet)
-6. [Canali di Gestione e Automazione](#6-canali-di-gestione-e-automazione)
-   - [Interfacce di Controllo](#61-interfacce-di-controllo)
-   - [Integrazione FortiAI e GenAI](#62-integrazione-fortiai-e-genai)
-7. [Amministrazione e Hardening di Sicurezza](#7-amministrazione-e-hardening-di-sicurezza)
-   - [Profili Amministrativi e RBAC](#71-profili-amministrativi-e-rbac)
-   - [Restrizione degli Accessi (Trusted Hosts e 2FA)](#72-restrizione-degli-accessi-trusted-hosts-e-2fa)
-   - [Hardening Password e Porte di Sistema](#73-hardening-password-e-porte-di-sistema)
-   - [Limitazione Metodi di Login via CLI](#74-limitazione-metodi-di-login-via-cli)
-
----
-
 ## 1. Il Contesto Moderno della Sicurezza di Rete
 
 ### 1.1 Evoluzione del Firewall
