@@ -137,4 +137,20 @@ Abilitazione del salvataggio su disco (Disk Logging)
       - 1 collector attaccato ai vari forti 
       - 1 analyzer mode per metterli nel db 
         Quindi di base se ho 5 fw ----> comunicano tutti e 5 e passano i log row al Forti Collector ------> questo prende           le info e le passa al forti Analyzer che le intabula
-      
+
+  - Metodi per registrare un fortigate
+    - Se non è registrato non puo usare FortiAnalyzer
+    - Inizializzazione dal dispositivo remoto:
+      Sul FortiGate si imposta l'indirizzo IP del FortiAnalyzer nel menu Log Settings. Il firewall invia una richiesta di
+      associazione verso FortiAnalyzer, dove comparirà nella lista dei dispositivi non registrati in attesa di
+      autorizzazione manuale
+    - Inizializzazione da FortiAnalyzer
+      L'amministratore accede alla console di FortiAnalyzer e avvia la procedura di discovery/aggiunta guidata, inserendo
+      l'indirizzo IP e le credenziali amministrative del FortiGate per completare l'accoppiamento da remoto
+    - È possibile censire e pre-registrare gli apparati su FortiAnalyzer prima ancora che vengano fisicamente accesi o
+      installati in sede.
+      L'amministratore inserisce preventivamente il numero di serie (Serial Number), il modello e i dettagli del
+      dispositivo; non appena il FortiGate viene collegato a Internet e contatta l'Analyzer, viene riconosciuto e
+      autorizzato automaticamente senza interruzioni operative
+    - se è registrato si
+    
