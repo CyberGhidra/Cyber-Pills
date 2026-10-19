@@ -132,4 +132,9 @@ Abilitazione del salvataggio su disco (Disk Logging)
       Operation Mode
     - Modalità di default: all'installazione o al primo avvio, FortiAnalyzer si trova configurato di fabbrica in Analyzer
       mode
-    - se il forti analyzer deve ricervere piu log fa fw diversi usa modalita collector 
+    - oltre a quella di defoult c'è la modalita collector che di solito si usa per architetture di rete grandi 
+      Il collector non gestisce i log quindi servono 2 apparati ovvero
+      - 1 collector attaccato ai vari forti 
+      - 1 analyzer mode per metterli nel db 
+        Quindi di base se ho 5 fw ----> comunicano tutti e 5 e passano i log row al Forti Collector ------> questo prende           le info e le passa al forti Analyzer che le intabula
+      
