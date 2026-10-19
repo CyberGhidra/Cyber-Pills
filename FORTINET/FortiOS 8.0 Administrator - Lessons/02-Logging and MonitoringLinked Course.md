@@ -250,4 +250,18 @@ Come vedere consultazione mirata dei log legati a una specifica regola di firewa
   - Application Name: il protocollo o l'applicazione Layer 7 riconosciuta
   - Result: esito dell'applicazione della regola con il conteggio dei byte scambiati
   - Policy ID: conferma la corrispondenza con la regola selezionata
-  
+- Da CLi
+- execute log filter category Numero x va a definire i criteri di ricerca
+- execute log display Esegue l'interrogazione e stampa a video i log
+- esempio:
+  HQ-NGFW-1 # execute log filter category 3
+  HQ-NGFW-1 # execute log display
+  45 logs found.
+  10 logs returned.
+  93.8% of logs has been searched.
+  Da qui va a buttarti una serie di paramentri come :
+  date=2026-04-29 time=07:29:09, type="utm", subtype="webfilter", level="warning
+  srcip=10.0.11.50
+  dstip=151.101.67.5
+  hostname="cnn.com", url="[http://cnn.com/](http://cnn.com/)" 
+  ETC....
