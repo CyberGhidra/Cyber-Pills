@@ -140,7 +140,8 @@ Abilitazione del salvataggio su disco (Disk Logging)
 
   - Metodi per registrare un fortigate
     - Se non è registrato non puo usare FortiAnalyzer
-    - Inizializzazione dal dispositivo remoto:
+    - se è registrato si
+    - - Inizializzazione dal dispositivo remoto:
       Sul FortiGate si imposta l'indirizzo IP del FortiAnalyzer nel menu Log Settings. Il firewall invia una richiesta di
       associazione verso FortiAnalyzer, dove comparirà nella lista dei dispositivi non registrati in attesa di
       autorizzazione manuale
@@ -152,5 +153,4 @@ Abilitazione del salvataggio su disco (Disk Logging)
       L'amministratore inserisce preventivamente il numero di serie (Serial Number), il modello e i dettagli del
       dispositivo; non appena il FortiGate viene collegato a Internet e contatta l'Analyzer, viene riconosciuto e
       autorizzato automaticamente senza interruzioni operative
-    - se è registrato si
     
