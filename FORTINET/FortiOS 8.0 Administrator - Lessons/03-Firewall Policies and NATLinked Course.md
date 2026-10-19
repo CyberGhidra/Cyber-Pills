@@ -40,3 +40,23 @@
                                                                                                     Source / Destination: all verso all
                                                                                                     Action: DENY
   in poche parole non trova nulla scarta il pacchetto
+
+- Se andiamo su Policy and Objects troviamo quello che ci offre la policy
+  - Una regola di firewall non usa solitamente valori grezzi scritti direttamente al suo interno, ma richiama oggetti modulari e riutilizzabili definiti nella sezione Policy & Objects
+      - Interface and zone: interfacce fisiche, interfacce logiche (es. VLAN) o raggruppamenti di più porte in un'unica entità logica (Zone).
+      - Address, user, and internet service objects
+        Address: oggetti IP singoli
+        User: account utente locali o gruppi
+        Internet Service Objects (ISDB): database proprietario di Fortinet che raggruppa indirizzi IP pubblici, porte e protocolli usati da servizi cloud e web noti
+        Service definitions: porte e protocolli di Livello 4 (TCP, UDP, ICMP o SCTP)
+        e molto altro
+  - Tipologie di Policy:
+     - Firewall policy (IPv4, IPv6)
+     - Firewall virtual wire pair policy ----> regola il traffico che passa attraverso una coppia di porte fisiche collegate virtualmente "filo-a-filo" (Virtual Wire Pair) in modalità trasparente/Layer 2, senza routing né indirizzi IP sulle interfacce
+     - Proxy policy: utilizzata quando il traffico viene ispezionato tramite architettura proxy esplicita o trasparente (Forward Proxy / Reverse Proxy)
+     - Multicast policy (IPv4, IPv6): policy dedicate alla gestione e all'instradamento del traffico multicast (da uno a molti, es. video streaming in tempo reale, routing OSPF/PIM).
+     - Local-in policy: regola il traffico destinato direttamente agli indirizzi IP del FortiGate stesso
+     - DoS policy (IPv4, IPv6): policy specializzate nel rilevamento e blocco precoce di attacchi di tipo Denial of Service
+     - Traffic Shaping: regole di gestione e limitazione della larghezza di banda
+   
+        
