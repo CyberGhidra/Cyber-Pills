@@ -239,5 +239,15 @@ Risoluzione nomi host nei log
       set resolve-hosts enable
     end
 
-
+Come vedere consultazione mirata dei log legati a una specifica regola di firewall
+- Policy & Objects > Firewall Policy
+- Nella tabella delle regole di firewall, si individua la policy che si desidera analizzare > tasto destro > Show matching    logs
+- Una volta cliccato ci troveremo su una schemata dei log della regola
+- Analisi della tabella dei log risultante:
+  - Data/Time: marca temporale dell'evento.
+  - Source: l'indirizzo IP del client locale che ha generato la richiesta
+  - Destination: indirizzo IP pubblico
+  - Application Name: il protocollo o l'applicazione Layer 7 riconosciuta
+  - Result: esito dell'applicazione della regola con il conteggio dei byte scambiati
+  - Policy ID: conferma la corrispondenza con la regola selezionata
   
