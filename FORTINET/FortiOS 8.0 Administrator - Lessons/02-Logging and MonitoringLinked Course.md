@@ -195,3 +195,49 @@ Di solito viene anche consigliato non prendere troppi paraemntri di analisi ma b
 - frequency
 - time 
 
+
+Per andare a settare l'ottimazione su spazio su FortiAnalyzer:
+- Percorso GUI: System Settings > Advanced > Device Log Settings
+- Troviamo :
+    - Per dimensione (Roll log file when size exceeds): configurabile da 10 a 1000 MB
+    - Per pianificazione temporale (Roll log files at scheduled time): Forza la rotazione a intervalli regolari
+      (nell'esempio: ogni lunedì a mezzanotte)
+    - Opzioni di trasferimento e backup esterno:
+      - Upload logs using a standard file transfer protocol: consente di spedire automaticamente i file ruotati verso server
+      remoti via FTP, SFTP o SCP.
+      - Upload logs to cloud storage: permette di trasferire l'archivio direttamente su storage in cloud (es. AWS S3).
+  - Eliminazione Automatica :
+     - Device log files older than
+     - Reports older than --> rimuove i report
+     - Content archive files older than ---> cancella gli archivi dei contenuti catturati
+     - Quarantined files older than ---> elimina i file sospetti o infetti trattenuti nell'area di quarantena oltre il
+       numero di giorni configurato
+
+Ricerca e filtraggio Log 
+- Da fortigate > Log and report > secure Events > poi in alto summary e log clicco log 
+- In alto a destra è presente il selettore della sorgente da cui leggere i log
+- Accannto anche l'indicatore temporale e quello selzeione esempio web filter o altro
+- abbiamo filtro di ricerca avanzata dove possiamo andare a mettere paramentri esempio Action == blocked
+- Da li vedi una lista di ip che hanno provatoa ad aprire determinati link bloccati poi da firewall
+
+Risoluzione nomi host nei log 
+- Log and reports > log settings > global settings
+- normalmente i log vengono registrati con ip ma possiamo fare che vengano tradotti in modo tale che siano leggibili
+- Le due modalita:
+  -  On log creation ovverro alla creazione dei log
+  -  when viewed al momento della visualizzazione
+- Come si setta ?
+  - o da GUI ovevro sotto preferences ---> resilve hostname ---> Quando è attiva, è possibile selezionare tramite pulsante
+    a scelta multipla una delle due modalità: On log creation oppure When viewed.
+  - Configurazione da riga di comando (CLI) :
+    PER ON LOG :
+    config log setting
+       set resolve-ip enable
+     end
+    PER WHEN viewed
+    config log gui-display
+      set resolve-hosts enable
+    end
+
+
+  
