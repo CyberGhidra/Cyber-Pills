@@ -166,3 +166,32 @@ end
 4) Lato FortiAnalyzer > si accede alla schermata Device Manager
 5) Nelle colonne troviamo esempio > Unauthorized Devices > nome (HQ-NGFW-1), piattaforma (FortiGate-VM64-KVM), numero di serie univoco (Serial Number), IP (10.0.13.254) e versione firmware
 6) Si seleziona la casella di spunta accanto al dispositivo > Si preme il pulsante Authorize
+
+Il fortigate la porta per comunicare con FortiAnalyzer usa UDP 514 protocollo OFTP/SSL
+Da Fortigate possiamo andare al posto di usare l'interfaccia usare cli :
+
+config log fortianalyzer setting
+    set status enable
+    set server "10.0.13.125"
+    set serial "FAZ-VMTM24012176" corrisponde al numero di serie (Serial Number) del fortiAnalyzer 
+    set enc-algorithm high-medium
+    set upload-option realtime
+end
+
+Viene consigliato comunque di attivare TPC per sicurezza e crittografia del passaggio dei dati tramite :
+
+config log fortianalyzer setting
+    set status enable
+    set enc-algorithm high-medium ----> CONTROLLA LA CRITTOGRAFIA (SSL/TLS):
+    set reliable enable ---> comandao che attiva TPC
+end
+
+Una volta applicato questo comando, nella console di FortiAnalyzer (sotto Device Manager), accanto alla modalità di invio (es. Real Time) comparirà l'icona di un lucchetto verde. Il lucchetto certifica visivamente che la trasmissione è passata a TCP ed è attivamente cifrata con OFTPS (SSL/TLS)
+
+Di solito viene anche consigliato non prendere troppi paraemntri di analisi ma bensi quelli che servono di piu:
+- Source e destination
+- type of traffic
+- type of security event
+- frequency
+- time 
+
