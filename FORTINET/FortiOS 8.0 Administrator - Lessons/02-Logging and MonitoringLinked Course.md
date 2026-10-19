@@ -93,3 +93,43 @@ Causa dell'Azione di Sicurezza:
      - msg="URL belongs to a denied category in policy": Spiegazione formale: la categoria News and Media è esplicitamente
        contrassegnata con azione di blocco nel profilo applicato.
 
+
+Abilitazione del salvataggio su disco (Disk Logging)
+- Da interfaccia grafica (GUI): percorso Log & Report > Log Settings > Local Logs, impostando l'opzione Disk logging su
+  Enable.
+- Da riga di comando (CLI):
+  
+  config log disk setting
+    set status enable
+  end
+
+- Con Disk Logging abilitato possiamo avere uno storico dei log
+- Con Disk Logging disabilitato è esclusivamente in tempo reale da FortiViwe
+
+- I modelli FortiGate dotati di unità di memorizzazione interna (SSD o HDD) salvano i log all'interno di un database SQL
+  locale.
+-Personalizzazione del periodo di conservazione: la soglia temporale massima di retention può essere modificata tramite CLI
+ con il parametro maximum-log-age:
+
+  config log disk setting
+    set maximum-log-age <valore_in_giorni>
+  end
+
+ - I modelli F-40 vs 41F
+   - I modelli che finiscono con 0 non hanno ssd interna 
+   - i modelli che finiscono con 1 si 
+   - esempio modello F-40 salva quello che riesce nella ram ma appean si riempie sovrascrive / o se si riavvia cancella
+     tutto. In questo moedello non si puo attaccare memerie esterne di espansione
+     L'unico modo per salvare log è inviari a FortiAnalyzer, FortiGate cloud o SIEM esterno
+
+- FortiAnalyzer come funziona:
+  - i log vengono salvati in formato raw ovvero grezzo perchè richiedono meno spazio e possono essere mantenuti per periodi     piu lunghi
+  - Il fortiAnalyzer li prende e li inserisce nel suo db ovviamente indicizzando i log
+  - admin riesce cosia interrogare in maniera rapida il db e a filtrare in modo veloce quello che gli serve
+
+  - Come si setta FortiAnalyzer  :
+    - Percorso GUI: è visibile e modificabile dal widget di sistema in Dashboard > Status > System Information alla voce
+      Operation Mode
+    - Modalità di default: all'installazione o al primo avvio, FortiAnalyzer si trova configurato di fabbrica in Analyzer
+      mode
+    - se il forti analyzer deve ricervere piu log fa fw diversi usa modalita collector 
