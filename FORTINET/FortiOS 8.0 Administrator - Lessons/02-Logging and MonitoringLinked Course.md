@@ -153,4 +153,16 @@ Abilitazione del salvataggio su disco (Disk Logging)
       L'amministratore inserisce preventivamente il numero di serie (Serial Number), il modello e i dettagli del
       dispositivo; non appena il FortiGate viene collegato a Internet e contatta l'Analyzer, viene riconosciuto e
       autorizzato automaticamente senza interruzioni operative
-    
+
+Nel concreto come si fa?
+1) Lato Fortigate > Security Fabric > Fabric Connectors > Logging & Analytics
+2) Nel campo Server si inserisce l'indirizzo IP del FortiAnalyzer (es : 10.0.13.125 )
+3) nella stessa schermata si puo settare il tempo di regreshrate real time, every minute o every 5 minutes o da cli
+
+  config log fortianalyzer setting
+    set upload-option [store-and-upload | realtime | 1-minute | 5-minute]
+end
+
+4) Lato FortiAnalyzer > si accede alla schermata Device Manager
+5) Nelle colonne troviamo esempio > Unauthorized Devices > nome (HQ-NGFW-1), piattaforma (FortiGate-VM64-KVM), numero di serie univoco (Serial Number), IP (10.0.13.254) e versione firmware
+6) Si seleziona la casella di spunta accanto al dispositivo > Si preme il pulsante Authorize
