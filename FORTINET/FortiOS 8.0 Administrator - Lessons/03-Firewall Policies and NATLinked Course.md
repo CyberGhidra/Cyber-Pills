@@ -199,4 +199,53 @@
   - Interface Pair View = È la vista tradizionale e organizzata graficamente per coppie di ingresso e uscita ti mette le        regole in base alla porta 
   - By Sequence = Elenco piatto ordinato per esecuzione e mette in ordine per Policy id
  
+NAT ( DNAT e SNAT ) 
+- NAT : è la tecnica che consente di modificare gli indirizzi IP (sorgente o destinazione) all'interno dell'intestazione di   un pacchetto di rete mentre attraversa il firewall.
+- Vantaggi NAT:
+  - Offuscamento dell'indirizzo reale
+  - Risparmio degli indirizzi IPv4 pubblici
+  - Flessibilità dell'indirizzamento privato
+- SNAT : Indirizzo IP e porta sorgente > Si abilita direttamente all'interno della Firewall Policy > Consentire ai client
+  interni di navigare verso Internet o reti esterne.
+- DNAT : Indirizzo IP e porta destinazione > Richiede la creazione di un oggetto Virtual IP (VIP) da inserire come
+  Destination nella Firewall Policy > Pubblicare all'esterno server o servizi interni (Port Forwarding).
 
+
+  Come funziona :
+  
+- Pacchetto originale generato dal PC (Original packet):
+ - Src (Sorgente): 10.0.1.10:55001 (indirizzo privato del PC e porta effimera locale).
+ - Dst (Destinazione): 80.80.80.80:443 (web server HTTPS su Internet).
+ - Interfaccia di ingresso: port2 (LAN).
+- Elaborazione della Firewall Policy (Policy ID 1: "Internet"):
+ - Rispetta i criteri: srcintf: port2 --->  dstintf: port1,
+ - srcaddr: 10.0.1.0/24 ----> dstaddr: 0.0.0.0/0,
+ - azione ACCEPT con parametro nat: enable.
+- Pacchetto modificato dal FortiGate (SNATed packet):
+ - Prima di immettere il pacchetto su Internet tramite la porta di uscita port1, FortiGate sostituisce l'IP e la porta sorgente:
+    - Src: 70.70.70.70:55651 (l'IP pubblico della porta WAN port1 del firewall e una porta TCP effimera tradotta).
+    - Dst: rimane invariato su 80.80.80.80:443.
+  - Quando il web server risponde a 70.70.70.70:55651, la Stateful Session Table del FortiGate riconosce la connessione e
+    ritrasla il pacchetto inverso riconsegnandolo a 10.0.1.10:55001.
+
+- Come configurare SNAT da policy ?
+- Using the outgoing interface address (Usa l'indirizzo dell'interfaccia di uscita)
+    - il FortiGate prende l'indirizzo IP configurato direttamente sulla porta di rete fisica o logica da cui il pacchetto
+      esce verso la destinazione
+- Using a dynamic IP pool (Usa un pool IP dinamico)
+    - anziché utilizzare l'IP proprio dell'interfaccia di uscita, il firewall attinge gli indirizzi sorgente da un gruppo
+      (IP Pool) di uno o più indirizzi IP pubblici dedicati, preventivamente creati in Policy & Objects > IP Pools
+
+ - IP Pool
+ - un IP Pool stabilisce un singolo indirizzo IP o un intervallo (range) di indirizzi IP pubblici da utilizzare come
+   indirizzo sorgente per l'intera durata della sessione di rete.
+- Tipi di Pool
+  - Overload = È il classico PAT (Port Address Translation) multi-IP. Più computer interni condividono gli IP del pool
+    pubblico, differenziandosi per le porte TCP/UDP allocate
+  - One-to-One = Assegna un IP pubblico univoco a ogni singolo host interno
+  - Fixed port range = Riserva blocchi fissi e predefiniti di porte per ciascun indirizzo IP interno.
+  - Port block allocation = Alloca blocchi di porte dinamici a lotti (es. blocchi di 64 o 128 porte) a richiesta
+    dell'utente.
+
+
+  
