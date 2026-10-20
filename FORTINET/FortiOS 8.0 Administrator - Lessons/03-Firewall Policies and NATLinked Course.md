@@ -180,3 +180,23 @@
        Senza una decifratura SSL attiva (Deep Packet Inspection o Certificate Inspection), molti dei profili soprastanti
        (come Antivirus, File Filter e ispezione approfondita del Web Filter) non possono analizzare il contenuto dei dati
        cifrati, lasciando un potenziale punto cieco alle minacce nascoste all'interno del tunnel HTTPS
+
+- Policy ID
+  - va in maniera progressiva e va ad asseganre un id alla policy
+  - quando vado a modificarla da cli mi serve il suo identificatico
+    esempio:
+    
+    config firewall policy
+    edit 2
+        set name "DMZ"
+    next
+    edit 1
+        set name "Block FTP"
+    end
+  - Stessa cosa succede nei log perche vediamo policy=1 esempio che corrisponde ad una regola
+
+- Le firewall policy si possono vedere in 2 modi differneti:
+  - Interface Pair View = È la vista tradizionale e organizzata graficamente per coppie di ingresso e uscita ti mette le        regole in base alla porta 
+  - By Sequence = Elenco piatto ordinato per esecuzione e mette in ordine per Policy id
+ 
+
