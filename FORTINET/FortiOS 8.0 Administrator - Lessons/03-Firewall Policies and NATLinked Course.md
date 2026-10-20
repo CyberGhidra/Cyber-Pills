@@ -137,3 +137,41 @@
   Entries: pulsante View/Edit Entries per ispezionare gli specifici blocchi di IP e porte inclusi da FortiOS in base ai
   filtri selezionati.
   
+- DESTINATION :
+- Address Objects (Oggetti Indirizzo)
+    - Subnet (IP or netmask): un'intera sottorete di rete definita con notazione CIDR o subnet mask estesa (es.
+      192.168.20.0/24 o 10.200.1.0/255.255.255.0).
+    - IP address or address range: un singolo host IP specifico (/32) oppure un intervallo contiguo di indirizzi IP (es. da
+      172.16.1.100 a 172.16.1.150).  
+    - FQDN (Fully Qualified Domain Name):Nomi di dominio completi (es. update.microsoft.com o api.github.com).
+      Funzionamento: FortiOS esegue periodicamente query DNS per risolvere l'FQDN e memorizza gli indirizzi IP risultanti
+      nella propria cache interna del kernel per applicare la regola al momento del transito dei pacchetti (DNS query used
+      to resolve FQDN).
+    - Geography (Geolocalizzazione IP):Permette di creare regole basate sull'area geografica o nazione di appartenenza
+      della destinazione (es. bloccare o autorizzare il traffico solo verso server situati in specifici Paesi).
+      L'assegnazione dell'IP al Paese si basa sulla localizzazione geografica dichiarata dagli Internet Service Provider
+      (ISP).
+      Il database GeoIP viene mantenuto costantemente allineato e scaricato tramite i servizi in abbonamento FortiGuard
+      (Database updated periodically through FortiGuard).
+      Dynamic (Fabric connector address):Oggetti indirizzo sincronizzati dinamicamente tramite connettori del Security
+      Fabric verso piattaforme cloud o SDN (es. AWS, Azure, GCP, VMware NSX, Kubernetes).
+      Se un'istanza o un server remoto cambia indirizzo IP nel cloud, l'oggetto sul FortiGate si aggiorna automaticamente
+      senza richiedere modifiche manuali alla policy.
+
+  - Parliamo di Security Profiles
+    intervengono quando la policy consente il transito (Action = ACCEPT). Eseguono l'ispezione avanzata a livello
+    applicativo e dei contenuti (Layer 7), proteggendo la rete attraverso tre azioni cardine
+  - I Moduli di Sicurezza disponibili
+     - AntiVirus (AV): scansiona il traffico in transito per individuare e neutralizzare malware, virus e payload malevoli
+       contenuti nei download e negli allegati.
+     - Web filter (WEB): controlla la navigazione web degli utenti bloccando l'accesso a siti dannosi, categorie non
+       consentite (es. social network, siti di scommesse) o URL specifici.
+     - DNS filter (DNS): intercetta e analizza le query DNS dei client prima ancora che venga instaurata la sessione IP,
+       bloccando domini malevoli, botnet o server C&C (Command & Control).  
+     - Application control (APP): riconosce e disciplina l'uso di migliaia di applicazioni web e protocolli a livello
+       applicativo indipendentemente dalla porta utilizzata.
+     - IPS (Intrusion Prevention System): monitora i flussi in tempo reale per identificare anomalie di protocollo,
+       attacchi di rete ed exploit verso vulnerabilità software note.
+     - File filter (FILE): blocca o registra il
+       trasferimento di file basandosi sul tipo reale di file o sulla sua estensione (es. impedire il download di file
+       eseguibili .exe o archivi compressi).   
