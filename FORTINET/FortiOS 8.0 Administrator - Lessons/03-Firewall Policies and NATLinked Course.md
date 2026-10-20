@@ -58,5 +58,82 @@
      - Local-in policy: regola il traffico destinato direttamente agli indirizzi IP del FortiGate stesso
      - DoS policy (IPv4, IPv6): policy specializzate nel rilevamento e blocco precoce di attacchi di tipo Denial of Service
      - Traffic Shaping: regole di gestione e limitazione della larghezza di banda
+
+  - Configure firewall policies
+  - Il primo requisito è il nome della policy ( campo obbligatorio e univoco )
+  - Se pero non si desidera assegnare obbligatoriamente un nome alla policy allora :
+    System > Feature Visibility abilitando ALLOW Unnamed policies
+  - i capi posso essere popolati in due modi ( campi come Source, Destination o Service ) in due modi:
+    - clicking ovvero si apre una lista di campi creati
+    - Drag and drop ovvero trasciare gli oggetti dentro la policy
+  - Da CLI :
+
+  config firewall policy
+    edit 1
+        set name "training"
+        set uuid 2220....etc
+
+  - Affinche la logica funzioni deve soddisfare la condizione AND :
+    - Incoming and outgoing interfaces: l'interfaccia fisica o logica da cui entra il traffico (es. port4) e quella da cui        deve uscire in base alla tabella di routing (es. port2).
+    - Source: l'indirizzo IP, subnet, range IP, FQDN o servizio Internet da cui origina la connessione (nell'esempio:
+      HQ_SUBNET).
+    - User/group: l'identità dell'utente o gruppo (nell'esempio: utente guest). Se questo campo è popolato, il traffico
+      deve provenire da un utente formalmente autenticato.
+    - Destination: l'indirizzo IP, subnet, FQDN o oggetto geografico di destinazione (nell'esempio: Remote_HQ).
+    - Services: il protocollo e la porta Layer 4 della richiesta (nell'esempio: porte standard HTTP 80 e HTTPS 443).
+    - Schedules: la finestra temporale o il calendario di validità della regola (nell'esempio: always, sempre attiva).
+  - Un volta controllato tutto che sia ok esegue l'azione finale ovevro ACCEPT o DENY
+  - Poi esegue le fasi successive ovvero 
+    - auth
+    - security profile = esempio antivirus, web filter, ips o app control
+    - logging = sessioni tracciate
    
-        
+  - Quando andiamo a creare una policy > vicino a Source & Destination > Show logic / Hide logic 
+    Ci mostra le metriche di AND, OR o NOT
+  - Generalmnete i capi incoming e outgoing interface sono limitati a una singola selezione
+    Per sbloccarla basta andare su system > feature visibility e impostare allow
+
+  - Nella creazione di una policy, la definizione dell'indirizzo è obbligatroria 
+    Le tipologie supportate in questo campo sono:
+    - IP address or range: singolo indirizzo IP (host /32) o intervallo continuo di IP (es. da 192.168.1.10 a
+      192.168.1.50).
+    - Subnet (IP/netmask): un'intera sottorete di rete definita con indirizzo di rete e subnet mask (es. 10.0.1.0/24
+      10.0.1.0/255.255.255.0).
+    - FQDN (Fully Qualified Domain Name): nomi a dominio risolti dinamicamente dal firewall.
+    - Geography: oggetti basati sulla geolocalizzazione IP per nazione.
+    - Dynamic (Fabric connector address): oggetti dinamici popolati automaticamente tramite connettori Fabric (es. istanze
+      cloud AWS, Azure, VMware, Kubernetes).
+    - MAC address range: filtraggio a livello di indirizzo fisico MAC o intervalli di MAC address.
+    - ISDB (Internet Service Database): database Fortinet di servizi Internet noti.
+  - Autenticazione Utente/Gruppo Opzionale
+
+  - TAG e TAG ADDRESS GROUPS ( facilita la ricerca quando cerche una policy con Tag == <nome_del_tag> )
+  - Serve per etichettare oggetti di rete per far si che gestisci aggregazione
+  - Creazione del Tag (Policy & Objects > Tags)
+    Name: il nome per esteso del tag (nell'esempio: ZTNA-Address).
+    Abbreviation: sigla abbreviata opzionale utile per la visualizzazione compatta (nell'esempio: ZTA).
+    Color: colore di evidenziazione grafica per riconoscerlo a colpo d'occhio nelle tabelle.
+    Comments: note descrittive facoltative.
+
+    Nella sezione Organization & Display, all'interno del campo Tags, viene selezionato il tag precedentemente creato: ZTA
+    ZTNA-Address.
+    Display using: consente di scegliere come mostrare il tag nella GUI (tutti i tag, solo il primo tag oppure solo l'icona
+    colorata).
+    Preview: mostra l'anteprima visiva di come apparirà l'oggetto nelle policy e nelle tabelle (ZTA Training-ZTNA).
+
+- Geographic-Based ISDB ( serve per limitare i servizi come outlook solo in determinate posizioni geografiche e poi
+  richiamrlo da policy)
+  che consente di combinare il database dei servizi Internet di Fortinet (ISDB) con parametri geografici per un controllo
+  di sicurezza e instradamento molto granulare
+- Per compilare:
+  Name: nome assegnato all'oggetto personalizzato (Training-Location-ISDB).
+  Type: commutato su Geographic Based (pulsante verde attivo).
+  Primary Internet Service: il servizio cloud primario di riferimento scelto dal catalogo (nell'esempio: Google-Other, ID
+  65536).
+  Country/Region: United States.
+  Region: California.
+  City: Sunnyvale.
+  Direction: impostato su Both (bidirezionale).
+  Entries: pulsante View/Edit Entries per ispezionare gli specifici blocchi di IP e porte inclusi da FortiOS in base ai
+  filtri selezionati.
+  
