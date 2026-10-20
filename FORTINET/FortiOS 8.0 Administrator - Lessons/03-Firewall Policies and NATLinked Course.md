@@ -175,3 +175,8 @@
      - File filter (FILE): blocca o registra il
        trasferimento di file basandosi sul tipo reale di file o sulla sua estensione (es. impedire il download di file
        eseguibili .exe o archivi compressi).   
+     - SSL inspection : Con questa opzione il firewall non decifra il contenuto del pacchetto, limitandosi a leggere solo i
+       metadati in chiaro (come l'SNI o il certificato del server).
+       Senza una decifratura SSL attiva (Deep Packet Inspection o Certificate Inspection), molti dei profili soprastanti
+       (come Antivirus, File Filter e ispezione approfondita del Web Filter) non possono analizzare il contenuto dei dati
+       cifrati, lasciando un potenziale punto cieco alle minacce nascoste all'interno del tunnel HTTPS
