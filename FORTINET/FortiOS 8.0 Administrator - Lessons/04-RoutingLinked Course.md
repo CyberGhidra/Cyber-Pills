@@ -1,4 +1,4 @@
-<img width="670" height="364" alt="image" src="https://github.com/user-attachments/assets/85ac754d-f426-4022-9829-6c238ceffd28" />## ROUTING 
+## ROUTING 
 - FortiGate in Modalità NAT (Routed Mode)
   Quando il FortiGate è configurato nella modalità operativa predefinita (NAT Mode, detta anche Routed Mode), opera come un router IP a tutti gli effetti.
   Inoltro tra reti diverse
