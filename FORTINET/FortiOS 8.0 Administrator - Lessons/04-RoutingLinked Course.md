@@ -115,4 +115,108 @@
   Da cosa è composta:
   - Da quasi tutte le voci presenti nella RIB.
   - In più, contiene voci specifiche di sistema/kernel (system-specific entries), come rotte interne di gestione, indirizzi broadcast locali
+ 
+- Come creare una rotta statica 
+  Network > Static Routes
+  Come creare la defoult route : 
+  Destination (Subnet vs Internet Service):
+  > Subnet (selezionata nell'immagine): permette di inserire una destinazione IP con relativa maschera di rete.
+  > 0.0.0.0/0.0.0.0 (Default Route): rappresenta qualsiasi indirizzo IP non appartenente a reti locali o rotte più specifiche note al firewall. Corrisponde alla via d'uscita universale verso Internet.   
+  Gateway Address (Specify vs Dynamic):
+  > Specify (selezionato): imposta manualmente l'indirizzo IP del router o modem del provider a cui consegnare il pacchetto (nell'esempio: 100.65.0.254).
+  > Dynamic: si utilizza quando l'interfaccia di uscita riceve il proprio IP e il gateway in modo dinamico tramite DHCP o PPPoE (il firewall recupera il gateway direttamente dal server del provider senza doverlo digitare).
+  Interface (port2):
+  > L'interfaccia fisica o logica (VLAN, tunnel IPsec) da cui il pacchetto deve essere trasmesso fisicamente verso il next hop.
+  Administrative Distance (10):
+  > È la metrica di affidabilità della sorgente di routing utilizzata per popolare la RIB.   .
+  > Il valore predefinito per le rotte statiche su FortiOS è 10.
+  > Minore è la distanza, maggiore è la priorità: una rotta direttamente connessa ha distanza 0, una statica ha 10, OSPF ha 110, BGP esterno ha 20
 
+- Static route with name adresses
+  Fino a poco tempo fa, nella schermata delle rotte statiche era obbligatorio digitare a mano l'indirizzo IP numerico e la maschera di rete (es. 10.200.1.0/24).
+  Con questo meccanismo è possibile collegare direttamente un oggetto creato in Policy & Objects alla tabella di instradamento.
+  Creazione dell'Oggetto (Policy & Objects > Addresses)
+  > Name: Remote_Subnet.
+  > Type: Subnet (oppure FQDN).
+    La levetta critica: Routing configuration :
+  > Questo è il dettaglio chiave da ricordare per l'esame e la pratica: affinché un oggetto indirizzo sia visibile e selezionabile all'interno del modulo di routing, è obbligatorio abilitare il selettore Routing configuration.
+    Perché esiste questo interruttore? Un firewall aziendale può contenere centinaia o migliaia di oggetti indirizzo usati solo per le policy di sicurezza. Se fossero tutti visibili nel routing, il menu a tendina diventerebbe ingestibile. Questa opzione funge da filtro     esponendo solo gli oggetti espressamente destinati all'instradamento.   
+  Creazione della Rotta (Network > Static Routes)
+  > Destination: Invece di selezionare Subnet o Internet Service, si preme il pulsante centrale Named Address.
+  > Selezione dell'oggetto: Nel campo a tendina compare l'oggetto Remote_Subnet precedentemente abilitato.
+  Campi standard di instradamento:
+  > Gateway Address: 100.65.0.254 (Next Hop a cui inoltrare il traffico).
+  > Interface: port2 (Interfaccia di uscita).
+  > Administrative Distance: 10 (Priorità di default per le rotte statiche).
+
+Percorso GUI: Dashboard > Network Monitor > Routing
+> Mostra esclusivamente le rotte considerate attive e migliori (best routes).
+> Aggrega le rotte dirette (Connected, con distanza 0), le rotte statiche (Static, distanza predefinita 10) e tutte le rotte dinamiche apprese via OSPF, BGP o RIP.
+> Possimao trovare oltre le informazioni base come network, adderess, port anche type
+> Type si divide in varie categorie 
+   1) Connected (Reti Direttamente Connesse) > Sono le reti fisicamente collegate alle porte
+   2) Static (Rotte Statiche) > Rotte inserite a mano dall'amministratore di rete
+   3) I Protocolli di Routing Dinamico (IGP ed EGP)
+      eBGP (External Border Gateway Protocol) > È il protocollo che governa la comunicazione tra Autonomous System (AS) tipo AWS Direct Connect, Azure ExpressRoute
+      OSPF (Open Shortest Path First) > È il protocollo di tipo IGP (Interior Gateway Protocol) più diffuso nelle reti aziendali interne e nei data center
+      RIP (Routing Information Protocol) > È uno dei primi protocolli dinamici della storia di Internet (Distance-Vector), oggi considerato ereditato (legacy) e raramente usato in architetture moderne
+
+Distance 
+Connect = 0 
+static WAN = 1 
+static DHCP = 5
+static Manual = 10
+EBGP = 20
+OSPF = 110
+IS-IS = 115
+RIP = 120
+IBGP = 200
+
+
+- ECMP
+  L'ECMP è il meccanismo che permette a FortiGate di utilizzare contemporaneamente più percorsi alternativi verso la stessa destinazione
+  Requisiti Obbligatori per Attivare l'ECMP :
+   1) Destination subnet (Sottorete di destinazione)
+   2) Distance (Administrative Distance)
+   3) Metric (Metrica)
+   4) Priority (Priorità)
+Configuring ECMP (Algoritmi e Parametri CLI)
+
+config system settings
+    set v4-ecmp-mode [source-ip-based | weight-based | usage-based | source-dest-ip-based]
+end
+
+ESEMPIO 
+
+[ User A: 10.0.3.1 ]
+         │
+         ├─── (port3: 10.0.3.0/24) ───► [ FortiGate ] ──┬── port1 (10.0.1.0/24) ──► Gateway: 10.0.1.254 ──┐
+         │                                               │                                                 ├──► [ Server 10.0.4.0/24 ]
+ [ User B: 10.0.3.2 ]                                    └── port2 (10.0.2.0/24) ──► Gateway: 10.0.2.254 ──┘
+
+Scenario Operativo
+Due client interni (User A 10.0.3.1 e User B 10.0.3.2) sono attestati sulla rete LAN connessa alla porta port3.   
+Entrambi devono raggiungere il data center/server remoto con subnet 10.0.4.0/24.   
+Il FortiGate dispone di due collegamenti ridondati verso la rete cloud:   
+Tramite port1 (subnet 10.0.1.0/24) verso il gateway 10.0.1.254.   
+Tramite port2 (subnet 10.0.2.0/24) verso il gateway 10.0.2.254
+
+Decodifica dell'Output CLI (get router info routing-table all)
+
+S    10.0.4.0/24 [10/0] via 10.0.1.254, port1, [5/0]
+                 [10/0] via 10.0.2.254, port2, [5/0]
+
+S: rotta di tipo Statico (Static).   
+10.0.4.0/24: la subnet di destinazione è identica per entrambe le righe.   
+[10/0] (Distance e Metrica - Fumetto azzurro a sinistra):   
+Entrambe le rotte hanno Distance = 10.   
+Entrambe le rotte hanno Metric = 0.  
+[5/0] (Priorità - Fumetto azzurro a destra):   
+Il primo valore tra parentesi [5/...] rappresenta la Priority. Entrambe le rotte statiche hanno priorità esatta impostata su 5
+
+Come viaggia il traffico dei due utenti?
+In base all'algoritmo predefinito source-ip-based:   
+> User A (10.0.3.1) genera la prima sessione verso il server: l'algoritmo calcola l'hash del suo IP e lo assegna a port1.
+> Tutte le connessioni di User A verso il server viaggeranno attraverso il gateway 10.0.1.254.
+> User B (10.0.3.2) avvia una connessione: il suo IP sorgente differente produce un risultato hash diverso, indirizzando il flusso verso port2 e gateway 10.0.2.254.
+> Se port1 dovesse disconnettersi, la prima riga verrebbe rimossa istantaneamente dalla FIB e il 100% delle sessioni convergerebbe su port2 in automatico senza disservizi per gli utenti.   
