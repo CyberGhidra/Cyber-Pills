@@ -107,3 +107,43 @@
     Test User Credentials: pulsante per eseguire una prova pratica di autenticazione digitando username e password di un
     utente reale per verificare la conformità di tutto l'albero.
 
+  - RADIUS Overview (Panoramica e Pacchetti)
+    Questa slide illustra come funziona il protocollo RADIUS (Remote Authentication Dial-In User Service) quando FortiGate
+    agisce come client di autenticazione verso un server centrale.
+    Protocollo AAA Standard: RADIUS è un protocollo standard di rete che fornisce servizi di AAA:
+    Authentication (Autenticazione): verifica l'identità dell'utente (chi sei).
+    Authorization (Autorizzazione): stabilisce cosa l'utente ha il permesso di fare (a quali risorse/gruppi appartiene).        Accounting (Tracciamento/Contabilità): registra cosa fa l'utente, quando accede e quando si disconnette.
+    
+    Tipi di messaggi RADIUS scambiati:
+    Access-Request: FortiGate raccoglie le credenziali dell'utente e le invia al server RADIUS per la validazione.              Risposta del Server: il server RADIUS valuta la richiesta e può rispondere con uno di questi tre pacchetti:
+        Access-Accept: credenziali corrette e autorizzazione concessa; FortiGate fa passare il traffico dell'utente.                Access-Reject: credenziali errate o utente non autorizzato; FortiGate nega l'accesso.
+        Access-Challenge: il server richiede un passaggio aggiuntivo prima di decidere (ad esempio un codice OTP per                l'autenticazione a due fattori/2FA o un cambio password obbligatorio),
+
+    Slide 2: Configuring a RADIUS Server on FortiGate
+         parametri principali evidenziati sono:
+         Parametri Generali:
+         Name: etichetta interna per identificare l'oggetto sul firewall (es. RADIUS_Server).  
+         Authentication method: impostato su Default (oppure Specify per forzare algoritmi specifici come PAP, CHAP, MS
+         CHAPv2).
+         NAS IP: IP opzionale con cui FortiGate si presenta al server come Network Access Server.
+         Include in every user group: se abilitato, include implicitamente questo server in tutti i gruppi utenti del                firewall.
+         Parametri del Primary Server:IP/Name: 
+         indirizzo IP o FQDN del server RADIUS (nell'esempio: 10.0.13.130).   
+         Secret (Shared Secret): la chiave segreta condivisa tra FortiGate e il server RADIUS (must match). 
+         Questa password deve essere rigorosamente identica su entrambi i lati; serve a cifrare la password dell'utente nel          pacchetto e a autenticare il firewall presso il server.
+
+  Slide 3: Testing LDAP and RADIUS Query on the CLI (Diagnostica da CLI)
+      - A. Test per Server LDAP
+        diagnose test authserver ldap <server_name> <username> <password>
+      - esempio 
+      # diagnose test authserver ldap External_Server aduser1 Training!
+        authenticate 'aduser1' against 'External_Server' succeeded!
+        Group membership(s) - CN=AD-users,OU=Training,DC=trainingAD,DC=training,DC=lab
+      - B. Test per Server RADIUS
+        diagnose test authserver radius <server_name> <scheme> <user> <password>
+      - esempio
+        # diagnose test authserver radius FortiAuth-RADIUS pap student fortinet
+          authenticate 'student' against 'pap' succeeded, server=primary
+          assigned_rad_session_id=810153440 session timeout=0 secs!
+          Group membership(s) - remote-RADIUS-admins
+    
