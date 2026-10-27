@@ -1,206 +1,215 @@
-## Firewall authentication
+# FortiGate Firewall Authentication
 
-- Identificazione di utenti e gruppi di utenti:
-    - include l'autenticazione formale di singoli utenti o gruppi.
-    - Maggiore affidabilità:
-      autenticare gli utenti tramite credenziali valide offre un livello di sicurezza superiore rispetto al semplice riconoscimento basato sull'indirizzo IP o sulla tipologia di dispositivo (entrambi facilmente falsificabili o condivisi).
-    - Flusso operativo:
-      L'utente tenta di accedere a una risorsa di rete e il FortiGate richiede l'autenticazione presentando una schermata di login (Captive Portal / Authentication Required).
-      L'utente inserisce le credenziali valide (Username e Password).
-      Una volta accertata l'identità dell'utente o del dispositivo, FortiGate applica le relative Firewall Policy e i Security Profile per autorizzare o negare l'accesso alla specifica risorsa richiesta.
-      
-- Metodi di Autenticazione Firewall su FortiGateLa :
-    - A. Local Password Authentication (Autenticazione Locale)
-      Nome utente e password sono memorizzati e gestiti direttamente all'interno del database locale del FortiGate.
-      Indicata per contesti con un numero ridotto di account o per utenze di emergenza.
-    - B. Server-based Password Authentication (Autenticazione Remota)
-      Chiamata anche autenticazione remota, delega la verifica delle credenziali a un server di directory o di autenticazione centralizzato.
-      I protocolli/server supportati includono:
-      LDAP (es. Microsoft Active Directory)
-      RADIUS
-      TACACS+
-      POP3
-    - C. Two-Factor Authentication (2FA / Autenticazione a Due Fattori)
-      Viene attivata come livello aggiuntivo sopra uno dei metodi preesistenti (locale o basato su server).
-      Richiede la combinazione di due fattori di sicurezza:
-      Something you know (qualcosa che si conosce): password o PIN.
-      Something you have (qualcosa che si possiede): token hardware/software (es. FortiToken Mobile) o certificato digitale.  
+L'autenticazione a livello di firewall consente di identificare in modo univoco singoli utenti o gruppi prima di autorizzare l'accesso alle risorse di rete. Rispetto al controllo basato esclusivamente su indirizzo IP o MAC address (facilmente soggetti a spoofing, NAT o rotazione DHCP), l'autenticazione dell'identità garantisce un livello di sicurezza superiore e permette l'applicazione di policy granulari orientate all'utente (**Identity-Based Policies**).
 
-- Per vedere le utenze create User authentication > user definition
-- Il Processo di Server-Based Password Authentication (da A a Z)
-  
-  [ FASE PREPARATORIA: Configurazione ]
-  Server Remoto preconfigurato (LDAP/RADIUS)
-           │
-           ├───► Metodo 1: Creazione singolo utente locale associato a Server
-           │         └─► Inserito in un User Group
-           │
-           └───► Metodo 2: Associazione dell'intero Server a un User Group
-                     └─► Tutti gli utenti del server sono inclusi
-                                   │
-                                   ▼
-                       [ Inserito in Firewall Policy ][cite: 1, 11]
+---
 
--------------------------------------------------------------------------
+## 1. Architettura e Metodi di Autenticazione
 
-[ FASE OPERATIVA: Flusso di Connessione Utente ]
-  1. Client invia traffico ────► FortiGate presenta Captive Portal
-  2. Utente inserisce credenziali (User/PW) ────► FortiGate riceve
-  3. FortiGate inoltra credenziali ────► Remote Server (LDAP/RADIUS)
-  4. Server verifica e risponde "OK" ────► FortiGate valida identità
-  5. FortiGate applica Firewall Policy + Profili di Sicurezza[cite: 1]
+### Flusso Operativo Generale
+1. **Richiesta di connessione:** Il client genera traffico verso una destinazione protetta.
+2. **Intercettazione (Captive Portal):** FortiGate intercetta la sessione HTTP/HTTPS e presenta un portale web di autenticazione (*Authentication Required*).
+3. **Verifica delle credenziali:** L'utente inserisce username e password, che vengono validate localmente o inoltrate a un server esterno.
+4. **Enforcement della Policy:** Accertata l'identità, FortiGate associa l'indirizzo IP della sessione all'utente autenticato e applica le specifiche **Firewall Policy** e i relativi **Security Profiles** (Antivirus, Web Filter, IPS).
 
+### Metodi di Autenticazione Supportati
+* **Autenticazione Locale (Local Password Authentication):**
+  * Credenziali salvate direttamente nel database interno di FortiOS.
+  * *Uso consigliato:* Reti isolate, contesti con pochissimi utenti o account amministrativi di emergenza (*break-glass*).
+* **Autenticazione Remota (Server-Based Authentication):**
+  * Delega la validazione a un server di directory aziendale.
+  * *Protocolli supportati:* LDAP / LDAPS (Microsoft Active Directory, OpenLDAP), RADIUS, TACACS+, POP3.
+  * *Uso consigliato:* Ambienti aziendali scalabili con gestione centralizzata delle identità.
+* **Autenticazione a Due Fattori (2FA / MFA):**
+  * Si sovrappone all'autenticazione locale o remota combinando:
+    * **Qualcosa che conosci:** Password o PIN.
+    * **Qualcosa che possiedi:** Token hardware/software (es. FortiToken Mobile) o certificato digitale.
 
-- Come si fa :
-  a) Prerequisito fondamentale: il server di autenticazione esterno (RADIUS, LDAP, TACACS+) deve essere già preventivamente censito e configurato su FortiGate
-  b) Da qui, l'amministratore può scegliere tra due strade operative:
-  
-  Opzione 1 - (Creazione Utente per Utente):
-  Percorso: User & Authentication > User Definition.
-  Si seleziona il tipo di utente remoto (Remote RADIUS User, Remote TACACS+ User o Remote LDAP User).
-  È obbligatorio specificare manualmente il campo Username esatto censito sul server esterno e puntare al server preconfigurato.
-  L'utente creato viene infine aggiunto a un gruppo utenti di FortiGate (User Group).
-  Vantaggio: controllo granulare sui singoli profili utente definiti sul firewall.
-  
-  Opzione 2 (Server aggiunto direttamente al Gruppo):
-  Percorso: User & Authentication > User Groups.
-  Invece di creare i singoli account a mano sul firewall, si seleziona l'intero server remoto (o specifici gruppi remoti del server, es. un gruppo Active Directory) e lo si assegna direttamente al gruppo locale di FortiGate.
-  Vantaggio: tutti gli utenti presenti su quel server diventano automaticamente membri del gruppo. Elimina l'onere amministrativo di creare o aggiornare le utenze su FortiOS quando nuovi utenti vengono assunti o censiti sulla directory aziendale.
-  
-  Collegamento alle Policy: il gruppo utenti (ottenuto tramite Opzione 1 o Opzione 2) viene inserito nel campo Source (sezione User/Group) della Firewall Policy per abilitare il controllo d'accesso condizionato.
+---
 
+## 2. Server-Based Authentication: Configurazione e Flussi
 
-- LDAP Overview (Panoramica e Funzionamento)
-  LDAP (Lightweight Directory Access Protocol) è un protocollo di livello applicativo impiegato per interrogare,
-  autenticare e manutenere servizi di directory distribuiti (come Microsoft Active Directory, OpenLDAP, Novell eDirectory)
-  Componenti della comunicazione:
-  - LDAP Client (FortiGate): il firewall agisce come client LDAP che inoltra le richieste di verifica credenziali ricevute
-    dagli utenti della rete.
-  - DSA (Directory System Agent): è il server LDAP/Active Directory remoto che detiene il database utenti.
-  Porte di rete e crittografia:
-  - Porta TCP 389: utilizzata per il traffico LDAP in chiaro oppure protetto tramite estensione crittografica STARTTLS
-    (aggiornamento dinamico della sessione a TLS).
-  - Porta TCP 636: utilizzata per LDAPS (LDAP over SSL/TLS), in cui l'intero canale TCP è cifrato fin dal primo handshake.
+### Flusso Logico (End-to-End)
 
-- Configuring an LDAP Server on FortiGate (Configurazione GUI)
-  - User & Authentication > LDAP Servers
-  - I parametri principali evidenziati sono:
-    Parametri di Rete di Base:
-    Name: etichetta interna dell'oggetto (es. External_Server).
-    Server IP/Name: l'indirizzo IP o l'FQDN del controller di dominio / server LDAP (es. 10.0.13.130).  
-    Server Port: porta di servizio (nell'esempio: 389).
-  - Attributi di Identificazione Utente:
-    Common Name Identifier: l'attributo schema che identifica il nome login dell'utente (Directory tree attribute that
-    identifies users).
-    Nell'esempio è impostato su uid (standard tipico per Linux/OpenLDAP).
-    Nota operativa: se il server è Microsoft Active Directory, questo valore viene in genere impostato su sAMAccountName o
-    userPrincipalName
-  - Credenziali di Binding Amministrativo (Bind Type):
-    Bind Type: selezionato su Regular (consente al firewall di presentarsi al server con un account dedicato per poter
-    sfogliare la directory).
-    Username / Password: le credenziali di un account con permessi di lettura LDAP (Credentials for an LDAP administrator),
-    compilate indicando il DN completo (es. uid=adadmin,cn=Users,dc=training,dc=lab).
-  - Protocollo di Sicurezza e Test di Connettività:
-    Protocol: selettore tra STARTTLS e LDAPS per abilitare la cifratura del traffico ed evitare il passaggio delle
-    credenziali in chiaro.
-    Test Connectivity: pulsante per validare che l'IP e la porta remota rispondano (esito: Successful).
-    Test User Credentials: pulsante per eseguire una prova pratica di autenticazione digitando username e password di un
-    utente reale per verificare la conformità di tutto l'albero.
+```
+[ FASE PREPARATORIA: Configurazione ]
+Server Remoto Censito (LDAP / RADIUS)
+          │
+          ├───► Metodo 1: Creazione singolo utente remoto su FortiGate
+          │              └─► Inserimento in un User Group locale
+          │
+          └───► Metodo 2: Mappatura dell'intero Server o Gruppo AD in uno User Group
+                         └─► Appartenenza dinamica automatica
+                                     │
+                                     ▼
+                     [ Applicazione nella Firewall Policy ]
+```
 
-  - RADIUS Overview (Panoramica e Pacchetti)
-    Questa slide illustra come funziona il protocollo RADIUS (Remote Authentication Dial-In User Service) quando FortiGate
-    agisce come client di autenticazione verso un server centrale.
-    Protocollo AAA Standard: RADIUS è un protocollo standard di rete che fornisce servizi di AAA:
-    Authentication (Autenticazione): verifica l'identità dell'utente (chi sei).
-    Authorization (Autorizzazione): stabilisce cosa l'utente ha il permesso di fare (a quali risorse/gruppi appartiene).        Accounting (Tracciamento/Contabilità): registra cosa fa l'utente, quando accede e quando si disconnette.
-    
-    Tipi di messaggi RADIUS scambiati:
-    Access-Request: FortiGate raccoglie le credenziali dell'utente e le invia al server RADIUS per la validazione.              Risposta del Server: il server RADIUS valuta la richiesta e può rispondere con uno di questi tre pacchetti:
-        Access-Accept: credenziali corrette e autorizzazione concessa; FortiGate fa passare il traffico dell'utente.                Access-Reject: credenziali errate o utente non autorizzato; FortiGate nega l'accesso.
-        Access-Challenge: il server richiede un passaggio aggiuntivo prima di decidere (ad esempio un codice OTP per                l'autenticazione a due fattori/2FA o un cambio password obbligatorio),
+```
+[ FASE OPERATIVA: Flusso di Connessione ]
+1. Client invia traffico           ────► FortiGate mostra il Captive Portal
+2. Utente inserisce credenziali    ────► FortiGate raccoglie User/Password
+3. FortiGate interroga il server   ────► Query verso Remote Server (LDAP/RADIUS)
+4. Server valida e risponde        ────► Risposta di autorizzazione (OK / Access-Accept)
+5. Sessione aperta                 ────► FortiGate applica Policy e Security Profiles
+```
 
-    Slide 2: Configuring a RADIUS Server on FortiGate
-         parametri principali evidenziati sono:
-         Parametri Generali:
-         Name: etichetta interna per identificare l'oggetto sul firewall (es. RADIUS_Server).  
-         Authentication method: impostato su Default (oppure Specify per forzare algoritmi specifici come PAP, CHAP, MS
-         CHAPv2).
-         NAS IP: IP opzionale con cui FortiGate si presenta al server come Network Access Server.
-         Include in every user group: se abilitato, include implicitamente questo server in tutti i gruppi utenti del                firewall.
-         Parametri del Primary Server:IP/Name: 
-         indirizzo IP o FQDN del server RADIUS (nell'esempio: 10.0.13.130).   
-         Secret (Shared Secret): la chiave segreta condivisa tra FortiGate e il server RADIUS (must match). 
-         Questa password deve essere rigorosamente identica su entrambi i lati; serve a cifrare la password dell'utente nel          pacchetto e a autenticare il firewall presso il server.
+### Strategie di Mappatura Utenti su FortiOS
 
-  Slide 3: Testing LDAP and RADIUS Query on the CLI (Diagnostica da CLI)
-      - A. Test per Server LDAP
-        diagnose test authserver ldap <server_name> <username> <password>
-      - esempio 
-      # diagnose test authserver ldap External_Server aduser1 Training!
-        authenticate 'aduser1' against 'External_Server' succeeded!
-        Group membership(s) - CN=AD-users,OU=Training,DC=trainingAD,DC=training,DC=lab
-      - B. Test per Server RADIUS
-        diagnose test authserver radius <server_name> <scheme> <user> <password>
-      - esempio
-        # diagnose test authserver radius FortiAuth-RADIUS pap student fortinet
-          authenticate 'student' against 'pap' succeeded, server=primary
-          assigned_rad_session_id=810153440 session timeout=0 secs!
-          Group membership(s) - remote-RADIUS-admins
-    
-- FortiToken
-  Come si assegna FortiToken:
-  L'assegnazione di un token a un utente può avvenire sia per gli amministratori del firewall sia per gli utenti di rete (VPN / Captive Portal).   
-  Assegnazione via GUI (Interfaccia Grafica)
-      - Verifica delle licenze token:
-        Vai su User & Authentication > FortiTokens.
-        Di fabbrica, ogni FortiGate include 2 licenze FortiToken Mobile gratuite. 
-        Se ne acquisti altre, seleziona Create New > Mobile Token e inserisci il codice di attivazione per registrarle sui server Fortinet.
-        Assegnazione all'utente:
-        Per un amministratore di sistema: 
-        vai su System > Administrators, modifica l'account desiderato, abilita l'opzione Two-factor Authentication e seleziona il token dall'elenco a tendina.
-        Per un utente di rete: 
-        vai su User & Authentication > User Definition, modifica l'utente, abilita l'interruttore Two-factor Authentication e seleziona il token desiderato.
-        Invio del codice di attivazione:
-        Nel profilo utente occorre specificare l'Email o il Numero di telefono (SMS).
-        Cliccando su Send Activation Code, FortiOS invia una notifica contenente il codice o il QR code per importare il token nell'app FortiToken Mobile sullo smartphone.
+| Parametro | Opzione 1: Utente Singolo (*Remote User*) | Opzione 2: Server / Gruppo Mappato (*Group Match*) |
+| :--- | :--- | :--- |
+| **Percorso GUI** | `User & Authentication > User Definition` | `User & Authentication > User Groups` |
+| **Configurazione** | Si crea un utente remoto specificando l'esatto username presente sul server esterno. | Si inserisce direttamente il server remoto o uno specifico gruppo del directory server nello User Group locale. |
+| **Manutenzione** | Alta: ogni nuovo assunto richiede la creazione dell'oggetto su FortiGate. | Bassa: automatica in base alle modifiche apportate sul server centrale (es. Active Directory). |
+| **Vantaggio** | Massimo controllo granulare sui singoli utenti. | Elevata scalabilità ed eliminazione del sovraccarico amministrativo. |
 
-- Modalità Attiva vs Modalità Passiva (Push vs Manual OTP)
-- A. Modalità Passiva (Manual Token / TOTP classico)
-  Come funziona: 
-  L'utente apre manualmente l'app FortiToken Mobile sullo smartphone, legge il codice numerico di 6 cifre generato (valido per circa 30 o 60 secondi) e lo digita nel campo richiesto sul portale web, sul client FortiClient VPN o nella console.
-- Modalità Attiva (FortiToken Mobile Push)
-  Come funziona: 
-  Dopo aver inserito username e password, l'utente riceve una notifica push istantanea sullo smartphone. 
-  Aprendo l'app, compare una schermata con i dettagli del login e due pulsanti: Approve o Deny. Cliccando Approve, l'autenticazione viene completata immediatamente senza dover digitare alcuna cifra.
+> **Associazione alla Policy:** In entrambi i casi, lo **User Group** risultante deve essere inserito nel campo **Source** (sezione *User / Group*) della Firewall Policy.
 
-- Da CLI
-- Aggiungere le licenze token al FortiGate
+---
 
+## 3. Protocollo LDAP / LDAPS
+
+LDAP (*Lightweight Directory Access Protocol*) è un protocollo applicativo per interrogare e gestire directory distribuite.
+
+* **Ruoli:**
+  * **LDAP Client:** FortiGate (inoltra le richieste di bind/search).
+  * **DSA (Directory System Agent):** Il server remoto (es. Domain Controller Active Directory).
+* **Porte e Sicurezza:**
+  * **TCP 389:** LDAP standard in chiaro; supporta l'upgrade a sessione cifrata tramite **STARTTLS**.
+  * **TCP 636:** **LDAPS** (LDAP over SSL/TLS), crittografato nativamente fin dall'handshake iniziale.
+
+### Parametri di Configurazione (`User & Authentication > LDAP Servers`)
+
+* **Name:** Identificativo univoco dell'oggetto su FortiOS (es. `AD_Corp_DC01`).
+* **Server IP/Name & Port:** Indirizzo IP/FQDN del server e porta (`389` per STARTTLS o `636` per LDAPS).
+* **Common Name Identifier:** Attributo di schema che rappresenta il nome di login:
+  * OpenLDAP / Linux: solitamente `uid` o `cn`.
+  * Active Directory: solitamente `sAMAccountName` (formato *username*) o `userPrincipalName` (formato *user@domain.local*).
+* **Distinguished Name (Base DN):** Il ramo dell'albero da cui iniziare la ricerca (es. `dc=azienda,dc=local`).
+* **Bind Type (Regular):** Consente al firewall di autenticarsi con un account di servizio per navigare la struttura directory:
+  * **Username:** DN completo dell'account amministrativo/servizio (es. `cn=svc_fortigate,ou=ServiceAccounts,dc=azienda,dc=local`).
+  * **Password:** Password associata all'account di servizio.
+* **Test Tools:**
+  * *Test Connectivity:* Verifica raggiungibilità IP e apertura della porta.
+  * *Test User Credentials:* Verifica in tempo reale il corretto binding e la validità delle credenziali di un utente reale.
+
+---
+
+## 4. Protocollo RADIUS
+
+RADIUS (*Remote Authentication Dial-In User Service*) opera su architettura client/server fornendo funzionalità complete di **AAA**:
+* **Authentication:** Verifica chi è l'utente.
+* **Authorization:** Determina a quali risorse o gruppi ha accesso.
+* **Accounting:** Registra statistiche di utilizzo, inizio/fine sessione e volume di traffico.
+
+### Pacchetti di Comunicazione RADIUS
+1. **Access-Request:** FortiGate pacchettizza le credenziali utente e le inoltra al server RADIUS.
+2. **Access-Accept:** Credenziali corrette e privilegi validati; FortiGate sblocca il traffico.
+3. **Access-Reject:** Credenziali errate o utente non autorizzato; accesso negato.
+4. **Access-Challenge:** Il server richiede passaggi aggiuntivi prima di autorizzare la sessione (es. richiesta OTP per 2FA o cambio password scaduta).
+
+### Parametri di Configurazione (`User & Authentication > RADIUS Servers`)
+* **Primary Server IP/Name:** Indirizzo del server RADIUS (es. FortiAuthenticator, Cisco ISE, Microsoft NPS).
+* **Secret (Shared Secret):** Stringa segreta condivisa tra FortiGate e RADIUS. È usata per calcolare l'hash di protezione delle credenziali e autenticare il NAS (*Network Access Server*). Deve coincidere rigorosamente su entrambi i nodi.
+* **Authentication Method:** Metodo di autenticazione supportato (`Default`, oppure specificato manualmente tra `PAP`, `CHAP`, `MS-CHAPv2`).
+* **NAS IP:** Indirizzo IP sorgente con cui FortiGate si presenta al server RADIUS (utile se il server applica filtri sui client autorizzati).
+
+---
+
+## 5. Diagnostica e Troubleshooting da CLI
+
+La CLI di FortiOS offre comandi dedicati per simulare le query di autenticazione senza dover attendere il traffico reale dei client.
+
+### Test Autenticazione LDAP
+```
+diagnose test authserver ldap <ldap_server_name> <username> <password>
+```
+
+*Esempio ed esito atteso:*
+```
+# diagnose test authserver ldap External_Server aduser1 Training!
+authenticate 'aduser1' against 'External_Server' succeeded!
+Group membership(s) - CN=AD-users,OU=Training,DC=trainingAD,DC=training,DC=lab
+```
+
+### Test Autenticazione RADIUS
+```
+diagnose test authserver radius <radius_server_name> <auth_scheme> <username> <password>
+```
+*Schemi supportati:* `pap`, `chap`, `mschap`, `mschapv2`.
+
+*Esempio ed esito atteso:*
+```
+# diagnose test authserver radius FortiAuth-RADIUS pap student fortinet
+authenticate 'student' against 'pap' succeeded, server=primary
+assigned_rad_session_id=810153440 session timeout=0 secs!
+Group membership(s) - remote-RADIUS-admins
+```
+
+---
+
+## 6. FortiToken e Autenticazione a Due Fattori (2FA)
+
+FortiOS include nativamente il supporto per l'autenticazione multifattore tramite token hardware fisici o token software (**FortiToken Mobile**).
+* Ogni unità FortiGate include **2 licenze FortiToken Mobile gratuite** utilizzabili fin da subito.
+* Licenze aggiuntive possono essere registrate tramite codice di attivazione in `User & Authentication > FortiTokens`.
+
+### Modalità di Risposta: Passiva vs Attiva
+
+```
+[ MODALITÀ PASSIVA (TOTP Manuale) ]
+Utente apre l'app ──► Legge il codice a 6 cifre ──► Digita manualmente l'OTP a schermo
+
+[ MODALITÀ ATTIVA (Push Notification) ]
+Utente invia User/PW ──► Notifica Push su smartphone ──► Tap su "Approve" o "Deny"
+```
+
+* **Modalità Passiva (TOTP):** Genera codici numerici *Time-based One-Time Password* a 6 cifre con validità di 30-60 secondi. Richiede la digitazione manuale dell'OTP nel form del portale o su FortiClient.
+* **Modalità Attiva (Push):** Richiede connettività Internet per il dispositivo mobile. Mostra una notifica interattiva: con un tocco su **Approve** l'autenticazione viene completata istantaneamente senza digitare codici.
+
+### Assegnazione via GUI
+1. **Per Amministratori di Sistema:**
+   * Percorso: `System > Administrators`.
+   * Modificare l'account, abilitare **Two-factor Authentication** e selezionare il FortiToken da associare.
+2. **Per Utenti di Rete (VPN / Captive Portal):**
+   * Percorso: `User & Authentication > User Definition`.
+   * Selezionare l'utente locale o remoto, attivare **Two-factor Authentication** e scegliere il token.
+3. **Distribuzione:**
+   * Configurare i campi *Email* o *SMS* nel profilo utente.
+   * Cliccare su **Send Activation Code**: FortiOS invia una notifica con il codice di provisioning o il QR code da inquadrare con l'applicazione mobile.
+
+---
+
+## 7. Configurazione da CLI (Prontuario Rapido)
+
+### Registrazione Licenze Token su FortiGate
+```
 config user fortitoken
     edit "<CODICE_ATTIVAZIONE_O_SERIALE>"
     next
 end
+```
 
-
-- Assegnare il token a un Amministratore (Admin 2FA)
-
-  config sys admin
+### Associazione 2FA a un Amministratore (`admin_sec`)
+```
+config sys admin
     edit "admin_sec"
         set two-factor enable
         set fortitoken "<NUMERO_SERIALE_TOKEN>"
         set email-to "admin@azienda.local"
     next
 end
+```
 
-- Assegnare il token a un Utente locale (User 2FA)
-  
-  config user local
+### Creazione Utente Locale con 2FA FortiToken
+```
+config user local
     edit "mario.rossi"
         set type password
-        set passwd "PasswordForte123!"
+        set passwd "PasswordComplessa123!"
         set two-factor fortitoken
         set fortitoken "<NUMERO_SERIALE_TOKEN>"
         set email-to "mario.rossi@azienda.com"
     next
 end
-  
+```
