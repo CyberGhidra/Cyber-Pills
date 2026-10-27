@@ -147,3 +147,60 @@
           assigned_rad_session_id=810153440 session timeout=0 secs!
           Group membership(s) - remote-RADIUS-admins
     
+- FortiToken
+  Come si assegna FortiToken:
+  L'assegnazione di un token a un utente può avvenire sia per gli amministratori del firewall sia per gli utenti di rete (VPN / Captive Portal).   
+  Assegnazione via GUI (Interfaccia Grafica)
+      - Verifica delle licenze token:
+        Vai su User & Authentication > FortiTokens.
+        Di fabbrica, ogni FortiGate include 2 licenze FortiToken Mobile gratuite. 
+        Se ne acquisti altre, seleziona Create New > Mobile Token e inserisci il codice di attivazione per registrarle sui server Fortinet.
+        Assegnazione all'utente:
+        Per un amministratore di sistema: 
+        vai su System > Administrators, modifica l'account desiderato, abilita l'opzione Two-factor Authentication e seleziona il token dall'elenco a tendina.
+        Per un utente di rete: 
+        vai su User & Authentication > User Definition, modifica l'utente, abilita l'interruttore Two-factor Authentication e seleziona il token desiderato.
+        Invio del codice di attivazione:
+        Nel profilo utente occorre specificare l'Email o il Numero di telefono (SMS).
+        Cliccando su Send Activation Code, FortiOS invia una notifica contenente il codice o il QR code per importare il token nell'app FortiToken Mobile sullo smartphone.
+
+- Modalità Attiva vs Modalità Passiva (Push vs Manual OTP)
+- A. Modalità Passiva (Manual Token / TOTP classico)
+  Come funziona: 
+  L'utente apre manualmente l'app FortiToken Mobile sullo smartphone, legge il codice numerico di 6 cifre generato (valido per circa 30 o 60 secondi) e lo digita nel campo richiesto sul portale web, sul client FortiClient VPN o nella console.
+- Modalità Attiva (FortiToken Mobile Push)
+  Come funziona: 
+  Dopo aver inserito username e password, l'utente riceve una notifica push istantanea sullo smartphone. 
+  Aprendo l'app, compare una schermata con i dettagli del login e due pulsanti: Approve o Deny. Cliccando Approve, l'autenticazione viene completata immediatamente senza dover digitare alcuna cifra.
+
+- Da CLI
+- Aggiungere le licenze token al FortiGate
+
+config user fortitoken
+    edit "<CODICE_ATTIVAZIONE_O_SERIALE>"
+    next
+end
+
+
+- Assegnare il token a un Amministratore (Admin 2FA)
+
+  config sys admin
+    edit "admin_sec"
+        set two-factor enable
+        set fortitoken "<NUMERO_SERIALE_TOKEN>"
+        set email-to "admin@azienda.local"
+    next
+end
+
+- Assegnare il token a un Utente locale (User 2FA)
+  
+  config user local
+    edit "mario.rossi"
+        set type password
+        set passwd "PasswordForte123!"
+        set two-factor fortitoken
+        set fortitoken "<NUMERO_SERIALE_TOKEN>"
+        set email-to "mario.rossi@azienda.com"
+    next
+end
+  
