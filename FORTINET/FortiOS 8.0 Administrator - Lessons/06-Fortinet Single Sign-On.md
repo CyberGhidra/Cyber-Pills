@@ -158,7 +158,7 @@ User group source (Scelta fondamentale):Collector Agent: I gruppi e le appartene
 Local: Cliccando su Local, si indica al FortiGate di utilizzare una connessione diretta a un proprio LDAP server interno per recuperare in autonomia i gruppi della directory (Proactively retrieve from LDAP server), riducendo la dipendenza dal Collector per la risoluzione dei metadati. 
 
 
-SSO Agent Installation (Download del software)
+1: SSO Agent Installation (Download del software)
 Percorso di download sul portale:Accesso al sito di supporto Fortinet ([https://support.fortinet.com](https://support.fortinet.com)).   
 Navigazione in Support > Firmware Download.   
 Selezione del prodotto FortiGate, quindi clic su Download.   
@@ -168,3 +168,29 @@ DC agent (DCAgent_Setup): Il componente da installare direttamente a bordo dei s
 Collector Agent per Microsoft servers (FSSO_Setup): L'agente collettore principale da installare su un server membro Windows.   
 Collector Agent per Novell (FSSO_Setup_edirectory): Pacchetto specifico per l'integrazione con Novell eDirectory.   
 TS Agent (TSAgent_Setup): Il Terminal Server Agent dedicato ad ambienti Citrix o Microsoft Remote Desktop (RDS) per tracciare le porte per singolo utente.   
+
+2: FSSO Collector Agent Installation Process (Installazione guidata)
+Descrive i requisiti e i passaggi fondamentali del wizard di installazione del Collector Agent su una macchina Windows:
+
+Privilegi amministrativi: Il file di setup deve essere eseguito obbligatoriamente come Administrator.   
+
+Account di servizio Windows: È necessario specificare un account per l'avvio del servizio Windows nel formato rigoroso DomainName\UserName con i relativi permessi amministrativi per interrogare la directory.   
+
+Opzioni di configurazione (Install Options):
+- Monitor User logon events and send the information to FortiGate (monitoraggio eventi di login).
+- Serve NTLM authentication requests coming from FortiGate (supporto all'autenticazione fallback NTLM).
+- Access method of Windows Directory: scelta tra modalità Standard (formato domain\user, consigliato per la maggior parte degli scenari) e Advanced (notazione LDAP completa con supporto OU).
+
+Lancio del DC Agent wizard: Prima di chiudere la procedura guidata, il setup offre l'opzione di avviare immediatamente la configurazione e installazione del DC Agent sui Domain Controller rilevati. 
+
+3: FSSO Collector Agent Configuration (Console di Gestione)
+Mostra la console principale del Collector Agent e i parametri operativi di rete e sicurezza:   
+- Monitor user logon events: Casella attiva per monitorare costantemente i login degli utenti.
+- Support NTLM authentication: Abilita o disabilita l'elaborazione dei tentativi di autenticazione NTLM.
+- Listening Ports (Porte di ascolto fondamentali):
+  - Porta di ascolto per FortiGate: Porta TCP 8000 di default. Se cifrata tramite SSL, utilizza la porta TCP 8001.
+  - Porta di ascolto per DC Agent: Porta UDP 8002 di default. Con SSL/Preshared key attiva per il DC Agent, utilizza la porta 8003.
+  - Enable SSL: Interruttore per cifrare la comunicazione tra il Collector e il FortiGate.
+  - Authentication (Password di collegamento):
+      - Require authenticated connection from FortiGate: Impone l'inserimento di una password condivisa affinché il FortiGate possa connettersi a questo Collector (la stessa password che si inserisce nel connettore su FortiOS).
+  - Timers: Riquadro dei temporizzatori di verifica delle postazioni e della cache.  
