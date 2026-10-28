@@ -90,3 +90,69 @@ Sicurezza costante ovunque:
   Per-user: il canone viene calcolato in base al numero di identità/utenti attivi censiti sulla piattaforma.   
   Time-based: licenze con durata temporale definita (es. contratti annuali o pluriennali).   
   Stackable with co-term renewals: le licenze sono cumulabili (stackable) e supportano l'allineamento delle scadenze (co-terming), consentendo di aggiungere nuovi pacchetti utente in qualsiasi momento sincronizzando un'unica data di rinnovo annuale
+
+- Piattaforme Supportate da FortiOS
+  FortiOS supporta l'integrazione SSO con diversi sistemi e piattaforme aziendali:   
+  - Microsoft Windows Active Directory (AD) (lo scenario più diffuso)
+  - Novell eDirectory
+  - Citrix
+  - VMware Horizon
+  - Microsoft Exchange
+
+- Modalità di Deployment per Microsoft Active Directory (AD)
+  Per intercettare le sessioni di login degli utenti su Windows AD e mappare l'associazione IP <-> Utente <-> Gruppo, FortiOS offre tre architetture principali:
+
+  A. Domain Controller (DC) Agent Mode
+  Come funziona: 
+  un piccolo componente software (l'agente DC) viene installato direttamente a bordo di ogni Domain Controller della foresta AD.
+  Caratteristiche:
+  Il DC Agent intercetta i pacchetti di autenticazione Kerberos/NTLM in tempo reale non appena l'utente effettua il logon alla postazione.
+  Invia immediatamente l'evento a un Collector Agent centrale, che a sua volta aggiorna la tabella FSSO sul FortiGate. 
+  È la soluzione più reattiva ed evita ritardi di propagazione, ma richiede l'installazione di software di terze parti sui Domain Controller aziendali. 
+
+  B. Polling Mode
+  In questa modalità non si installa alcun software sui Domain Controller. 
+  Fortinet interroga periodicamente i registri eventi di sicurezza (Security Event Log) di Windows per individuare i codici di evento legati ai logon con successo (es. Event ID 4624). 
+  Si divide in due varianti:   
+ -  Collector agent-based (Collector Agent Polling):
+    Il software Fortinet FSSO Collector Agent viene installato su una macchina Windows dedicata all'interno del dominio (server membro o VM di servizio).   
+    Il Collector interroga via rete (WMI o WinAPI) i Domain Controller a intervalli regolari, estrae i log di login e trasmette le associazioni al FortiGate.   
+  - gentless (Polling diretto dal FortiGate):
+    Non viene installato alcun agente esterno né software server.   
+    È il FortiGate stesso a collegarsi direttamente via WMI/SMB ai Domain Controller tramite credenziali amministrative per leggere i registri di autenticazione.
+    Pro: architettura a impatto zero (zero-footprint).
+    Contro: genera un carico aggiuntivo sulla CPU del firewall ed è consigliabile per ambienti di piccole dimensioni.
+  C. Terminal Server (TS) Agent
+     Il problema da risolvere: 
+     in ambienti desktop condivisi (come Citrix XenApp/Virtual Apps o Microsoft Remote Desktop Session Host / Terminal Server), decine di utenti diversi lavorano contemporaneamente condividendo lo stesso indirizzo IP del server. 
+     Con il normale FSSO, il firewall vedrebbe solo l'ultimo utente connesso sovrascrivere l'IP.
+     - Come funziona il TS Agent:
+       Viene installato a bordo del server Citrix/Terminal Server.
+       Potenzia le capacità del Collector Agent o di FortiAuthenticator assegnando dinamicamente a ciascun utente loggato un intervallo univoco di porte TCP/UDP sorgente (source port range).
+       In questo modo, FortiGate distingue e applica policy differenti a utenti multipli attestati sul medesimo IP.
+
+FSSO Configuration — Agentless Polling Mode
+Come configurare l'autenticazione trasparente FSSO senza installare alcun software aggiuntivo su server o domain controller.
+Percorso e Configurazione GUI
+Percorso: Security Fabric > External Connectors.   
+Selezione connettore: 
+Dalla categoria Endpoint/Identity, si seleziona l'icona con il logo Windows Poll Active Directory Server.   
+Parametri principali (Connector Settings):
+Server IP/Name: Indirizzo IP o FQDN del Domain Controller da monitorare.   
+User / Password: Credenziali di un account di servizio con privilegi sufficienti per leggere i log di sicurezza (Security Event Log) del controller di dominio.   
+LDAP server: Associazione al server LDAP precedentemente configurato su FortiOS (necessario per risolvere i gruppi di appartenenza dell'utente).   
+Enable polling: Levetta attiva per abilitare il controllo periodico dei registri di logon da parte del firewall.
+
+FSSO Configuration — Collector Agent-Based Polling or DC Agent Mode
+Mostra la configurazione quando nella rete è presente l'agente software dedicato Fortinet FSSO Collector Agent (sia che operi leggendo i log via polling dai DC, sia che riceva i dati dai DC Agent installati a bordo dei controller)
+Funzionalità dell'Agente FSSOIl Collector Agent 
+Monitora in modo centralizzato i dati di login degli utenti provenienti da molteplici fonti: Active Directory (AD), server di posta Exchange, sessioni Terminal Server / RDS, ambienti virtuali Citrix e server Novell eDirectory.   
+Una volta consolidate le informazioni (Username + IP + Gruppi), il Collector Agent le invia al FortiGate. 
+Percorso e Configurazione GUI
+Percorso: Security Fabric > External Connectors.   
+Selezione connettore: Si sceglie l'icona rossa FSSO Agent on Windows AD.   
+Parametri principali (Connector Settings):
+Name: Nome identificativo del connettore sul firewall.   
+Primary FSSO agent: Indirizzo IP/nome della macchina Windows su cui è in esecuzione il servizio Collector Agent e la relativa password di autenticazione configurata sull'agente.   
+User group source (Scelta fondamentale):Collector Agent: I gruppi e le appartenenze degli utenti vengono risolti e filtrati direttamente dal Collector Agent sulla macchina Windows remota prima di inviarli al firewall.   
+Local: Cliccando su Local, si indica al FortiGate di utilizzare una connessione diretta a un proprio LDAP server interno per recuperare in autonomia i gruppi della directory (Proactively retrieve from LDAP server), riducendo la dipendenza dal Collector per la risoluzione dei metadati. 
