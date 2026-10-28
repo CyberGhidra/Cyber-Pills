@@ -183,7 +183,24 @@ Opzioni di configurazione (Install Options):
 
 Lancio del DC Agent wizard: Prima di chiudere la procedura guidata, il setup offre l'opzione di avviare immediatamente la configurazione e installazione del DC Agent sui Domain Controller rilevati. 
 
-3: FSSO Collector Agent Configuration (Console di Gestione)
+3: DC Agent Installation Process (Wizard DC Agent)
+IP and port for collector agent: 
+Si inserisce l'indirizzo IP del Collector Agent e la porta di ascolto (default UDP 8002) verso cui i DC dovranno inoltrare le notifiche di login. 
+
+Domains to monitor: 
+Selezione dei domini Active Directory appartenenti alla foresta da monitorare.   
+
+Remove users: Selezione facoltativa di account da escludere preventivamente dall'ispezione dei logon (es. account di servizio, account di test).   
+
+Select domain controllers: 
+Elenco dei singoli Domain Controller su cui applicare l'installazione o il controllo.   
+
+Working Mode (Scelta della modalità operativa):
+  DC Agent Mode: Installa fisicamente il DC Agent sui Domain Controller selezionati (massima reattività).   
+  Polling Mode: Non installa alcun software sui DC; istruisce il Collector a interrogare i controller da remoto tramite API/NetAPI o lettura diretta dei Windows Security Event Logs.   
+
+
+4: FSSO Collector Agent Configuration (Console di Gestione)
 Mostra la console principale del Collector Agent e i parametri operativi di rete e sicurezza:   
 - Monitor user logon events: Casella attiva per monitorare costantemente i login degli utenti.
 - Support NTLM authentication: Abilita o disabilita l'elaborazione dei tentativi di autenticazione NTLM.
@@ -193,4 +210,24 @@ Mostra la console principale del Collector Agent e i parametri operativi di rete
   - Enable SSL: Interruttore per cifrare la comunicazione tra il Collector e il FortiGate.
   - Authentication (Password di collegamento):
       - Require authenticated connection from FortiGate: Impone l'inserimento di una password condivisa affinché il FortiGate possa connettersi a questo Collector (la stessa password che si inserisce nel connettore su FortiOS).
-  - Timers: Riquadro dei temporizzatori di verifica delle postazioni e della cache.  
+  - Timers: Riquadro dei temporizzatori di verifica delle postazioni e della cache.
+ 
+5: Group Filter (Filtraggio dei Gruppi)
+Gestione centralizzata: I filtri vengono definiti a livello di Collector Agent per stabilire quali informazioni di gruppo devono essere trasmesse a quale firewall.
+Legame con il Serial Number del firewall: I filtri possono essere legati al numero di serie univoco del FortiGate (tied to FortiGate serial number), permettendo a un unico Collector di inviare gruppi diversi a firewall diversi.
+Criteri di filtraggio flessibili: È possibile costruire i filtri includendo gruppi specifici, intere Unità Organizzative (OU), singoli utenti o combinazioni di essi.
+
+6: Ignored User List (Lista Utenti Ignorati)
+Metodi di aggiunta alla lista:
+  - Manual entry: Inserimento manuale del nome account (supporta anche wildcard * e ?).
+  - Add Users: Selezione grafica manuale degli utenti sfogliando la directory.
+  - Add by OU: Selezione di un'intera Unità Organizzativa (OU) dell'albero Active Directory (es. l'OU degli account di servizio o dei computer) per escluderne in blocco tutti i membri. 
+
+7 : FortiGate FSSO Group Object Configuration (Configurazione GUI su FortiGate)
+Mostra come appare la creazione dell'oggetto gruppo FSSO su FortiOS dal percorso User & Authentication > User Groups > Create new > Fortinet Single Sign-On (FSSO) in base alla modalità scelta:
+  - In Standard access mode (a sinistra):
+    - Mostra l'elenco piatto dei gruppi inviati dal Collector Agent (Collector Agent Group Filters).
+    - L'amministratore seleziona semplicemente i gruppi di dominio desiderati dall'elenco.
+  - In Advanced access mode (a destra):
+    - Mostra l'intero albero gerarchico LDAP del dominio (dc=trainingad,dc=training,dc=lab).
+    - Permette di navigare graficamente nelle cartelle e nelle OU, applicare filtri LDAP personalizzati (Custom LDAP filter) e selezionare selettivamente utenti, gruppi o intere Unità Organizzative. 
