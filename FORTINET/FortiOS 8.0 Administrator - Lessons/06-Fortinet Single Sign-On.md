@@ -156,3 +156,15 @@ Name: Nome identificativo del connettore sul firewall.
 Primary FSSO agent: Indirizzo IP/nome della macchina Windows su cui è in esecuzione il servizio Collector Agent e la relativa password di autenticazione configurata sull'agente.   
 User group source (Scelta fondamentale):Collector Agent: I gruppi e le appartenenze degli utenti vengono risolti e filtrati direttamente dal Collector Agent sulla macchina Windows remota prima di inviarli al firewall.   
 Local: Cliccando su Local, si indica al FortiGate di utilizzare una connessione diretta a un proprio LDAP server interno per recuperare in autonomia i gruppi della directory (Proactively retrieve from LDAP server), riducendo la dipendenza dal Collector per la risoluzione dei metadati. 
+
+
+SSO Agent Installation (Download del software)
+Percorso di download sul portale:Accesso al sito di supporto Fortinet ([https://support.fortinet.com](https://support.fortinet.com)).   
+Navigazione in Support > Firmware Download.   
+Selezione del prodotto FortiGate, quindi clic su Download.   
+Selezione della versione firmware di riferimento (nell'esempio: v8.00 > 8.0 > 8.0.0). 
+Pacchetti di installazione disponibili (Available agents):
+DC agent (DCAgent_Setup): Il componente da installare direttamente a bordo dei singoli Domain Controller.   
+Collector Agent per Microsoft servers (FSSO_Setup): L'agente collettore principale da installare su un server membro Windows.   
+Collector Agent per Novell (FSSO_Setup_edirectory): Pacchetto specifico per l'integrazione con Novell eDirectory.   
+TS Agent (TSAgent_Setup): Il Terminal Server Agent dedicato ad ambienti Citrix o Microsoft Remote Desktop (RDS) per tracciare le porte per singolo utente.   
