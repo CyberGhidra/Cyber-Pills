@@ -170,7 +170,152 @@ SSL Certificate Inspection e Full SSL Inspection
   end
 
 
+## 5. Configurazione del Profilo SSL/SSH Inspection
 
+Il profilo si crea e si gestisce da **Security Profiles > SSL/SSH Inspection**.
+
+### 5.1 Opzioni Principali
+* **Enable SSL Inspection of:**
+  * **Multiple Clients Connecting to Multiple Servers:** Scenario *Outbound / Forward Proxy* (decifratura del traffico degli utenti interni verso Internet).
+  * **Protecting SSL Server:** Scenario *Inbound / Reverse Proxy* (protezione di server web aziendali interni esposti verso Internet).
+* **Inspection Method:** Scelta tra *SSL Certificate Inspection* e *Full SSL Inspection*.
+* **CA Certificate:** Seleziona l'autorità utilizzata per firmare i certificati al volo (di default `Fortinet_CA_SSL`).
+
+### 5.2 Gestione Certificati Non Validi (Invalid & Untrusted Certificates)
+FortiGate può rilevare anomalie nei certificati remoti (scaduti, revocati, firma non verificabile o timeout) e permette di personalizzare le azioni:
+* **Allow / Keep Untrusted & Allow:** Inoltra al client un certificato temporaneo marcato come *non fidato*, permettendo al browser dell'utente di mostrare il nativo avviso di sicurezza.
+* **Block:** Abbassa la connessione e blocca istantaneamente l'accesso ai siti con certificati non validi.
+* **Ignore:** FortiGate sostituisce comunque il certificato malevolo con uno valido firmato dalla propria CA fidata, mascherando di fatto il problema all'utente finale (sconsigliato per motivi di sicurezza).
+* **Custom:** Permette di differenziare l'azione (*Keep Untrusted & Allow*, *Block*, *Trust & Allow*) per ciascuna singola casistica (*Expired*, *Revoked*, *Validation timed-out*, *Validation failed*).
+
+### 5.3 Esenzioni dall'Ispezione SSL (SSL Exemptions)
+Non tutto il traffico deve o può essere decifrato. Le esenzioni sono necessarie per tre motivi:
+1. **Problemi applicativi:** Applicazioni con meccanismi di *Certificate Pinning* (es. Dropbox, client bancari dedicati) che rifiutano categoricamente certificati intermedi generati da proxy.
+2. **Requisiti legali e di conformità:** Normative su privacy/GDPR che impediscono ai datori di lavoro di decifrare dati sensibili su portali bancari o sanitari.
+3. **Ottimizzazione risorse:** Sgravare la CPU del firewall decifrando solo ciò che è necessario.
+
+#### Metodi di Esenzione Configurabili:
+* **Reputable websites:** Toggle rapido per escludere automaticamente i siti a elevata reputazione classificati come sicuri da FortiGuard.
+* **Web categories:** Esclusione per intere macro-categorie (es. *Finance and Banking*, *Health and Wellness*, *Personal Privacy*).
+* **Addresses:** Esenzione puntuale per singoli host, FQDN o classi di rete (es. oggetti indirizzo per Microsoft 365, Apple, Google Drive, Dropbox).
+
+### 5.4 Applicazione alla Firewall Policy
+* Il profilo configurato viene agganciato nella sezione **Security Profiles > SSL inspection** della specifica regola in **Policy & Objects > Firewall Policy**.
+* Se la policy viene impostata su **`no-inspection`**, il firewall non analizza né le intestazioni né il payload del traffico SSL/SSH, rendendo inefficaci le scansioni di AntiVirus, File Filter e DLP sul traffico cifrato.
+* **Decrypted traffic mirror:** Opzione per duplicare e inviare una copia del traffico decifrato verso porte fisiche collegate a sonde terze (sistemi IDS/IPS o SIEM).
+
+---
+
+## 6. Full SSL Inspection su Traffico Inbound (Protecting SSL Server)
+
+Quando il firewall deve proteggere un server applicativo interno pubblicato su Internet:
+1. In **Security Profiles > SSL/SSH Inspection**, si seleziona l'opzione **Protecting SSL Server**.
+2. **Requisiti crittografici su FortiGate:** A bordo del firewall devono essere caricati:
+   * Il **certificato pubblico reale** del server.
+   * La **relativa chiave privata**.
+   * L'intera catena di certificati intermedi della CA.
+3. **Funzionamento:** FortiGate funge da terminatore crittografico (*SSL Offloading / Reverse Proxy*). Presenta il certificato valido ai client esterni su Internet, decifra il flusso, scansiona il payload alla ricerca di attacchi (IPS/WAF/AV) e rigenera la sessione verso il server web interno.
+
+### Gestione Multi-Server tramite SNI
+* Un unico profilo di ispezione inbound può ospitare più certificati per proteggere server web differenti che condividono lo stesso indirizzo IP pubblico esterno (*Multiple certificates defined in one profile*).
+* FortiGate esamina l'estensione **SNI** inviata nel `Client Hello` esterno, la confronta con i campi CN/SAN dei certificati installati e serve il certificato corrispondente (es. `www.aaa.com`, `www.bbb.com`, `www.ccc.com`).
+* **Fallback:** Se il client invia un SNI privo di corrispondenza, FortiGate utilizza automaticamente il primo certificato della lista.
+
+---
+
+## 7. Requisiti e Gestione dei Certificati CA
+
+### 7.1 Requisiti della CA per la Deep Inspection
+Per consentire a FortiGate di emettere e firmare certificati al volo durante la Full SSL Inspection, il certificato impiegato deve possedere obbligatoriamente due estensioni standard X.509:
+* **`cA=True`** (Basic Constraints): specifica che il certificato è un'autorità di certificazione e non un'entità finale (*End Entity*).
+* **`keyUsage=keyCertSign`**: autorizza esplicitamente l'apparato a firmare altri certificati digitali.
+
+### 7.2 Tipologie di CA Utilizzabili
+1. **`Fortinet_CA_SSL` (Preinstallato di Fabbrica):** Certificato autofirmato (*self-signed*). È immediatamente funzionante, ma non essendo emesso da una CA pubblica riconosciuta a livello globale, genera avvisi di sicurezza nel browser di ciascun utente (*Software is Preventing Browser From Safely Connecting*) finché non viene importato nei keystore dei client.
+2. **Subordinate CA di Dominio (Consigliato in Ambienti Enterprise):** Certificato rilasciato dall'autorità PKI interna dell'azienda (es. Microsoft Active Directory Certificate Services). Essendo la CA radice aziendale già fidata su tutti i computer del dominio, non richiede alcuna installazione aggiuntiva sui PC.
+
+---
+
+## 8. Guida Operativa: Il FortiGate Certificate Store
+
+L'intero ciclo di vita dei certificati si amministra da **System > Certificates**.
+
+### 8.1 Struttura del Certificate Store
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                      FORTIGATE CERTIFICATE STORE                       │
+├────────────────────────────────────────────────────────────────────────┤
+│ 1. CRL (Certificate Revocation Lists)                                  │
+│    Liste dei certificati revocati aggiornate via file o URL HTTP/LDAP  │
+├────────────────────────────────────────────────────────────────────────┤
+│ 2. Local CA Certificate                                                │
+│    CA abilitate alla firma al volo per la Deep Inspection              │
+│    (Fortinet_CA_SSL predefinito o Subordinate CA aziendale importata) │
+├────────────────────────────────────────────────────────────────────────┤
+│ 3. Local Certificate                                                   │
+│    Certificati con chiave privata residenti su FortiGate:              │
+│    • Accesso GUI HTTPS (Fortinet_GUI_Server)                           │
+│    • Connessioni SSL-VPN e IPsec VPN                                   │
+│    • Richieste CSR in sospeso (Pending CSR)                            │
+│    • Certificati dei Web Server interni (Inbound Inspection)           │
+├────────────────────────────────────────────────────────────────────────┤
+│ 4. Remote CA Certificate                                               │
+│    Bundle di CA radice pubbliche e private impiegate per validare      │
+│    l'autenticità dei server web remoti e delle firme digitali          │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### 8.2 Come Scaricare e Distribuire la CA (`Fortinet_CA_SSL`)
+1. Navigare in **System > Certificates**.
+2. Nella sezione **Local CA Certificate**, selezionare `Fortinet_CA_SSL` e cliccare sul pulsante **Download** in alto.
+3. Viene salvato il file pubblico `Fortinet_CA_SSL.cer`.
+4. **Distribuzione sugli endpoint:**
+   * *Aziendale:* Distribuzione automatizzata tramite Criteri di Gruppo Active Directory (GPO), Microsoft Intune o FortiClient EMS.
+   * *Manuale (es. Mozilla Firefox):* `Impostazioni > Privacy e Sicurezza > Certificati > Mostra certificati > Autorità > Importa...` e selezionare l'attendibilità per l'identificazione di siti web.
+
+### 8.3 Come Importare Certificati e CA su FortiGate
+* **Importare una CA esterna:** `Create/Import > CA Certificate`
+  * Supporta il caricamento di file (`.cer`, `.crt`, `.pem`) o la connessione online via protocollo **SCEP** (*Simple Certificate Enrollment Protocol*).
+* **Importare un Certificato Locale (con chiave privata):** `Create/Import > Certificate`
+  * **Local Certificate:** Completa una CSR precedentemente generata sul FortiGate caricando il file `.cer` firmato dalla CA.
+  * **Certificate and associated key file:** Caricamento separato del certificato pubblico (`.cer`) e del file con la chiave privata (`.key` / `.pem`).
+  * **PKCS#12 Certificate:** Caricamento di un archivio unico (`.pfx` / `.p12`) protetto da password, contenente certificato, catena di certificazione e chiave privata.
+* **Importare Liste di Revoca (CRL):** `Create/Import > CRL`
+  * **Online Updating (Raccomandato):** Configura l'aggiornamento automatico e periodico specificando l'URL del server di distribuzione CRL via protocollo **HTTP**, **LDAP** o **SCEP** (es. `http://crl3.digicert.com/...`).
+
+---
+
+## 9. Tecnologie Crittografiche Emergenti per VPN in FortiOS
+
+FortiOS include estensioni crittografiche avanzate per la protezione del trasporto e dell'autenticazione delle connessioni VPN:
+
+### 9.1 TLS 1.3 VPN Key Negotiation Over TCP
+* **Contesto:** In presenza di reti o provider che bloccano o degradano il traffico UDP (porte UDP 500/4500 ed ESP protocollo IP 50), FortiOS supporta l'incapsulamento del traffico VPN IPsec all'interno di una sessione TCP protetta da TLS (*IKE over TCP*).
+* **TLS 1.3:** Sostituisce l'handshake TLS 1.2 offrendo un tempo di negoziazione ridotto (1-RTT rispetto a 2-RTT) ed escludendo algoritmi crittografici legacy o vulnerabili. Sia la negoziazione IKEv2 che i pacchetti dati ESP viaggiano incapsulati all'interno della connessione TLS.
+* **Abilitazione da CLI:**
+  ```fortios
+  config system settings
+      set ike-tcp-service enable
+  end
+  ```
+
+### 9.2 Post-Quantum Cryptography (PQC) per VPN IPsec (IKEv2)
+* **Scopo:** Proteggere la fase di autenticazione delle VPN contro attacchi futuri basati su elaboratori quantistici su larga scala (in grado di compromettere gli algoritmi asimmetrici tradizionali come RSA ed ECDSA).
+* **Standard RFC 7427:** Framework flessibile e indipendente dall'algoritmo (*algorithm-agnostic*) per la gestione delle firme digitali in IKEv2.
+* **Algoritmi PQC NIST integrati:**
+  * **ML-DSA (FIPS 204):** Basato su reticoli algebrici (*Module-Lattice-Based Digital Signature Algorithm*).
+  * **SLH-DSA (FIPS 205):** Basato su primitive di hash (*Stateless Hash-Based Digital Signature Algorithm*).
+* **Configurazione di Fase 1 da CLI:**
+  ```fortios
+  config vpn ipsec phase1-interface
+      edit "PQC"
+          set authmethod signature
+          set digital-signature-auth enable
+          set signature-hash-alg identity
+      next
+  end
+  ```
 
 
 
