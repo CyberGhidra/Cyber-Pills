@@ -1,4 +1,4 @@
-## Digital certificate 
+<img width="634" height="297" alt="image" src="https://github.com/user-attachments/assets/d67d435a-386b-4b8d-aeea-8e1c04ef8e3b" />## Digital certificate 
 
 - COSE' : 
   È un file crittografico che funge da documento di identità digitale, generato e firmato digitalmente da un'autorità terza fidata denominata Certificate Authority (CA).
@@ -88,3 +88,95 @@ Traffico Cifrato in Assenza di Ispezione SSL (Encrypted Traffic With No SSL Insp
      contenuto decifrato e ri-cifrandolo prima di inoltrarlo al client
      
      
+SSL Certificate Inspection e Full SSL Inspection
+- 1: SSL Certificate Inspection
+     Questa modalità esegue un controllo superficiale senza aprire i dati crittografati.
+     Principio di funzionamento:
+     FortiGate non decifra il trafficoCome identifica la destinazione: Estrae l'FQDN (il nome di dominio del sito) da due elementi scambiati in chiaro durante l'handshake iniziale.
+     La sessione TLS/SSL tra client e server rimane diretta e ininterrotta end-to-end.
+     Casi d'uso e limiti:
+     È utilizzabile per Web Filtering (blocco o autorizzazione di intere categorie o domini) e per Application Control di base. Non consente scansioni a livello di file (AntiVirus, DLP) perché il payload rimane cifrato
+- 2: Full SSL Inspection (Deep Packet Inspection)
+     Principio di funzionamento: FortiGate opera come un proxy Man-in-the-Middle autorizzato (acts as a man-in-the-middle proxy).
+     Due sessioni SSL separate: Il firewall spezza il canale TLS in due connessioni distinte e indipendenti:
+     a) Client-to-FortiGate: Tra il browser dell'utente e il firewall.
+     b) FortiGate-to-server: Tra il firewall e il server web remoto di destinazione ([https://www.example.com](https://www.example.com)).
+     Protocolli: 
+     HTTPS: Traffico web cifrato (TCP 443).
+     SMTPS: Trasmissione sicura di posta elettronica verso server SMTP (es. TCP 465 o 587).   
+     POP3S: Scaricamento sicuro di posta da client (TCP 995).   
+     IMAPS: Sincronizzazione avanzata e sicura di caselle di posta (TCP 993).   
+     FTPS: Trasferimento file cifrato tramite estensioni SSL/TLS (es. TCP 990 o sessioni TLS esplicite).
+
+      [ Network user ]                                     [ Web server ]
+              │                                                    │
+              │ ◄────────── HTTPS session 1 ──────────►            │
+              │             (Encrypted packet)                     │
+              │                                                    │
+              ▼                                                    ▼
+      ┌─────────────────────────────────────────────────────────────────┐
+      │                           FORTIGATE                             │
+      │                                                                 │
+      │   [Decryption] ──► [Decrypted packet] ──► [Content scanning]   │
+      │                             │                                   │
+      │                             ▼                                   │
+      │                    [Re-encryption]                              │
+      │                                                                 │
+      └─────────────────────────────────────────────────────────────────┘
+                                       │
+                                       ◄────── HTTPS session 2 ─────────►
+                                              (Encrypted packet)
+
+
+  TLS 1.3 VPN Key Negotiation Over TCP
+  Questa slide presenta l'integrazione di TLS 1.3 all'interno dei meccanismi di incapsulamento VPN su canale TCP.
+  Contesto e Funzionamento (IKE / ESP over TCP):
+  Perché una VPN su TCP?
+  Nativamente, IPsec opera su protocolli e porte UDP (IKE su UDP 500/4500 ed ESP protocollo IP 50). In presenza di firewall intermedi restrittivi, captive portal o reti che bloccano il traffico UDP, FortiOS incapsula l'intero traffico VPN
+  all'interno di una sessione TCP protetta da TLS.
+  Cosa transita nel tunnel TLS:
+  a) IKEv2 (negoziazione chiavi e fase di autenticazione) viene trasportato dentro la connessione TLS.
+  b) ESP (Encapsulating Security Payload - i dati effettivi del tunnel) viaggia incapsulato nel medesimo canale TLS (IKEv2 and ESP traffic are transported within the TLS connection).
+  Il Passaggio a TLS 1.3 :
+  FortiOS introduce l'opzione TLS 1.3 in sostituzione del precedente handshake basato su TLS 1.2.
+  Vantaggi:
+  Security: Rimozione di algoritmi di cifratura e funzioni di hashing legacy/vulnerabili (es. SHA-1, RC4, modalità CBC).
+  Performance: Handshake più rapido (1-RTT rispetto ai 2-RTT richiesti da TLS 1.2 per completare la negoziazione delle chiavi).
+
+  Da cli :
+
+  config system settings
+    set ike-tcp-service enable
+  end
+
+
+  Post-Quantum Cryptography (PQC) for VPNs
+  Questa affronta la protezione a lungo termine contro la minaccia dei computer quantistici (Post-Quantum Cryptography - PQC) applicata all'autenticazione delle VPN IPsec basate su IKEv2.
+  Architettura e Standard Implementati in FortiOS :
+  RFC 7427 (IKEv2 Digital Signature Framework): Standard IETF che definisce un'architettura flessibile e algorithm-agnostic (indipendente dallo specifico algoritmo crittografico) per negoziare firme digitali in IKEv2
+  Superamento di RSA ed ECDSA: Consente a FortiOS di autenticare le fasi IKEv2 senza vincolarsi esclusivamente agli schemi a chiave pubblica convenzionali.
+  Algoritmi PQC standardizzati dal NIST integrati in FortiOS:
+  ML-DSA (FIPS 204)
+  SLH-DSA (FIPS 205)
+
+  Da cli :
+
+  config vpn ipsec phase1-interface
+    edit "PQC"
+        set authmethod signature
+        set digital-signature-auth enable
+        set signature-hash-alg identity
+    next
+  end
+
+
+
+
+
+
+
+
+
+
+
+
