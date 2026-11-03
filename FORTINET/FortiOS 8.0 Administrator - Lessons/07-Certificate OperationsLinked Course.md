@@ -1,4 +1,4 @@
-<img width="634" height="297" alt="image" src="https://github.com/user-attachments/assets/d67d435a-386b-4b8d-aeea-8e1c04ef8e3b" />## Digital certificate 
+## Digital certificate 
 
 - COSE' : 
   È un file crittografico che funge da documento di identità digitale, generato e firmato digitalmente da un'autorità terza fidata denominata Certificate Authority (CA).
