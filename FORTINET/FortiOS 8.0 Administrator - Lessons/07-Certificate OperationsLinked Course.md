@@ -1,7 +1,4 @@
 # Fortinet FortiOS: Digital Certificates, SSL/SSH Inspection & VPN Cryptography
-**Guida Tecnica Ufficiale e Sintesi Operativa**  
-*Livello: FCP / FCSS Security Operations & Network Security*
-
 ---
 
 ## Panoramica Esecutiva
