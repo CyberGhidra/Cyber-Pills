@@ -32,4 +32,34 @@
     Use FortiGuard outbreak prevention database (attivo su Block).   
     Use 0-day malware stream scanning (scansione in streaming per minacce zero-day).   
     Use external malware block list (utilizzo di liste hash malevoli esterne).   
-    Use EMS external feed (connessione ai feed di minaccia generati da FortiClient EMS).   
+    Use EMS external feed (connessione ai feed di minaccia generati da FortiClient EMS).
+    
+- Componenti Antivirus Avanzati
+  Content Disarm and Reconstruction (CDR): 
+  Tecnica di sanificazione dei file che rimuove gli elementi attivi potenzialmente malevoli lasciando inalterato il contenuto legittimo del documento.
+  Behavior-based detection (Rilevamento basato sul comportamento):
+  Analizza le azioni dinamiche e le anomalie comportamentali di un file o processo per intercettare minacce che tentano di eludere i database di firme noti.
+  CIFS scanning:
+  Scansione del traffico relativo alla condivisione file di rete (protocollo SMB/CIFS), essenziale per prevenire la propagazione di ransomware e malware tra share aziendali interne.
+  AI/ML, behavioral, and human analysis:
+  Integrazione multi-livello che combina modelli di Machine Learning, analisi euristico-comportamentale e analisi manuale/forense fornita dai FortiGuard Labs o tramite appliance dedicate come FortiSandbox e FortiNDR.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
