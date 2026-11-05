@@ -104,7 +104,24 @@
   Supporto alle funzioni avanzate:
   Ciò consente di agganciare alla policy profili antivirus completi che includono il CDR (Content Disarm and Reconstruction) e le opzioni avanzate di sanificazione documentale viste in precedenza, le quali richiedono tassativamente un feature set Proxy-based per          operare.
 
--
+- Configuring Protocol Options
+  Definizione del Profilo (Policy & Objects > Protocol Options):
+  Parametri Generali:
+  Name: Nome univoco assegnato all'oggetto profilo (Name of the protocol options profile to apply in a firewall policy).
+  Log Oversized Files: Se abilitato, genera un log quando un file supera la dimensione massima scansionabile dal motore UTM.
+  RPC over HTTP: Permette l'ispezione del traffico RPC incapsulato in sessioni web HTTP.
+  Mappatura delle Porte (Protocol Port Mapping):
+  Consente di specificare su quali porte TCP/UDP il firewall deve intercettare i vari protocolli per applicare i controlli UTM (AntiVirus, DLP, Web Filter):
+  HTTP: porta 80
+  SMTP: porta 25
+  POP3: porta 110
+  IMAP: porta 143
+  FTP: porte 21,222,23 (nell'esempio vengono dichiarate porte non standard separate da virgole)
+  NNTP: porta 119
+  MAPI: porta 135
+  DNS: porta 53
+  CIFS: porta 445
+  
 
 
 
