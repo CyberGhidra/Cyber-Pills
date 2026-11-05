@@ -45,7 +45,17 @@
   Integrazione multi-livello che combina modelli di Machine Learning, analisi euristico-comportamentale e analisi manuale/forense fornita dai FortiGuard Labs o tramite appliance dedicate come FortiSandbox e FortiNDR.  
 
 
+- Antivirus Integration With Multiple FortiSandbox Destinations)
+  On-premises FortiSandbox: 
+  appliance fisica o macchina virtuale (VM) installata localmente all'interno dell'infrastruttura di rete aziendale (icona del server fisico con la "bomba").
+  FortiSandbox Cloud:
+  servizio gestito in cloud erogato direttamente da Fortinet (icona della nuvola con la "bomba")
 
+  Configurazione:
+  Abilitazione Simultanea: 
+  È possibile abilitare contemporaneamente entrambe le destinazioni all'interno della configurazione (Both destinations can be enabled simultaneously).   
+  Comportamento in Modalità Automatica (auto):
+  Quando la destinazione FortiSandbox è impostata sul valore automatico (auto), FortiOS seleziona e inoltra i campioni verso il dispositivo contrassegnato come predefinito (default).  
 
 
 
