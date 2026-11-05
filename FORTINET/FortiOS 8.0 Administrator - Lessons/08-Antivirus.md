@@ -57,10 +57,24 @@
   Comportamento in Modalità Automatica (auto):
   Quando la destinazione FortiSandbox è impostata sul valore automatico (auto), FortiOS seleziona e inoltra i campioni verso il dispositivo contrassegnato come predefinito (default).  
 
+- Tipi di controlli
+  Flow-based Inspection (Ispezione basata sul flusso) : 
+  Modalità predefinita (Default inspection mode): è l'impostazione standard consigliata per la maggior parte del traffico e delle policy in FortiOS.   
+  Singola connessione TCP diretta: Il client stabilisce direttamente il three-way handshake TCP (SYN --> SYN-ACK ---> ACK) con il server reale di destinazione.  
+  FortiGate si interpone lungo il percorso di rete senza spezzare la sessione di trasporto.
+  Scansione in streaming (File is scanned on a flow basis): I file e i dati in transito non vengono interamente trattenuti e assemblati in memoria prima dell'invio.
+  Il motore di sicurezza analizza i pacchetti "al volo" (in streaming) mentre attraversano il firewall; se rileva una firma malevola o una violazione, tronca la connessione (ad esempio inviando un reset TCP).
+  Vantaggi operativi: latenza minima, throughput molto elevato e minor impatto sulle risorse di memoria RAM e CPU del dispositivo.
 
-
-
-
+  Proxy-based Inspection (Ispezione basata su proxy) :
+  Opzioni di sicurezza aggiuntive (Provides additional options): Consente controlli più approfonditi ed è obbligatoria per moduli avanzati che richiedono la modifica o la ricostruzione completa dei file, come il CDR (Content Disarm and Reconstruction) visto in
+  precedenza o alcune opzioni complesse di protocollo e DLP.
+  Due connessioni TCP separate (Two TCP connections):
+  FortiGate spezza fisicamente la comunicazione a livello di trasporto terminando la sessione:
+  Connessione 1 (Client ---> FortiGate): il client completa il handshake (SYN ---> SYN-ACK ---> ACK) credendo di parlare con il server, ma risponde il proxy interno di FortiGate.
+  Connessione 2 (FortiGate <---> Server): solo dopo (o in parallelo secondo la logica del proxy), FortiGate instaura una seconda sessione TCP indipendente (SYN --> SYN-ACK ---> ACK) verso il server reale.
+  Bufferizzazione completa: Il firewall trattiene e riassembla l'intero file/payload nella memoria RAM (gestito dal processo wad) prima di decidere se consentirne l'inoltro o scartarlo.
+  Impatto operativo: ispezione esaustiva e capacità di manipolare i documenti, a fronte di una latenza maggiore e un carico di memoria RAM notevolmente più alto.   
 
 
 
