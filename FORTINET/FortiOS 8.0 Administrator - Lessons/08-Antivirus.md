@@ -76,8 +76,35 @@
   Bufferizzazione completa: Il firewall trattiene e riassembla l'intero file/payload nella memoria RAM (gestito dal processo wad) prima di decidere se consentirne l'inoltro o scartarlo.
   Impatto operativo: ispezione esaustiva e capacità di manipolare i documenti, a fronte di una latenza maggiore e un carico di memoria RAM notevolmente più alto.   
 
+- Flow-Based Inspection Mode
+  Modalità predefinita (Default mode): è l'architettura di ispezione standard e consigliata per garantire prestazioni elevate, bassa latenza e ridotto consumo di risorse di calcolo/memoria.
+- Configurazione del Profilo Antivirus (Finestra a sinistra: Security Profiles > AntiVirus)
+  Parametri Generali:
+  Name: default (nome dell'oggetto profilo).
+  AntiVirus scan: interruttore attivo impostato su Block (Action applied to the infected files). Se viene individuato un file malevolo, la trasmissione viene interrotta. L'alternativa Monitor si limiterebbe a registrare l'evento nei log senza bloccarlo.
+  Feature set: selezionato su Flow-based (in contrapposizione a Proxy-based).
+  Protocolli Ispezionati (Inspected Protocols):
+  HTTP (navigazione web in chiaro o decifrata)
+  SMTP, POP3, IMAP (traffico e-mail e relativi allegati)
+  FTP (trasferimento file)
+  CIFS (condivisione file di rete SMB/Windows share)
+  WebSocket (comunicazioni web bidirezionali full-duplex)
 
+- Applicazione nella Firewall Policy (Finestra a destra: Policy & Objects > Firewall Policy)
+  Associazione della regola:
+  All'interno della regola di traffico (Action = ACCEPT), nella sezione Security Profiles, si attiva l'interruttore AntiVirus (Enable AntiVirus profile in the firewall policy).
+  Si seleziona dal menu a tendina il profilo desiderato (nell'esempio default).
+  Poiché la Firewall Policy è impostata in modalità Flow-based, il menu a discesa mostrerà esclusivamente i profili Antivirus configurati con feature set Flow-based.
+  I profili creati come Proxy-based (ad esempio quelli che integrano il CDR visto in precedenza) vengono automaticamente filtrati e nascosti per prevenire conflitti architetturali.
 
+- Selezione della Modalità Proxy-based da Firewall policy
+  Funzionalità Esclusive Abilitate (Available only in proxy-based inspection mode):
+  Video Filter
+  Flessibilità nella selezione del profilo AV
+  Supporto alle funzioni avanzate:
+  Ciò consente di agganciare alla policy profili antivirus completi che includono il CDR (Content Disarm and Reconstruction) e le opzioni avanzate di sanificazione documentale viste in precedenza, le quali richiedono tassativamente un feature set Proxy-based per          operare.
+
+-
 
 
 
