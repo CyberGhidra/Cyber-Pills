@@ -104,3 +104,7 @@ Mostra all'utente una schermata web di avviso che segnala che il sito appartiene
 
 Authenticate (Autentica):
 La categoria è bloccata per la navigazione standard, ma presenta un modulo di autenticazione (Captive Portal / override). Se l'utente fa parte di un gruppo autorizzato (es. dirigenti, team IT) e inserisce credenziali valide, l'accesso a quella specifica categoria viene sbloccato temporaneamente (funzione di User Override).
+
+
+
+
