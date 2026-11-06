@@ -32,3 +32,38 @@
   - Ispezione approfondita (More thorough inspection): Il traffico viene intercettato, bufferizzato ed esaminato nel dettaglio dal demone proxy di sistema.
   - Funzionalità aggiuntive (Provides additional options): Sblocca controlli avanzati non disponibili in flow-mode, come la manipolazione degli header HTTP, la rimozione sicura di script o l'integrazione di filtri più complessi.
   - Impatto hardware (More resource intensive): Comporta un maggiore utilizzo di RAM (per il buffering completo dei payload) e un consumo di CPU più elevato.   
+
+- SSL Certificate Inspection
+  Security Profiles > SSL/SSH Inspection
+  Analisi dei Parametri
+  # Enable SSL inspection of: Multiple Clients Connecting to Multiple Servers   
+  Identifica lo scenario Outbound / Forward Proxy: protegge i client della rete interna che navigano verso molteplici server web esterni su Internet.   
+  
+  # Inspection method: SSL Certificate Inspection   
+  Selezionato al posto di Full SSL Inspection. 
+  In questa modalità il firewall non decifra il contenuto dei dati, ma analizza unicamente l'handshake TLS iniziale (SNI e certificato server) per estrarre il dominio di destinazione.
+  Non richiede l'installazione di una CA aziendale sui computer degli utenti.   
+  
+  # Server certificate SNI check (con opzioni: Enable, Strict, Disable)   
+  A cosa serve (Action if the SNI does not match the CN or SAN fields): 
+  Verifica che il nome di dominio richiesto dal client nel campo SNI corrisponda a quello dichiarato nel certificato inviato dal server (campi Common Name o Subject Alternative Name).
+     
+  Vincolo architetturale: La nota evidenzia che questa verifica opera esclusivamente quando la policy è configurata in modalità Proxy-based (only in proxy-based inspection). 
+  In modalità Flow-based questo controllo specifico non interviene.  
+  
+  # Protocol Port Mapping (HTTPS: 443,10443)   
+  Indica al firewall su quali porte TCP intercettare il protocollo HTTPS per estrarre i certificati.   
+  Come evidenziato dal callout azzurro (You can specify more than one port number, separated by comma), è possibile specificare più porte separate da una virgola (nell'esempio la porta standard 443 e la porta alternativa 10443).
+  
+  # Gestione degli errori nei certificati:
+  
+  Malicious certificates (Block): 
+  Blocca il traffico se il certificato appartiene a siti identificati come malevoli dal database FortiGuard.   
+  
+  Untrusted SSL certificates (Block): 
+  Interrompe la connessione se il certificato del server è firmato da una CA non riconosciuta o non valida.   
+  
+  ncrypted Client Hello (Block): 
+  Opzione in basso per decidere se bloccare o consentire l'accesso se il browser utilizza ECH (Encrypted Client Hello), tecnologia che nasconderebbe l'SNI alla vista del firewall.
+
+
