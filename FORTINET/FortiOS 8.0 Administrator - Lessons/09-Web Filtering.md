@@ -87,3 +87,20 @@ Funzionalità Esclusive (Feature available only in proxy based):
      Remove ActiveX   
      Remove Cookies
   Questi elementi vengono eliminati direttamente dal codice HTML prima che la pagina web venga consegnata al browser del client.
+
+
+Categorie Web filtering (Security Profiles > Web Filter):
+Allow (Consenti):
+Il traffico verso i siti appartenenti a quella categoria viene autorizzato a passare senza restrizioni o notifiche. Di default non genera log di blocco (riduce il volume dei log).   
+
+Monitor (Monitora):
+Il traffico viene consentito esattamente come con Allow, ma viene registrato esplicitamente nei log di sistema (log event). È l'azione ideale durante le fasi di collaudo o audit di una rete per scoprire quali categorie visitano gli utenti prima di decidere se bloccarle.  
+
+Block (Blocca):
+La connessione viene immediatamente interrotta e al browser dell'utente viene inviata la pagina di blocco del FortiGate (Web Filter Block Page), indicando il motivo e la categoria incriminata.   
+
+Warning (Avviso):
+Mostra all'utente una schermata web di avviso che segnala che il sito appartiene a una categoria sconsigliata o a rischio. L'utente ha la facoltà di premere un pulsante (es. Proceed / Continua) per aggirare temporaneamente l'avviso e accedere comunque al sito per un intervallo di tempo prestabilito (utile per policy aziendali di tipo "a tuo rischio").   
+
+Authenticate (Autentica):
+La categoria è bloccata per la navigazione standard, ma presenta un modulo di autenticazione (Captive Portal / override). Se l'utente fa parte di un gruppo autorizzato (es. dirigenti, team IT) e inserisce credenziali valide, l'accesso a quella specifica categoria viene sbloccato temporaneamente (funzione di User Override).
