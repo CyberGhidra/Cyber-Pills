@@ -1,110 +1,203 @@
-## Web Filtering 
-- Il Web Filtering non agisce all'inizio assoluto della connessione (quello è il compito del Routing e del controllo delle Firewall Policy), ma si attiva subito dopo che la policy ha autorizzato il traffico (azione ACCEPT) e (se configurato) dopo che il pacchetto è stato    decifrato.
-  1. ARRIVO PACCHETTO ──► 2. ROUTING & POLICY MATCH (ACCEPT) ──► 3. SSL INSPECTION (Se attiva) ──► 4. WEB FILTERING (Layer 7)
-     Attivazione del Web Filter: 
-     Web Filtering associato a quella specifica Firewall Policy. Il motore legge l'URL, estrae il nome del dominio (o interroga il database cloud FortiGuard) e verifica se la categoria di quel sito (es. News and Media, Social Networking, Gambling) è autorizzata o bloccata.
+# FortiOS: Architettura del Web Filtering & SSL/SSH Inspection
 
-- Come fa il FortiGate a identificare il sito web di destinazione quando è attiva la modalità SSL Certificate Inspection (senza decifratura del payload) ?.
-  Nel traffico HTTPS, il contenuto della richiesta (l'URL esteso come /index.php?login=true) è protetto da cifratura. Tuttavia, durante l'avvio della sessione TLS, il firewall intercetta e legge in chiaro l'handshake iniziale per estrarre l'FQDN (Fully Qualified Domain
-  Name) del server:
+---
 
-  1) Passo Principale — Estrazione tramite SNI (Server Name Indication):
-     Nel primo passaggio (1. Client Hello), il browser dell'utente invia la versione del protocollo, le suite crittografiche supportate e l'estensione Server Name Indication (SNI).
-     Il campo SNI contiene il nome host in chiaro:
-     Server Name: [www.fortinet.com](https://www.fortinet.com)
-     FortiGate legge questo campo prima ancora che la cifratura sia stabilita e identifica a quale sito il client vuole accedere.
-  2) Passo Secondario (Fallback) — Lettura del Certificato del Server:
-     Se il client non include l'estensione SNI nel Client Hello ("If SNI is not present..."), FortiOS attende la risposta del server (2. Server Hello).
-     Il server remoto invia il proprio certificato digitale X.509.
-     FortiGate esamina i campi del certificato, leggendo il valore del Subject / Common Name (CN) (es. CN = *.fortinet.com) o dei campi SAN (Subject Alternative Name) per risalire al dominio.
+## 1. Posizionamento nel Ciclo di Vita del Pacchetto (Packet Lifecycle)
 
+Il **Web Filtering** opera a **Livello 7 (Application Layer)** dello stack OSI. Non interviene all'inizio della sessione: il traffico deve prima essere instradato e autorizzato esplicitamente a livello Layer 3/Layer 4 dalla tabella delle policy.
 
-- Modalita di ispezione:
-  Flow-based Inspection (Ispezione basata sul flusso):
-  Modalità predefinita (Default inspection mode): È l'impostazione standard consigliata su FortiOS.
-  Come gestisce il traffico (Traffic inspected while flowing through FortiGate): Il firewall non spezza la sessione TCP; il flusso transita direttamente attraverso il dispositivo mentre i pacchetti vengono analizzati in streaming.
-  Prestazioni:
-  - Requires fewer processing resources: Richiede un minor consumo di memoria RAM e cicli CPU.   
-  - Faster scanning: L'elaborazione è più veloce e la latenza introdotta è minima.   
+```text
+[ ARRIVO FRAME/PACCHETTO ]
+           │
+           ▼
+[ 1. ROUTE LOOKUP (FIB) ] ────────► Determina l'interfaccia di uscita (egress)
+           │
+           ▼
+[ 2. FIREWALL POLICY CHECK ] ─────► Ricerca sequenziale top-to-bottom
+           │                        - Se MATCH (Action: ACCEPT) ──► Session Table creata
+           │                        - Se MATCH (Action: DENY)   ──► Drop immediato
+           ▼
+[ 3. SSL INSPECTION ENGINE ] ─────► Lettura SNI/SAN (Certificate Inspection)
+           │                        oppure Decifratura in RAM (Deep Inspection)
+           ▼
+[ 4. WEB FILTERING ENGINE (L7) ] ─► Controllo Categorie FortiGuard / URL Statici
+           │
+           ├─► Azione BLOCK/DENY  ──► Connessione troncata (RST/Block Page)
+           └─► Azione ALLOW/PASS  ──► Inoltro verso la destinazione
+```
 
-  Proxy-based Inspection (Ispezione basata su proxy):
-  - Il FortiGate termina fisicamente la sessione TCP proveniente dal client e ne apre una seconda verso il server remoto, interponendosi come proxy.
-  - Ispezione approfondita (More thorough inspection): Il traffico viene intercettato, bufferizzato ed esaminato nel dettaglio dal demone proxy di sistema.
-  - Funzionalità aggiuntive (Provides additional options): Sblocca controlli avanzati non disponibili in flow-mode, come la manipolazione degli header HTTP, la rimozione sicura di script o l'integrazione di filtri più complessi.
-  - Impatto hardware (More resource intensive): Comporta un maggiore utilizzo di RAM (per il buffering completo dei payload) e un consumo di CPU più elevato.   
+### Regola d'Oro d'Esame:
+Affinché il Web Filtering possa ispezionare il traffico HTTPS (che costituisce ormai oltre il 95% del traffico web mondiale), la Firewall Policy deve associare congiuntamente:
+1. Un profilo **Web Filter**.
+2. Un profilo **SSL/SSH Inspection** (`certificate-inspection` oppure `custom-deep-inspection`).
 
-- SSL Certificate Inspection
-  Security Profiles > SSL/SSH Inspection
-  Analisi dei Parametri
-  # Enable SSL inspection of: Multiple Clients Connecting to Multiple Servers   
-  Identifica lo scenario Outbound / Forward Proxy: protegge i client della rete interna che navigano verso molteplici server web esterni su Internet.   
-  
-  # Inspection method: SSL Certificate Inspection   
-  Selezionato al posto di Full SSL Inspection. 
-  In questa modalità il firewall non decifra il contenuto dei dati, ma analizza unicamente l'handshake TLS iniziale (SNI e certificato server) per estrarre il dominio di destinazione.
-  Non richiede l'installazione di una CA aziendale sui computer degli utenti.   
-  
-  # Server certificate SNI check (con opzioni: Enable, Strict, Disable)   
-  A cosa serve (Action if the SNI does not match the CN or SAN fields): 
-  Verifica che il nome di dominio richiesto dal client nel campo SNI corrisponda a quello dichiarato nel certificato inviato dal server (campi Common Name o Subject Alternative Name).
-     
-  Vincolo architetturale: La nota evidenzia che questa verifica opera esclusivamente quando la policy è configurata in modalità Proxy-based (only in proxy-based inspection). 
-  In modalità Flow-based questo controllo specifico non interviene.  
-  
-  # Protocol Port Mapping (HTTPS: 443,10443)   
-  Indica al firewall su quali porte TCP intercettare il protocollo HTTPS per estrarre i certificati.   
-  Come evidenziato dal callout azzurro (You can specify more than one port number, separated by comma), è possibile specificare più porte separate da una virgola (nell'esempio la porta standard 443 e la porta alternativa 10443).
-  
-  # Gestione degli errori nei certificati:
-  
-  Malicious certificates (Block): 
-  Blocca il traffico se il certificato appartiene a siti identificati come malevoli dal database FortiGuard.   
-  
-  Untrusted SSL certificates (Block): 
-  Interrompe la connessione se il certificato del server è firmato da una CA non riconosciuta o non valida.   
-  
-  ncrypted Client Hello (Block): 
-  Opzione in basso per decidere se bloccare o consentire l'accesso se il browser utilizza ECH (Encrypted Client Hello), tecnologia che nasconderebbe l'SNI alla vista del firewall.
+---
 
-Come creare un profilo web filtering in base a Flow-based vs Proxy-based.
-Security Profiles > Web Filter
-I componenti principali configurabili sono in Flow-Based:   
-- Feature set: Flow-based (selezionato di default).   
-- FortiGuard Category Based Filter: Il motore primario di classificazione cloud di Fortinet per consentire, monitorare, avvisare o bloccare intere categorie di siti web.   
-- Search Engines (Safe Search): Consente di forzare la modalità di ricerca sicura (Safe Search) sui motori di ricerca supportati (Google, Yahoo!, Bing, Yandex) per escludere contenuti per adulti dai risultati.   
-- Static URL Filter: Permette di definire liste esplicite di URL/pattern (tramite semplici stringhe, wildcard o espressioni regolari) da autorizzare o bloccare a prescindere dalla categoria FortiGuard.   
-- Rating Options: Definisce il comportamento del firewall quando i server FortiGuard sono temporaneamente irraggiungibili (Allow all websites o Block all websites) e abilita la classificazione sia per dominio che per indirizzo IP.
+## 2. Identificazione del Dominio in HTTPS (SSL Certificate Inspection)
 
-I componenti principali configurabili sono in Proxy-Based :
-Requisito Hardware Obbligatorio:Supported on only FortiGate models with more than 2 GB RAM   
-L'ispezione proxy per il Web Filter richiede la ritenzione e l'analisi dei pacchetti in memoria RAM; pertanto, FortiOS disabilita o non supporta questa modalità sui modelli entry-level dotati di 2 GB di RAM o meno.   
-Funzionalità Esclusive (Feature available only in proxy based):
-- Il passaggio a proxy sblocca opzioni avanzate visibili con l'icona del divieto/attenzione rossa, non disponibili in flow-mode:  
-  1) Log all search keywords: Registra nei log di sistema le esatte parole chiave digitate dagli utenti nei motori di ricerca.
-  2) Restrict Google account usage to specific domains: Inserisce header HTTP personalizzati per consentire l'accesso solo agli account Google aziendali (es. @tuaazienda.com), bloccando gli account Gmail personali.
-  3) Rimozione di componenti attivi (Proxy Options):
-     Remove Java Applets   
-     Remove ActiveX   
-     Remove Cookies
-  Questi elementi vengono eliminati direttamente dal codice HTML prima che la pagina web venga consegnata al browser del client.
+Nel traffico crittografato TLS/SSL, la risorsa puntuale (Path e URI, ad esempio `/login.php?user=admin`) è cifrata e inaccessibile senza Full Inspection. Tuttavia, il FortiGate estrae l'**FQDN (Fully Qualified Domain Name)** analizzando i metadati scambiati in chiaro durante l'handshake crittografico iniziale.
 
+```text
+Client Browser                                             FortiGate (In-Line)                                        Web Server
+      │                                                           │                                                       │
+      │ ──── 1. Client Hello (SNI: www.fortinet.com) ───────────► │ ──── [ESTRAZIONE 1: Campo SNI in chiaro] ──────────► │
+      │                                                           │                                                       │
+      │ ◄─── 2. Server Hello + Certificate (X.509) ────────────── │ ◄─── [ESTRAZIONE 2 (Fallback): SAN o CN] ───────────── │
+      │                                                           │                                                       │
+      │                                                           ├─► Query Locale / FortiGuard Cloud Rating              │
+      │                                                           ├─► Match Categoria / Blacklist / Whitelist             │
+      │                                                           │                                                       │
+      │ ◄─── [Se Categoria Bloccata: Invio TCP RST o Block Page] ─┤                                                       │
+```
 
-Categorie Web filtering (Security Profiles > Web Filter):
-Allow (Consenti):
-Il traffico verso i siti appartenenti a quella categoria viene autorizzato a passare senza restrizioni o notifiche. Di default non genera log di blocco (riduce il volume dei log).   
+### I Due Passaggi di Ispezione dell'Handshake:
+1. **Passo Primario — Server Name Indication (SNI):**
+   * Nel pacchetto `Client Hello`, il client include l'estensione TLS **SNI**, che contiene in chiaro il nome di dominio richiesto (es. `Server Name: www.fortinet.com`).
+   * Il FortiGate estrae il dato istantaneamente, prima ancora che venga scambiata qualsiasi chiave o certificato.
+2. **Passo Secondario (Fallback) — Certificato Server X.509:**
+   * Se il client è obsoleto o non include l'SNI, FortiOS attende il pacchetto `Server Hello` proveniente dal server web.
+   * Il firewall legge i campi pubblici del certificato: prioritariamente il **SAN** (*Subject Alternative Name*) e successivamente il **CN** (*Common Name* nel *Subject*), ricavando il dominio (es. `CN = *.fortinet.com`).
 
-Monitor (Monitora):
-Il traffico viene consentito esattamente come con Allow, ma viene registrato esplicitamente nei log di sistema (log event). È l'azione ideale durante le fasi di collaudo o audit di una rete per scoprire quali categorie visitano gli utenti prima di decidere se bloccarle.  
+---
 
-Block (Blocca):
-La connessione viene immediatamente interrotta e al browser dell'utente viene inviata la pagina di blocco del FortiGate (Web Filter Block Page), indicando il motivo e la categoria incriminata.   
+## 3. Matrice Architetturale: Flow-Based vs. Proxy-Based
 
-Warning (Avviso):
-Mostra all'utente una schermata web di avviso che segnala che il sito appartiene a una categoria sconsigliata o a rischio. L'utente ha la facoltà di premere un pulsante (es. Proceed / Continua) per aggirare temporaneamente l'avviso e accedere comunque al sito per un intervallo di tempo prestabilito (utile per policy aziendali di tipo "a tuo rischio").   
+La scelta della modalità di ispezione definisce come la CPU e la memoria allocano le risorse e gestiscono i socket TCP.
 
-Authenticate (Autentica):
-La categoria è bloccata per la navigazione standard, ma presenta un modulo di autenticazione (Captive Portal / override). Se l'utente fa parte di un gruppo autorizzato (es. dirigenti, team IT) e inserisce credenziali valide, l'accesso a quella specifica categoria viene sbloccato temporaneamente (funzione di User Override).
+```text
+MODALITÀ FLOW-BASED (Streaming in-line):
+[ Client ] ────────────── [ FortiGate (IPS Engine / Direct Flow) ] ────────────── [ Server ]
+                     (1 Singola Connessione TCP End-to-End passante)
 
+MODALITÀ PROXY-BASED (Dual Socket / WAD Daemon):
+[ Client ] ◄── Connessione TCP 1 ──► [ FortiGate / WAD Proxy ] ◄── Connessione TCP 2 ──► [ Server ]
+```
 
+| Criterio Tecnico | Flow-Based Inspection | Proxy-Based Inspection |
+| :--- | :--- | :--- |
+| **Architettura TCP** | **Singola sessione TCP diretta** passante tra client e server. | **Due sessioni TCP distinte**: Client $\leftrightarrow$ FortiGate e FortiGate $\leftrightarrow$ Server. |
+| **Motore di Elaborazione** | Gestito principalmente dall'**IPS Engine** (e chip ASIC CP9). | Gestito dal demone proxy di sistema **WAD** (*Web Application Daemon*). |
+| **Buffer dei Dati** | Analisi in streaming al volo (overhead di memoria minimo). | Buffer completo del payload in memoria RAM prima dell'analisi. |
+| **Requisito Hardware** | Supportato su **tutti i modelli** FortiGate. | Vincolo: **Modelli con più di 2 GB di RAM** (disabilitato sui modelli entry-level). |
+| **Latenza & Throughput** | Latenza quasi nulla, velocità vicina al wire-speed. | Latenza superiore introdotta dal riassemblaggio TCP e buffering. |
+| **Funzionalità Esclusive** | Classificazione FortiGuard, SafeSearch, Static URL. | Log keyword di ricerca, Google Tenant Restriction, Stripping Header/ActiveX/Java/Cookie, Server SNI Check rigoroso. |
 
+---
 
+## 4. Configurazione del Profilo SSL/SSH Inspection
+
+Percorso: `Security Profiles > SSL/SSH Inspection`.
+
+### Parametri Chiave:
+* **Enable SSL inspection of:** `Multiple Clients Connecting to Multiple Servers`  
+  Identifica lo scenario **Forward Proxy / Outbound**: protegge i client della rete interna che accedono a risorse eterogenee su Internet.
+* **Inspection Method:** `SSL Certificate Inspection`  
+  Non decifra il payload applicativo. Non necessita dell'installazione del certificato di root CA (*Fortinet_CA_SSL*) sui dispositivi client.
+* **Protocol Port Mapping:**  
+  Specifica le porte Layer 4 sulle quali FortiOS intercetta il traffico HTTPS per analizzare i certificati (Default: `443, 10443`). È possibile indicare porte multiple separate da virgola.
+* **Server certificate SNI check:**  
+  Verifica la corrispondenza tra l'SNI dichiarato nel `Client Hello` e il CN/SAN presente nel certificato del server per prevenire attacchi di domain fronting/spoofing.  
+  *Vincolo Tecnico:* Funzione attiva **esclusivamente su policy in modalità Proxy-based**.
+
+### Gestione degli Errori e Meccanismi di Protezione:
+* **Untrusted SSL certificates (Block):** Tronca la connessione se il certificato del server non è firmato da una CA valida presente nel trusted store di FortiOS.
+* **Malicious certificates (Block):** Blocca i certificati associati a siti noti per malware o frodi secondo l'intelligence FortiGuard.
+* **Encrypted Client Hello - ECH (Block):** Blocca la sessione se il browser utilizza standard ECH/ESNI. Poiché l'ECH cifra l'estensione SNI verso il server DNS/web, impedirebbe al firewall di visualizzare il dominio; l'azione di blocco forza il browser a degradare a TLS standard o impedisce bypass non controllati.
+
+---
+
+## 5. Azioni sulle Categorie FortiGuard
+
+All'interno di `Security Profiles > Web Filter`, FortiGuard Labs suddivide i siti in macro-categorie e sotto-categorie. Per ciascuna di esse è possibile definire una delle seguenti 5 azioni:
+
+```text
+[ Query Categoria Sito ]
+           │
+           ├─► ALLOW        ──► Inoltro trasparente (Nessun log generato di default)
+           ├─► MONITOR      ──► Inoltro del traffico + Generazione evento nei log di sicurezza
+           ├─► BLOCK        ──► Sessione terminata + Invio "Web Filter Block Page"
+           ├─► WARNING      ──► Pagina di avviso: l'utente può cliccare "Proceed"
+           └─► AUTHENTICATE ──► Captive Portal: sblocco subordinato a credenziali di gruppo
+```
+
+1. **Allow (Consenti):**
+   * Il traffico è consentito senza interferenze. Per preservare lo spazio su disco e non saturare l'I/O del database di logging, di default questa azione non genera voci nei log UTM.
+2. **Monitor (Monitora):**
+   * Il traffico è autorizzato esattamente come con *Allow*, ma FortiOS genera una voce esplicita nei **Security Logs** (`subtype="webfilter"`). Essenziale durante i test pilota per definire la baseline di navigazione aziendale.
+3. **Block (Blocca):**
+   * La connessione viene troncata. Al browser dell'utente viene inviata una pagina HTML personalizzabile di sistema (*Replacement Message*) che riporta l'URL, la categoria FortiGuard incriminata e il motivo del drop.
+4. **Warning (Avviso):**
+   * Presenta una schermata intermedia di avvertimento. Se l'utente clicca sul pulsante di conferma (*Proceed*), FortiOS crea un bypass temporaneo per quell'IP/utente e consente l'accesso per un lasso di tempo configurabile (es. 15 minuti).
+5. **Authenticate (Autentica):**
+   * Blocca la normale navigazione mostrando un modulo di autenticazione (*Override*). Solo gli utenti appartenenti a specifici gruppi locali o Active Directory/LDAP autorizzati possono superare il blocco inserendo le proprie credenziali.
+
+---
+
+## 6. Funzionalità Avanzate Esclusive: Proxy-Based Web Filtering
+
+Nel momento in cui la Firewall Policy e il profilo Web Filter operano con **Feature set: Proxy-based** (sui modelli con RAM > 2 GB), si sbloccano funzionalità avanzate a livello applicativo:
+
+### 1. Log All Search Keywords
+Intercetta e registra nei log di sistema le query testuali digitate dagli utenti nei motori di ricerca supportati (Google, Bing, Yahoo!, Yandex).
+
+### 2. Restrict Google Account Usage to Specific Domains
+Previene l'accesso ad account personali (es. `@gmail.com`) da reti aziendali forzando l'uso della Google Workspace aziendale:
+* Il FortiGate inietta un header HTTP aggiuntivo nelle richieste verso i server Google:
+  ```http
+  X-GoogApps-Allowed-Domains: azienda.com, partner.com
+  ```
+
+### 3. Rimozione Componenti Attivi (Proxy Options)
+Il motore WAD analizza il codice HTML/JS prima di consegnarlo al client ed elimina fisicamente le inclusioni di codice potenzialmente insicure:
+* **Remove Java Applets:** Neutralizza i tag `<applet>` e gli archivi `.jar`.
+* **Remove ActiveX:** Neutralizza gli oggetti ActiveX (`<object>`, `<embed>`) tipici di ambienti legacy.
+* **Remove Cookies:** Rimuove gli header `Set-Cookie` per impedire il tracciamento della sessione.
+
+---
+
+## 7. Struttura del Log di Web Filtering (Analisi Campo per Campo)
+
+Esempio di log reale generato da un blocco FortiGuard:
+
+```text
+date=2026-04-29 time=07:29:09 eventtime=1754576949412373904 tz="-0700" logid="0316013056" type="utm" subtype="webfilter" eventtype="ftgd_blk" level="warning" vd="root" policyid=1 poluuid="5476b1d8-8be7-51ef-d3c8-3e0539bb2ec0" policytype="policy" sessionid=35060 srcip=10.0.11.50 srcport=46830 srccountry="Reserved" srcintf="port4" dstip=151.101.67.5 dstport=80 dstcountry="United States" dstintf="port2" proto=6 httpmethod="GET" service="HTTP" hostname="cnn.com" profile="default" action="blocked" reqtype="direct" url="http://cnn.com/" sentbyte=501 rcvdbyte=0 direction="outgoing" msg="URL belongs to a denied category in policy" ratemethod="domain" cat=36 catdesc="News and Media"
+```
+
+### Decodifica dei Parametri di Diagnostica:
+* `type="utm" subtype="webfilter"`: Identifica l'evento generato dai profili di sicurezza unificati (L7), nello specifico dal motore Web Filter.
+* `eventtype="ftgd_blk"`: Indica che la causa scatenante è una regola della categorizzazione cloud FortiGuard (*FortiGuard Block*).
+* `level="warning"`: Severità di Livello 4 (evento anomalo o traffico respinto).
+* `policyid=1`: ID della Firewall Policy che conteneva il profilo di sicurezza che ha generato il drop.
+* `sessionid=35060`: Indice della connessione registrata nella Stateful Session Table in RAM.
+* `srcip=10.0.11.50` / `srcport=46830`: Socket di rete sorgente dell'endpoint richiedente (LAN su `port4`).
+* `dstip=151.101.67.5` / `dstport=80`: Socket del web server remoto attestato su WAN (`port2`).
+* `hostname="cnn.com"` / `url="http://cnn.com/"`: FQDN e risorsa richiesta.
+* `cat=36` / `catdesc="News and Media"`: ID numerico e nome della categoria secondo la classificazione FortiGuard.
+* `action="blocked"` / `msg="URL belongs to a denied category in policy"`: Esito applicato dal motore di sicurezza (abbattimento del canale TCP).
+
+---
+
+## 8. Diagnostica e Verifica da Riga di Comando (CLI Cheat-Sheet)
+
+```fortios
+# 1. Verifica dello stato dei server cloud FortiGuard e del tempo di risposta (RTT)
+diagnose test updateinfo
+diagnose debug rating
+
+# 2. Test manuale di classificazione di un dominio FQDN dalla CLI
+diagnose webfilter fortiguard-rating <fqdn>
+# Esempio: diagnose webfilter fortiguard-rating www.cnn.com
+
+# 3. Visualizzazione della cache locale delle categorie (URL Cache)
+diagnose webfilter urlcache dump
+
+# 4. Debug in tempo reale del motore WAD (Proxy-based)
+diagnose debug reset
+diagnose debug application wad 255
+diagnose debug enable
+
+# 5. Debug in tempo reale del motore IPS/Flow (Flow-based)
+diagnose debug reset
+diagnose debug application urlfilter 255
+diagnose debug enable
+```
