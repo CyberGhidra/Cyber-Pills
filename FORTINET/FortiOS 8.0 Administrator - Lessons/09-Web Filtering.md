@@ -66,4 +66,24 @@
   ncrypted Client Hello (Block): 
   Opzione in basso per decidere se bloccare o consentire l'accesso se il browser utilizza ECH (Encrypted Client Hello), tecnologia che nasconderebbe l'SNI alla vista del firewall.
 
+Come creare un profilo web filtering in base a Flow-based vs Proxy-based.
+Security Profiles > Web Filter
+I componenti principali configurabili sono in Flow-Based:   
+- Feature set: Flow-based (selezionato di default).   
+- FortiGuard Category Based Filter: Il motore primario di classificazione cloud di Fortinet per consentire, monitorare, avvisare o bloccare intere categorie di siti web.   
+- Search Engines (Safe Search): Consente di forzare la modalità di ricerca sicura (Safe Search) sui motori di ricerca supportati (Google, Yahoo!, Bing, Yandex) per escludere contenuti per adulti dai risultati.   
+- Static URL Filter: Permette di definire liste esplicite di URL/pattern (tramite semplici stringhe, wildcard o espressioni regolari) da autorizzare o bloccare a prescindere dalla categoria FortiGuard.   
+- Rating Options: Definisce il comportamento del firewall quando i server FortiGuard sono temporaneamente irraggiungibili (Allow all websites o Block all websites) e abilita la classificazione sia per dominio che per indirizzo IP.
 
+I componenti principali configurabili sono in Proxy-Based :
+Requisito Hardware Obbligatorio:Supported on only FortiGate models with more than 2 GB RAM   
+L'ispezione proxy per il Web Filter richiede la ritenzione e l'analisi dei pacchetti in memoria RAM; pertanto, FortiOS disabilita o non supporta questa modalità sui modelli entry-level dotati di 2 GB di RAM o meno.   
+Funzionalità Esclusive (Feature available only in proxy based):
+- Il passaggio a proxy sblocca opzioni avanzate visibili con l'icona del divieto/attenzione rossa, non disponibili in flow-mode:  
+  1) Log all search keywords: Registra nei log di sistema le esatte parole chiave digitate dagli utenti nei motori di ricerca.
+  2) Restrict Google account usage to specific domains: Inserisce header HTTP personalizzati per consentire l'accesso solo agli account Google aziendali (es. @tuaazienda.com), bloccando gli account Gmail personali.
+  3) Rimozione di componenti attivi (Proxy Options):
+     Remove Java Applets   
+     Remove ActiveX   
+     Remove Cookies
+  Questi elementi vengono eliminati direttamente dal codice HTML prima che la pagina web venga consegnata al browser del client.
