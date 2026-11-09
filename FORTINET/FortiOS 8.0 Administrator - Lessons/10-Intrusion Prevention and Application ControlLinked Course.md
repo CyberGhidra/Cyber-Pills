@@ -29,6 +29,8 @@
   Target: L'obiettivo della firma (Server o Client).
   OS: La piattaforma software a cui si applica la vulnerabilità (Windows, Linux, ecc.).
   Action (Default action): L'azione predefinita associata dal team di sicurezza FortiGuard a quella singola firma:
-  Block: La connessione viene troncata e il traffico scartato non appena si riscontra il pattern malevolo.
-  Pass: Il pacchetto viene autorizzato a transitare (usato tipicamente per firme informative o a basso rischio).
+    1) Block: La connessione viene troncata e il traffico scartato non appena si riscontra il pattern malevolo.
+    2) Pass: Il pacchetto viene autorizzato a transitare (usato tipicamente per firme informative o a basso rischio).
   CVE-ID: Il codice standard internazionale di vulnerabilità (ad esempio CVE-2005-0277, CVE-2014-9263) per una rapida consultazione e tracciabilità con i bollettini di sicurezza.  
+
+
