@@ -74,3 +74,19 @@
        a) Se si verifica una corrispondenza (match), viene applicata immediatamente l'azione specificata per quella voce e l'analisi per quella firma termina.
        b) Se non corrisponde, il motore scende alla voce successiva.
   
+- IPS actions
+  Security Profiles > Intrusion Prevention
+  Azioni del Motore IPS :
+  1) Allow: Consente il transito del pacchetto malevolo senza bloccarlo o registrarlo (ignora la corrispondenza).
+  2) Monitor: Autorizza il passaggio del pacchetto e genera contestualmente una registrazione nei log di sistema per notificare l'amministratore dell'attacco o del test in corso.
+  3) Block: Interrompe immediatamente la trasmissione del pacchetto scartandolo ed eliminando la sessione in corso.
+  4) Reset: Tronca la sessione TCP inviando attivamente un pacchetto TCP RST (reset) al client, al server o a entrambi, chiudendo istantaneamente la connessione socket.
+  5) Default: Applica l'azione raccomandata e predefinita assegnata dal team di sicurezza FortiGuard per quella specifica firma (di solito Block per le minacce High/Critical e Pass/Allow per quelle informative).
+  6) Quarantine: Blocca il pacchetto e mette contestualmente l'indirizzo IP dell'attaccante in quarantena (ban temporaneo o permanente su tutte le comunicazioni attraverso il firewall).
+
+  Funzionalità Packet Logging (Copies the packets for later analysis)
+  Accanto alla voce Action si trova il controllo Packet logging (Enable / Disable):
+  1) Scopo: Se abilitato, FortiOS non si limita a generare un log testuale dell'evento, ma salva una copia integrale (payload e intestazioni) dei pacchetti che hanno fatto scattare la firma.
+  2) Analisi forense: Il traffico catturato può essere esportato direttamente in formato standard .pcap e analizzato tramite strumenti di packet analysis (come Wireshark) per verificare i falsi positivi o studiare il vettore dell'exploit in dettaglio.
+ 
+
