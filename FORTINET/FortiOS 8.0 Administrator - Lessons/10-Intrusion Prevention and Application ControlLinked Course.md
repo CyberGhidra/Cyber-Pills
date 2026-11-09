@@ -51,4 +51,16 @@
   - Metodo 2 --- Add Groups of Signatures Using Filters (Filtri Dinamici)
         - Creazione di gruppi dinamici: Anziché selezionare le firme una a una, si impostano filtri basati su criteri di classificazione (es. severità, protocollo, sistema operativo, target).
         - Manutenzione automatica: Tutte le nuove firme rilasciate e scaricate tramite i servizi FortiGuard che corrispondono a questi criteri vengono incluse automaticamente nel sensore senza alcun intervento manuale.
-        - 
+
+
+- Rate-Based Signatures
+  - A differenza delle normali firme IPS che intervengono al primo pacchetto corrispondente al pattern malevolo, le rate-based signatures permettono di monitorare e bloccare il traffico solo quando viene superata una soglia prestabilita entro una determinata finestra       temporale (Add rate-based signatures to block traffic when the threshold is exceeded during a time period).
+  - Parametri di Configurazione
+    1) Sotto la voce Rate-based settings, selezionando Specify, si sbloccano i parametri di soglia che si applicano alle firme selezionate nella tabella in basso (These parameters are applicable to the signatures selected at the bottom):
+       a) Threshold (Soglia): Definisce il numero massimo di tentativi o corrispondenze ammesse prima di far scattare la contromisura (nell'esempio il campo è editabile).
+       b) Duration (seconds) (Intervallo di tempo): Stabilisce l'arco temporale (in secondi, impostato a 60 nell'immagine) entro cui viene calcolato il superamento della soglia.
+    2) Criterio di Tracciamento (Track By)
+       a) Source IP: Conta le occorrenze generate dallo stesso indirizzo IP sorgente. È la scelta ideale contro tentativi di attacco brute force o port scan provenienti da un singolo attaccante.
+       b) Destination IP: Conta le occorrenze dirette allo stesso server/IP di destinazione, utile per proteggere una specifica risorsa da attacchi distribuiti a bassa intensità.   
+       c) Any: Considera entrambi i criteri o qualsiasi combinazione di traffico corrispondente alla firma.  
+       
