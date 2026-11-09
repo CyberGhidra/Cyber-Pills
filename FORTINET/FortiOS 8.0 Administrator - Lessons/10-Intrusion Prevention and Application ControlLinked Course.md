@@ -63,4 +63,14 @@
        a) Source IP: Conta le occorrenze generate dallo stesso indirizzo IP sorgente. È la scelta ideale contro tentativi di attacco brute force o port scan provenienti da un singolo attaccante.
        b) Destination IP: Conta le occorrenze dirette allo stesso server/IP di destinazione, utile per proteggere una specifica risorsa da attacchi distribuiti a bassa intensità.   
        c) Any: Considera entrambi i criteri o qualsiasi combinazione di traffico corrispondente alla firma.  
-       
+
+
+- IPS Sensor Inspection Sequence
+  Security Profiles > Intrusion Prevention
+  1) Principio della Sequenza Ordinata (Top-to-Bottom)
+     Elaborazione sequenziale: Come indicato dal callout azzurro a destra (IPS signatures and filters are processed in sequence), le voci inserite all'interno della tabella IPS Signatures and Filters vengono valutate in ordine rigorosamente sequenziale, dall'alto verso
+     il basso.
+     Priorità del matching: Quando il traffico transita attraverso l'IPS engine, il pacchetto viene confrontato con la prima voce in alto:
+       a) Se si verifica una corrispondenza (match), viene applicata immediatamente l'azione specificata per quella voce e l'analisi per quella firma termina.
+       b) Se non corrisponde, il motore scende alla voce successiva.
+  
