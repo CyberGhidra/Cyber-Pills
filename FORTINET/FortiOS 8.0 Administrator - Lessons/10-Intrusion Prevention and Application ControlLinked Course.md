@@ -33,4 +33,22 @@
     2) Pass: Il pacchetto viene autorizzato a transitare (usato tipicamente per firme informative o a basso rischio).
   CVE-ID: Il codice standard internazionale di vulnerabilità (ad esempio CVE-2005-0277, CVE-2014-9263) per una rapida consultazione e tracciabilità con i bollettini di sicurezza.  
 
+- Percorso e Configurazione Base del Sensore
+  Percorso GUI: Security Profiles > Intrusion Prevention.
+  New IPS Sensor: creazione di un nuovo profilo/sensore personalizzato (nell'esempio denominato IPS_profile).
+  Pulsante + Create New: all'interno della tabella IPS Signatures and Filters, premendo il pulsante si apre la finestra di dialogo per inserire le regole. È possibile scegliere tra due tipologie operative tramite il selettore Type (Filter o Signature).
 
+  Metodo 1: Add Individual Signatures (Aggiunta di Singole Firme)
+  Finestra in alto (Type: Signature):
+    - selezione puntuale: Permette di cercare e selezionare manualmente specifiche firme dal database (tramite nome, CVE o barra di ricerca).
+    - Metodo 1 --- Parametri configurabili sulla singola firma:
+        - Action: stabilisce il comportamento (Default, oppure forzato su Pass o Block).
+        - Packet logging: abilita o disabilita il salvataggio dei pacchetti che hanno innescato l'evento per successive analisi forensi / pcap (Enable / Disable).
+        - Status: stato operativo della firma (Enable, Disable, Default).
+        - Rate-based settings: impostazioni di soglia per attacchi volumetrici o brute-force.
+        - Exempt IPs: definizione di eccezioni per escludere specifici indirizzi IP dall'ispezione della regola
+     
+  - Metodo 2 --- Add Groups of Signatures Using Filters (Filtri Dinamici)
+        - Creazione di gruppi dinamici: Anziché selezionare le firme una a una, si impostano filtri basati su criteri di classificazione (es. severità, protocollo, sistema operativo, target).
+        - Manutenzione automatica: Tutte le nuove firme rilasciate e scaricate tramite i servizi FortiGuard che corrispondono a questi criteri vengono incluse automaticamente nel sensore senza alcun intervento manuale.
+        - 
