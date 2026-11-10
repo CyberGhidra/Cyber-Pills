@@ -1,168 +1,252 @@
-## Intrusion Prevention and Application ControlLinked Course
-- I tre elementi cardine che costituiscono il motore IPS:
-  a) IPS signature databases (Database delle firme IPS):
-     raccolta di pattern e firme costantemente aggiornate (tramite i servizi di intelligence FortiGuard) per riconoscere attacchi noti, CVE ed exploit diffusi.
-  b) Protocol decoders (Decodificatori di protocollo): analizzano i singoli protocolli di rete (es. HTTP, DNS, SMB, FTP) verificando che il traffico rispetti gli standard (RFC) e decodificando il flusso per consentire all'engine di esaminare i campi specifici del
-     pacchetto.
-  c) IPS engine: il motore di elaborazione che orchestra l'ispezione, confrontando i pacchetti decodificati con le firme e applicando gli algoritmi di rilevamento in tempo reale.
+# Intrusion Prevention System (IPS) & Application Control
 
-- Flusso Operativo Nello Schema GraficoMinaccia esterna (Attaccante / Hacker): 
-  1) tenta di inviare traffico malevolo, vettori di attacco o exploit verso l'infrastruttura.
-  2) FortiGate con IPS attivo: il traffico attraversa le interfacce e viene intercettato dal motore IPS. I decoder di protocollo e il database delle firme scansionano il flusso di dati.
-  3) Blocco e Protezione: il traffico contenente l'exploit o l'anomalia viene interrotto e scartato (icona dell'attaccante barrata).
-  4) Destinazioni Protette: solo il traffico legittimo e pulito raggiunge le sedi aziendali (edifici industriali/uffici) o i server e i datacenter interni.
- 
-- Percorso e Gestione dei Sensori IPS
-  Percorso GUI: Security Profiles > Intrusion Prevention.
-  IPS Sensors: All'interno di questa sezione è possibile creare nuovi sensori personalizzati (Create new) oppure visualizzare e modificare i sensori predefiniti forniti da FortiOS (come il profilo default mostrato a sinistra).
-  Pulsante View IPS Signatures: Cliccando sul link/pulsante, si apre la vista dettagliata dell'intero database delle firme IPS caricate sul firewall.
+---
 
-  Metriche e Classificazione del Database Firme (Grafici a ciambella)
-  Severity (Gravità dell'impatto): suddivide le firme in base al livello di rischio dell'exploit:   
-  Critical - High - Medium - Low  - Information   
-  Target (Bersaglio dell'attacco): distingue se la vulnerabilità sfrutta componenti lato Server (servizi in ascolto esposti) oppure lato Client (browser, software locali, client mail).
-  OS (Sistema Operativo): cataloga le firme in base all'ambiente target dell'exploit (Windows, Linux, macOS, Solaris, ecc.).
+## 1. Architettura del Motore IPS (IPS Engine)
 
-  Anatomia della Tabella Firme
-  Name: Il nome univoco identificativo della vulnerabilità o dell'exploit (ad es. 3Com.3CDaemon.FTPServer.Buffer.Overflow).
-  Severity: Il livello di gravità associato alla specifica minaccia.
-  Target: L'obiettivo della firma (Server o Client).
-  OS: La piattaforma software a cui si applica la vulnerabilità (Windows, Linux, ecc.).
-  Action (Default action): L'azione predefinita associata dal team di sicurezza FortiGuard a quella singola firma:
-    1) Block: La connessione viene troncata e il traffico scartato non appena si riscontra il pattern malevolo.
-    2) Pass: Il pacchetto viene autorizzato a transitare (usato tipicamente per firme informative o a basso rischio).
-  CVE-ID: Il codice standard internazionale di vulnerabilità (ad esempio CVE-2005-0277, CVE-2014-9263) per una rapida consultazione e tracciabilità con i bollettini di sicurezza.  
+Il modulo **Intrusion Prevention System (IPS)** di FortiOS è progettato per rilevare e bloccare in tempo reale exploit su vulnerabilità note, violazioni degli standard di protocollo (RFC) e attacchi applicativi. L'analisi opera in modalità **Flow-Based Detection**, scansionando i pacchetti in streaming al passaggio attraverso le interfacce senza trattenere arbitrariamente l'intero payload prima dell'elaborazione.
 
-- Percorso e Configurazione Base del Sensore
-  Percorso GUI: Security Profiles > Intrusion Prevention.
-  New IPS Sensor: creazione di un nuovo profilo/sensore personalizzato (nell'esempio denominato IPS_profile).
-  Pulsante + Create New: all'interno della tabella IPS Signatures and Filters, premendo il pulsante si apre la finestra di dialogo per inserire le regole. È possibile scegliere tra due tipologie operative tramite il selettore Type (Filter o Signature).
+```
+                  ┌─────────────────────────────────────────────────────────────┐
+                  │                    MOTORE IPS (FortiOS)                     │
+                  │                                                             │
+                  │  ┌──────────────────────┐         ┌──────────────────────┐  │
+                  │  │  Protocol Decoders   │         │    IPS Signatures    │  │
+                  │  │ (HTTP, DNS, SMB...)  │         │   Database (FDN)     │  │
+                  │  └──────────┬───────────┘         └──────────┬───────────┘  │
+                  │             │                                │              │
+                  │             └───────────────►◄───────────────┘              │
+                  │                             │                               │
+                  │                  ┌──────────▼──────────┐                    │
+                  │                  │     IPS Engine      │                    │
+                  │                  │(Matching Real-Time) │                    │
+                  │                  └──────────┬──────────┘                    │
+                  └─────────────────────────────┼───────────────────────────────┘
+                                                │
+       [ PACCHETTO DI RETE ] ───────────────────┴───────► [ AZIONE: ALLOW / BLOCK / RST ]
+```
 
-  Metodo 1: Add Individual Signatures (Aggiunta di Singole Firme)
-  Finestra in alto (Type: Signature):
-    - selezione puntuale: Permette di cercare e selezionare manualmente specifiche firme dal database (tramite nome, CVE o barra di ricerca).
-    - Metodo 1 --- Parametri configurabili sulla singola firma:
-        - Action: stabilisce il comportamento (Default, oppure forzato su Pass o Block).
-        - Packet logging: abilita o disabilita il salvataggio dei pacchetti che hanno innescato l'evento per successive analisi forensi / pcap (Enable / Disable).
-        - Status: stato operativo della firma (Enable, Disable, Default).
-        - Rate-based settings: impostazioni di soglia per attacchi volumetrici o brute-force.
-        - Exempt IPs: definizione di eccezioni per escludere specifici indirizzi IP dall'ispezione della regola
-     
-  - Metodo 2 --- Add Groups of Signatures Using Filters (Filtri Dinamici)
-        - Creazione di gruppi dinamici: Anziché selezionare le firme una a una, si impostano filtri basati su criteri di classificazione (es. severità, protocollo, sistema operativo, target).
-        - Manutenzione automatica: Tutte le nuove firme rilasciate e scaricate tramite i servizi FortiGuard che corrispondono a questi criteri vengono incluse automaticamente nel sensore senza alcun intervento manuale.
+### I Tre Componenti Cardine
+1. **IPS Signature Database (Database delle firme):**
+   * Collezione costantemente aggiornata di signature binarie e pattern euristiche gestite dai **FortiGuard Labs**.
+   * Identifica exploit verso vulnerabilità software note (CVE), malware di rete e codice arbitrario remoto.
+2. **Protocol Decoders (Decodificatori di Protocollo):**
+   * Moduli software specializzati nell'analisi sintattica dei singoli protocolli (HTTP, DNS, SMB, FTP, DCE-RPC, TLS, ecc.).
+   * Verificano che il traffico rispetti rigorosamente gli standard definiti dalle RFC.
+   * "Scartano" i layer di incapsulamento ed estraggono i singoli campi del pacchetto (es. URI, Header HTTP, record DNS) per sottoporli al motore di confronto.
+3. **IPS Engine:**
+   * Il processo software/hardware centrale orchestratore dell'ispezione.
+   * Esegue la correlazione logica in tempo reale tra i campi decodificati e i pattern del database, applicando le policy di mitigazione a latenza ultrabassa.
 
+---
 
-- Rate-Based Signatures
-  - A differenza delle normali firme IPS che intervengono al primo pacchetto corrispondente al pattern malevolo, le rate-based signatures permettono di monitorare e bloccare il traffico solo quando viene superata una soglia prestabilita entro una determinata finestra       temporale (Add rate-based signatures to block traffic when the threshold is exceeded during a time period).
-  - Parametri di Configurazione
-    1) Sotto la voce Rate-based settings, selezionando Specify, si sbloccano i parametri di soglia che si applicano alle firme selezionate nella tabella in basso (These parameters are applicable to the signatures selected at the bottom):
-       a) Threshold (Soglia): Definisce il numero massimo di tentativi o corrispondenze ammesse prima di far scattare la contromisura (nell'esempio il campo è editabile).
-       b) Duration (seconds) (Intervallo di tempo): Stabilisce l'arco temporale (in secondi, impostato a 60 nell'immagine) entro cui viene calcolato il superamento della soglia.
-    2) Criterio di Tracciamento (Track By)
-       a) Source IP: Conta le occorrenze generate dallo stesso indirizzo IP sorgente. È la scelta ideale contro tentativi di attacco brute force o port scan provenienti da un singolo attaccante.
-       b) Destination IP: Conta le occorrenze dirette allo stesso server/IP di destinazione, utile per proteggere una specifica risorsa da attacchi distribuiti a bassa intensità.   
-       c) Any: Considera entrambi i criteri o qualsiasi combinazione di traffico corrispondente alla firma.  
+## 2. Flusso Operativo del Traffico (Life of Packet IPS)
 
+```
+[ Attaccante Esterno ] ──► (1. Vettore Exploit) ──► [ FORTIGATE (IPS Attivo) ]
+                                                            │
+                     ┌──────────────────────────────────────┴──────────────────────────────────────┐
+                     ▼                                                                             ▼
+          [ Match Firma / Anomalia ]                                                     [ Traffico Legittimo ]
+                     │                                                                             │
+                     ▼                                                                             ▼
+           (3. Drop / TCP RST)                                                            (4. Inoltro Pulito)
+                     │                                                                             │
+            Attaccante Bloccato                                                       Destinazioni Protette:
+           (Connessione Troncata)                                                    • Sedi e Uffici LAN
+                                                                                     • Server & Data Center
+```
 
-- IPS Sensor Inspection Sequence
-  Security Profiles > Intrusion Prevention
-  1) Principio della Sequenza Ordinata (Top-to-Bottom)
-     Elaborazione sequenziale: Come indicato dal callout azzurro a destra (IPS signatures and filters are processed in sequence), le voci inserite all'interno della tabella IPS Signatures and Filters vengono valutate in ordine rigorosamente sequenziale, dall'alto verso
-     il basso.
-     Priorità del matching: Quando il traffico transita attraverso l'IPS engine, il pacchetto viene confrontato con la prima voce in alto:
-       a) Se si verifica una corrispondenza (match), viene applicata immediatamente l'azione specificata per quella voce e l'analisi per quella firma termina.
-       b) Se non corrisponde, il motore scende alla voce successiva.
-  
-- IPS actions
-  Security Profiles > Intrusion Prevention
-  Azioni del Motore IPS :
-  1) Allow: Consente il transito del pacchetto malevolo senza bloccarlo o registrarlo (ignora la corrispondenza).
-  2) Monitor: Autorizza il passaggio del pacchetto e genera contestualmente una registrazione nei log di sistema per notificare l'amministratore dell'attacco o del test in corso.
-  3) Block: Interrompe immediatamente la trasmissione del pacchetto scartandolo ed eliminando la sessione in corso.
-  4) Reset: Tronca la sessione TCP inviando attivamente un pacchetto TCP RST (reset) al client, al server o a entrambi, chiudendo istantaneamente la connessione socket.
-  5) Default: Applica l'azione raccomandata e predefinita assegnata dal team di sicurezza FortiGuard per quella specifica firma (di solito Block per le minacce High/Critical e Pass/Allow per quelle informative).
-  6) Quarantine: Blocca il pacchetto e mette contestualmente l'indirizzo IP dell'attaccante in quarantena (ban temporaneo o permanente su tutte le comunicazioni attraverso il firewall).
+1. **Tentativo di Intrusione:** Un host remoto invia pacchetti contenenti buffer overflow, injection SQL o anomalie di protocollo diretti alle risorse aziendali.
+2. **Intercettazione:** Il traffico transita attraverso la Firewall Policy su cui è agganciato il sensore IPS. I decodificatori estraggono i dati e il motore li confronta con il database.
+3. **Mitigazione:** Al rilevamento del pattern di attacco, FortiGate scarta i pacchetti malevoli (**Drop**) o interrompe la sessione inviando un reset (**TCP RST**).
+4. **Protezione:** Solo il traffico conforme e privo di pattern di minaccia raggiunge le destinazioni interne protette.
 
-  Funzionalità Packet Logging (Copies the packets for later analysis)
-  Accanto alla voce Action si trova il controllo Packet logging (Enable / Disable):
-  1) Scopo: Se abilitato, FortiOS non si limita a generare un log testuale dell'evento, ma salva una copia integrale (payload e intestazioni) dei pacchetti che hanno fatto scattare la firma.
-  2) Analisi forense: Il traffico catturato può essere esportato direttamente in formato standard .pcap e analizzato tramite strumenti di packet analysis (come Wireshark) per verificare i falsi positivi o studiare il vettore dell'exploit in dettaglio.
- 
+---
 
-- IPS Logging
-  Log & Report > Security Events
-  Card Intrusion Prevention: Mostra la sintesi grafica degli eventi IPS rilevati dal sistema (nell'esempio, 7 Events):
-  1) Top Attack: Elenca gli attacchi o exploit maggiormente riscontrati
-  2) Action: Indica l'azione applicata per ciascun tipo di attacco, come Dropped (pacchetto scartato/bloccato) o Detected (semplice rilevamento in modalità monitor).
-  3) Count: Il volume totale di occorrenze registrate per quella specifica firma.
-  Transizione ai Log Dettagliati: Cliccando sul link/icona con la freccia rossa accanto al titolo Intrusion Prevention o passando alla scheda Logs, si accede alla tabella analitica dei singoli record.
+## 3. Gestione e Classificazione del Database Firme
 
-  LOGS
-  Date/Time: Data e ora precisa in cui l'IPS engine ha rilevato l'attacco.   
-  Severity: Livello di gravità della firma innescata (nell'esempio evidenziati con barre arancioni di livello High o gialle per Medium).   
-  Source: L'indirizzo IP del mittente dell'attacco (es. 100.65.0.254).   
-  Protocol: Protocollo di trasporto utilizzato (il valore numerico 6 indica il protocollo standard TCP).   
-  Action: Esito operativo del firewall (dropped per le connessioni bloccate, detected per quelle monitorate).   
-  Attack Name: La firma IPS scattata (es. HTTP.URI.SQL.Injection).
+* **Percorso GUI:** `Security Profiles > Intrusion Prevention`
+* **Pulsante `View IPS Signatures`:** Permette di accedere alla vista complessiva delle decine di migliaia di firme attive sull'apparato.
 
-  LOGS DETAILS
-  Action & Policy Context:
-  Action: dropped (conferma che il flusso malevolo è stato scartato).   
-  Threat / Threat Level / Threat Score: Punteggio e classificazione del rischio associato alla minaccia (Threat Level: High, Threat Score: 30).   
-  Policy ID: Identifica la regola di firewall esatta che stava gestendo la sessione al momento del rilevamento (3).   
-  Policy UUID: L'identificativo univoco della firewall policy per correlazioni analitiche dirette.
+### Metriche di Classificazione (Dashboard a Grafico)
+* **Severity (Gravità dell'impatto):** Valuta l'indice di rischio dell'exploit associato:
+  $$\text{Critical} \longrightarrow \text{High} \longrightarrow \text{Medium} \longrightarrow \text{Low} \longrightarrow \text{Information}$$
+* **Target (Bersaglio):** 
+  * `Server`: Attacchi diretti contro servizi in ascolto (porte aperte esposte su Internet o DMZ: HTTP, SQL, SMB).
+  * `Client`: Attacchi che sfruttano vulnerabilità software sul lato client (browser, visualizzatori PDF, client di posta) quando l'utente contatta un server malevolo.
+* **OS (Sistema Operativo):** Cataloga le firme in base all'ambiente bersaglio (es. Windows, Linux, macOS, Solaris, Cisco IOS).
 
-  Security & Log Metadata:
-  Level: Alert Notification (livello di allerta di sistema del log).
+### Struttura della Tabella Firme (Anatomia di una Firma)
+| Campo | Descrizione Operativa |
+| :--- | :--- |
+| **Name** | Identificativo testuale univoco (es. `3Com.3CDaemon.FTPServer.Buffer.Overflow`, `HTTP.URI.SQL.Injection`). |
+| **Severity** | Livello di criticità assegnato dal team di threat intelligence. |
+| **Target** | Ambito di applicazione (`Server` o `Client`). |
+| **OS** | Piattaforma o architettura software bersaglio dell'attacco. |
+| **Action** | Azione predefinita assegnata da FortiGuard: **Block** (scarto immediato) per minacce critiche/alte, **Pass** per regole informative. |
+| **CVE-ID** | Codice univoco internazionale dello standard MITRE (es. `CVE-2005-0277`) per il cross-referencing con i bollettini di sicurezza mondiali. |
 
-  Intrusion Prevention (Dati specifici dell'IPS):
-  Profile: Il nome del profilo/sensore IPS applicato alla firewall policy (nell'esempio: WEBSERVER).
-  Attack Name: Il pattern intercettato (HTTP.URI.SQL.Injection).  
-  Attack ID: L'ID numerico univoco della firma FortiGuard (15,621).
-  Reference: Link diretto all'enciclopedia di intelligence FortiGuard per consultare la documentazione tecnica, le CVE collegate e la descrizione dell'attacco ([https://fortiguard.fortinet.com/encyclopedia/ips/15621
-  (https://fortiguard.fortinet.com/encyclopedia/ips/15621)).
-  Direction: Direzione del flusso di attacco (outgoing o incoming).
-  Message: Campo descrittivo che riassume la categoria e la natura dell'evento (web_misc: HTTP.URI.SQL.Injection).
+---
 
-  Application Control — Principi Operativi
-  - Il legame tra Application Control e il motore IPS di FortiGate:
-    1) Condivisione dell'IPS Engine: Application Control utilizza il motore IPS engine in modalità flow-based scan per scansionare il flusso di traffico in streaming a bassissima latenza.
-    2) Riconoscimento a Livello 7: Rileva e applica azioni sul traffico applicativo (Detects and acts on network application traffic), identificando le applicazioni moderne (es. social network e piattaforme come X, Meta, TikTok, Skype) indipendentemente dalle porte di
-       rete usate.
-    3) Efficacia su protocolli P2P: Risulta particolarmente indicato per individuare e disciplinare le applicazioni peer-to-peer (P2P), storicamente complesse da tracciare con le regole di firewall tradizionali.
+## 4. Configurazione dei Sensori IPS
 
-Per vedere le firme
-Security Profiles > Application Control
-Pulsante View Application Signatures: Cliccando sul link evidenziato dal riquadro rosso, si apre la tabella di dettaglio dell'intero catalogo delle firme applicative residenti sul sistema.
+* **Percorso GUI:** `Security Profiles > Intrusion Prevention` $\rightarrow$ `Create New` (es. sensore denominato `IPS_profile`).
+* **Sezione `IPS Signatures and Filters`:** Tramite il pulsante `+ Create New`, si sceglie la modalità di inclusione mediante il selettore `Type`.
 
+```
+                    ┌───────────────────────────────────────────────┐
+                    │               Tipo di Regola                  │
+                    └───────┬───────────────────────────────┬───────┘
+                            │                               │
+                            ▼                               ▼
+               [ Type: Signature (Puntuale) ]   [ Type: Filter (Dinamico) ]
+               • Selezione manuale per nome/CVE • Criteri: Severity, OS, Target
+               • Eccezioni e tuning mirato      • Include automaticamente le
+               • Override dei parametri standard   nuove firme rilasciate da FDN
+```
 
+### Metodo 1: Firme Individuali (`Type: Signature`)
+Consente di selezionare puntualmente singole firme tramite ricerca per testo o codice CVE.
+* **Action:** Sovrascrive l'azione predefinita (`Default`, `Pass`, `Block`, `Reset`).
+* **Packet Logging:** Abilita (`Enable` / `Disable`) la cattura e memorizzazione dell'esatto payload di pacchetto che ha innescato l'evento.
+* **Status:** Stato operativo (`Enable`, `Disable`, `Default`).
+* **Rate-based settings:** Abilita contromisure volumetriche o di soglia temporale.
+* **Exempt IPs:** Elenco di indirizzi IP esclusi dall'ispezione della regola (utile per scanner di vulnerabilità interni autorizzati).
 
+### Metodo 2: Gruppi Dinamici tramite Filtri (`Type: Filter`)
+Consente di aggregare le firme in base a insiemi di metadati (es. `Target = Server`, `Severity = Medium, High, Critical`, `Protocol = HTTP`, `OS = Windows`).
+* **Vantaggio Operativo (Zero-Touch):** Tutte le future firme rilasciate da FortiGuard che soddisfano i criteri configurati vengono aggiunte dinamicamente al sensore senza richiedere l'intervento dell'amministratore.
 
+---
 
+## 5. Rate-Based Signatures (Mitigazione Brute-Force & DoS)
 
+A differenza delle firme tradizionali (che intervengono alla prima corrispondenza binaria), le **Rate-Based Signatures** monitorano la frequenza temporale degli eventi, attivando la contromisura solo al superamento di una soglia prestabilita.
 
+```
+       Evento 1        Evento 2             Evento N (Threshold raggiunta)
+          │               │                                │
+          ▼               ▼                                ▼
+───[ Pacchetto ]───►[ Pacchetto ]─── ... ───►[ Pacchetto / Attacco ]───► [ AZIONE DI BLOCCO ]
+   └──────────────────────── Finestra Temporale (Duration) ────────────────────────┘
+```
 
+### Parametri di Configurazione (`Specify`)
+1. **Threshold (Soglia):** Numero massimo di occorrenze consentite prima di applicare l'azione di blocco.
+2. **Duration (Secondi):** Intervallo temporale mobile entro cui conteggiare le occorrenze (es. 60 secondi).
+3. **Track By (Criterio di Tracciamento):**
+   * `Source IP`: Tiene traccia delle occorrenze per singolo indirizzo IP sorgente. Ideale per contrastare port scan e attacchi brute-force.
+   * `Destination IP`: Tiene traccia delle occorrenze indirizzate a una specifica destinazione, proteggendo il server bersaglio da attacchi distribuiti a bassa intensità.
+   * `Any`: Conteggia qualsiasi occorrenza aggregata corrispondente alla firma.
 
+---
 
+## 6. Ordine di Ispezione del Sensore (Inspection Sequence)
 
+La tabella delle regole all'interno di un sensore IPS opera secondo il principio **Top-to-Bottom**:
 
+```
+                       ┌──────────────────────────────────────────────┐
+                       │           TRAFFICO IN ENTRATA                │
+                       └──────────────────────┬───────────────────────┘
+                                              │
+                                              ▼
+                       ┌──────────────────────────────────────────────┐
+                       │ Regola 1: Firma Specifica (Apache Tomcat)    │
+                       │           Azione: MONITOR                    │
+                       └──────┬────────────────────────────────┬──────┘
+                              │                                │
+                       [ Corrispondenza ]                 [ No Match ]
+                              │                                │
+                              ▼                                ▼
+                     Azione Eseguita:               ┌──────────────────────────────────────────────┐
+                     Registra Log e Passa           │ Regola 2: Filtro Dinamico (Server Windows)   │
+                     (Fine Analisi Firma)           │           Azione: DEFAULT (BLOCK)            │
+                                                    └──────────────────┬───────────────────────────┘
+                                                                       │
+                                                                       ▼
+                                                            Continua Sequenza...
+```
 
+* **Priorità del Matching:** I pacchetti vengono valutati riga per riga partendo dall'alto. Quando un pacchetto corrisponde a una riga, il firewall applica l'azione associata e arresta l'ispezione per quella firma.
+* **Inserimento Nuove Regole:** Ogni nuova riga creata viene inserita **automaticamente in fondo alla lista**.
+* **Best Practice:** Posizionare sempre le eccezioni e le firme specifiche (es. una firma impostata su `Monitor` per test o tuning) **sopra** i filtri dinamici generici, per evitare che questi ultimi blocchino preventivamente il traffico.
 
+---
 
+## 7. Azioni del Motore IPS & Packet Logging
 
+### Azioni Disponibili
+| Azione | Comportamento Operativo del Firewall |
+| :--- | :--- |
+| **Allow** | Consente il transito del pacchetto malevolo ignorando la corrispondenza (nessun log generato). |
+| **Monitor** | Autorizza il transito del pacchetto e genera contestualmente una registrazione nei log di sistema. |
+| **Block** | Scarta immediatamente il pacchetto e termina la sessione di rete attiva in memoria. |
+| **Reset** | Interrompe la connessione inviando un pacchetto TCP RST (`RST-Client`, `RST-Server` o entrambi), forzando l'immediata chiusura dei socket. |
+| **Default** | Applica l'azione raccomandata da FortiGuard Labs (generalmente `Block` per High/Critical, `Pass` per Info). |
+| **Quarantine** | Blocca il pacchetto e inserisce l'indirizzo IP della sorgente nella lista di quarantena (ban temporaneo o permanente su ogni flusso del firewall). |
 
+### Funzionalità Packet Logging
+* **Scopo:** Se abilitato, FortiOS acquisisce l'esatto flusso binario (header e payload) del pacchetto che ha scatenato la firma.
+* **Analisi Forense:** L'amministratore può scaricare il file catturato in formato standard `.pcap` per aprirlo su analizzatori di pacchetti (come Wireshark), verificando se si tratti di un tentativo reale di exploit o di un falso positivo applicativo.
 
+---
 
+## 8. Analisi Forense dei Log IPS
 
+* **Percorso GUI:** `Log & Report > Security Events` $\rightarrow$ Card `Intrusion Prevention`.
 
+### Struttura del Log IPS e Campi di Diagnostica
+Analisi dell'evento di sicurezza rilevato dal sistema:
 
+```
+date=2026-11-10 time=09:40:12 logid="0419016384" type="utm" subtype="ips" 
+level="alert" severity="high" srcip=100.65.0.254 srcport=49152 
+dstip=10.0.1.100 dstport=80 proto=6 action="dropped" policyid=3 
+poluuid="2b2a647e-8c91-51ef-ba34-118239bb4fc1" attack="HTTP.URI.SQL.Injection" 
+attackid=15621 profile="WEBSERVER" direction="incoming" msg="web_misc: HTTP.URI.SQL.Injection" 
+ref="https://fortiguard.fortinet.com/encyclopedia/ips/15621"
+```
 
+### Decodifica dei Parametri di Contesto
+* **`severity="high"` / `Threat Score: 30`:** Grado di rischio dell'attacco secondo i modelli FortiGuard.
+* **`proto=6`:** Valore standard IANA per il protocollo di trasporto Layer 4 **TCP** ($6 = \text{TCP}$, $17 = \text{UDP}$, $1 = \text{ICMP}$).
+* **`action="dropped"`:** Conferma dell'avvenuta neutralizzazione del pacchetto sul perimetro.
+* **`policyid=3` / `poluuid`:** Identifica in modo deterministico la Firewall Policy responsabile del transito.
+* **`profile="WEBSERVER"`:** Sensore IPS associato alla regola di firewall.
+* **`attack="HTTP.URI.SQL.Injection"` / `attackid=15621`:** Pattern identificato e relativo Attack ID univoco.
+* **`direction="incoming"`:** Vettore dell'attacco orientato dall'esterno verso la rete protetta.
+* **`ref`:** Collegamento diretto all'Enciclopedia delle Minacce FortiGuard contenente le CVE correlate e la documentazione del payload malevolo.
 
+---
 
+## 9. Application Control: Riconoscimento a Livello 7
 
+Il modulo **Application Control** opera in sinergia strutturale con il motore IPS di FortiOS:
 
+```
+                            [ Flusso di Traffico (Layer 7) ]
+                                           │
+                                           ▼
+                     ┌───────────────────────────────────────────┐
+                     │          IPS ENGINE (Flow-Based)          │
+                     ├─────────────────────┬─────────────────────┤
+                     │   Modulo IPS        │ Application Control │
+                     │   (Exploit/Firme)   │   (Decodifica L7)   │
+                     └─────────────────────┴─────────────────────┘
+                                           │
+                ┌──────────────────────────┴──────────────────────────┐
+                ▼                                                     ▼
+     Controllo su Porte Famose                             Controllo Applicativo Reale
+    (es. TCP 80, 443, 8080)                               (TikTok, Skype, BitTorrent, P2P)
+    Bypassato da porte non standard                       Ispezione comportamentale indipendente dalla porta
+```
 
-
-
-
+### Principi Operativi
+1. **Condivisione del Motore IPS:** Application Control **utilizza lo stesso IPS engine** in modalità flow-based scan. Questo garantisce scansioni in streaming con impatto minimo su CPU e RAM.
+2. **Ispezione a Livello 7 (Application Layer):** Riconosce le applicazioni di rete decodificando il traffico indipendentemente dalle porte TCP/UDP utilizzate (ad esempio, traffico non-web o protocolli remoti mascherati su porta TCP 443).
+3. **Gestione dei Protocolli P2P:** Identifica pattern dinamici ed euristici tipici del traffico Peer-to-Peer e dei protocolli distribuiti, aggirando le limitazioni dei firewall Layer 3/4 tradizionali.
+4. **Consultazione del Database:**
+   * **Percorso GUI:** `Security Profiles > Application Control` $\rightarrow$ Pulsante `View Application Signatures`.
+   * Permette di consultare il catalogo completo delle firme applicative (con granularità su singole sotto-funzioni quali download, upload o login) divise per popolarità e classe di rischio.
