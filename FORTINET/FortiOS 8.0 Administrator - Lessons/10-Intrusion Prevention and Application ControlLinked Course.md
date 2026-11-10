@@ -90,3 +90,79 @@
   2) Analisi forense: Il traffico catturato può essere esportato direttamente in formato standard .pcap e analizzato tramite strumenti di packet analysis (come Wireshark) per verificare i falsi positivi o studiare il vettore dell'exploit in dettaglio.
  
 
+- IPS Logging
+  Log & Report > Security Events
+  Card Intrusion Prevention: Mostra la sintesi grafica degli eventi IPS rilevati dal sistema (nell'esempio, 7 Events):
+  1) Top Attack: Elenca gli attacchi o exploit maggiormente riscontrati
+  2) Action: Indica l'azione applicata per ciascun tipo di attacco, come Dropped (pacchetto scartato/bloccato) o Detected (semplice rilevamento in modalità monitor).
+  3) Count: Il volume totale di occorrenze registrate per quella specifica firma.
+  Transizione ai Log Dettagliati: Cliccando sul link/icona con la freccia rossa accanto al titolo Intrusion Prevention o passando alla scheda Logs, si accede alla tabella analitica dei singoli record.
+
+  LOGS
+  Date/Time: Data e ora precisa in cui l'IPS engine ha rilevato l'attacco.   
+  Severity: Livello di gravità della firma innescata (nell'esempio evidenziati con barre arancioni di livello High o gialle per Medium).   
+  Source: L'indirizzo IP del mittente dell'attacco (es. 100.65.0.254).   
+  Protocol: Protocollo di trasporto utilizzato (il valore numerico 6 indica il protocollo standard TCP).   
+  Action: Esito operativo del firewall (dropped per le connessioni bloccate, detected per quelle monitorate).   
+  Attack Name: La firma IPS scattata (es. HTTP.URI.SQL.Injection).
+
+  LOGS DETAILS
+  Action & Policy Context:
+  Action: dropped (conferma che il flusso malevolo è stato scartato).   
+  Threat / Threat Level / Threat Score: Punteggio e classificazione del rischio associato alla minaccia (Threat Level: High, Threat Score: 30).   
+  Policy ID: Identifica la regola di firewall esatta che stava gestendo la sessione al momento del rilevamento (3).   
+  Policy UUID: L'identificativo univoco della firewall policy per correlazioni analitiche dirette.
+
+  Security & Log Metadata:
+  Level: Alert Notification (livello di allerta di sistema del log).
+
+  Intrusion Prevention (Dati specifici dell'IPS):
+  Profile: Il nome del profilo/sensore IPS applicato alla firewall policy (nell'esempio: WEBSERVER).
+  Attack Name: Il pattern intercettato (HTTP.URI.SQL.Injection).  
+  Attack ID: L'ID numerico univoco della firma FortiGuard (15,621).
+  Reference: Link diretto all'enciclopedia di intelligence FortiGuard per consultare la documentazione tecnica, le CVE collegate e la descrizione dell'attacco ([https://fortiguard.fortinet.com/encyclopedia/ips/15621
+  (https://fortiguard.fortinet.com/encyclopedia/ips/15621)).
+  Direction: Direzione del flusso di attacco (outgoing o incoming).
+  Message: Campo descrittivo che riassume la categoria e la natura dell'evento (web_misc: HTTP.URI.SQL.Injection).
+
+  Application Control — Principi Operativi
+  - Il legame tra Application Control e il motore IPS di FortiGate:
+    1) Condivisione dell'IPS Engine: Application Control utilizza il motore IPS engine in modalità flow-based scan per scansionare il flusso di traffico in streaming a bassissima latenza.
+    2) Riconoscimento a Livello 7: Rileva e applica azioni sul traffico applicativo (Detects and acts on network application traffic), identificando le applicazioni moderne (es. social network e piattaforme come X, Meta, TikTok, Skype) indipendentemente dalle porte di
+       rete usate.
+    3) Efficacia su protocolli P2P: Risulta particolarmente indicato per individuare e disciplinare le applicazioni peer-to-peer (P2P), storicamente complesse da tracciare con le regole di firewall tradizionali.
+
+Per vedere le firme
+Security Profiles > Application Control
+Pulsante View Application Signatures: Cliccando sul link evidenziato dal riquadro rosso, si apre la tabella di dettaglio dell'intero catalogo delle firme applicative residenti sul sistema.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
